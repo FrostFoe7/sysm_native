@@ -60,6 +60,12 @@ export default function ExploreScreen() {
     }, [isLoading]),
   );
 
+  // Reset loading when query changes
+  const handleQueryChange = useCallback((text: string) => {
+    setQuery(text);
+    setIsLoading(false);
+  }, []);
+
   const exploreData = useMemo(() => {
     void refreshKey;
     if (query.trim()) {
@@ -261,49 +267,55 @@ export default function ExploreScreen() {
 
   return (
     <ScreenLayout>
-      {/* Search bar */}
-      <Box className="px-4 pt-3 pb-3">
-        <HStack className="bg-[#1e1e1e] rounded-xl px-3 items-center h-[40px]" space="sm">
-          <Search size={16} color="#555555" />
-          <TextInput
-            value={query}
-            onChangeText={setQuery}
-            placeholder="Search"
-            placeholderTextColor="#555555"
-            className="flex-1 text-[#f3f5f7] text-[15px] h-full"
-            style={Platform.OS === 'web' ? { outlineStyle: 'none' as any } : undefined}
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
-          {query.length > 0 && (
-            <Pressable onPress={() => setQuery('')} hitSlop={8}>
-              <X size={16} color="#555555" />
-            </Pressable>
-          )}
-        </HStack>
-      </Box>
+      <View className="flex-1">
+        {/* Sticky Search bar */}
+        <View className="sticky top-0 z-10 px-4 pt-4 pb-4 bg-[#101010]">
+          <HStack className="bg-[#1e1e1e] rounded-xl px-4 items-center h-[48px]" space="sm">
+            <Search size={18} color="#555555" />
+            <TextInput
+              value={query}
+              onChangeText={handleQueryChange}
+              placeholder="Search"
+              placeholderTextColor="#555555"
+              numberOfLines={1}
+              className="flex-1 text-[#f3f5f7] text-[15px] h-full"
+              style={Platform.OS === 'web' ? { outlineStyle: 'none' as any } : undefined}
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+            {query.length > 0 && (
+              <Pressable onPress={() => {
+                setQuery('');
+                setIsLoading(false);
+              }} hitSlop={8}>
+                <X size={16} color="#555555" />
+              </Pressable>
+            )}
+          </HStack>
+        </View>
 
-      <FlatList
-        data={exploreData}
-        renderItem={renderItem}
-        keyExtractor={(item, index) => {
-          if (item.type === 'section-header') return `header-${item.title}`;
-          if (item.type === 'user') return `user-${item.user.id}`;
-          if (item.type === 'thread') return `thread-${item.thread.id}`;
-          return `item-${index}`;
-        }}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 24 }}
-        ListEmptyComponent={
-          isLoading ? (
-            <ExploreSkeleton />
-          ) : query.trim() ? (
-            <View className="items-center justify-center py-16">
-              <Text className="text-[#555555] text-[15px]">No results for "{query}"</Text>
-            </View>
-          ) : null
-        }
-      />
+        <FlatList
+          data={exploreData}
+          renderItem={renderItem}
+          keyExtractor={(item, index) => {
+            if (item.type === 'section-header') return `header-${item.title}`;
+            if (item.type === 'user') return `user-${item.user.id}`;
+            if (item.type === 'thread') return `thread-${item.thread.id}`;
+            return `item-${index}`;
+          }}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 24 }}
+          ListEmptyComponent={
+            isLoading ? (
+              <ExploreSkeleton />
+            ) : query.trim() ? (
+              <View className="items-center justify-center py-16">
+                <Text className="text-[#555555] text-[15px]">No results for "{query}"</Text>
+              </View>
+            ) : null
+          }
+        />
+      </View>
       <ShareSheet
         isOpen={shareThreadId !== null}
         onClose={() => setShareThreadId(null)}
