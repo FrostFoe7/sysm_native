@@ -1,7 +1,7 @@
 // components/Composer.tsx
 
-import React, { useState, useCallback, useRef } from 'react';
-import { TextInput, Pressable, Platform, KeyboardAvoidingView } from 'react-native';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { TextInput, Pressable, Platform, KeyboardAvoidingView, NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Avatar, AvatarImage, AvatarFallbackText } from '@/components/ui/avatar';
 import { Text } from '@/components/ui/text';
@@ -40,10 +40,42 @@ export function Composer({
     setContent('');
   }, [content, onSubmit]);
 
+  // Ctrl/Cmd + Enter to submit on web
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        const trimmed = content.trim();
+        if (trimmed.length > 0 && maxLength - trimmed.length >= 0) {
+          onSubmit(trimmed);
+          setContent('');
+        }
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [content, onSubmit]);
+
   const handleCancel = useCallback(() => {
     if (router.canGoBack()) {
       router.back();
     }
+  }, [router]);
+
+  // Esc to cancel on web
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        if (router.canGoBack()) {
+          router.back();
+        }
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
   }, [router]);
 
   const isValid = content.trim().length > 0 && remaining >= 0;

@@ -15,6 +15,8 @@ import { HStack } from '@/components/ui/hstack';
 import { VStack } from '@/components/ui/vstack';
 import { Text } from '@/components/ui/text';
 import { Divider } from '@/components/ui/divider';
+import { useAppToast, TOAST_ICONS } from '@/components/AppToast';
+import { isBookmarkedByCurrentUser, toggleBookmark } from '@/db/selectors';
 import { Link2, Share2, MessageSquare, Bookmark, Flag } from 'lucide-react-native';
 
 interface ShareSheetProps {
@@ -24,13 +26,17 @@ interface ShareSheetProps {
 }
 
 export function ShareSheet({ isOpen, onClose, threadId }: ShareSheetProps) {
+  const { showToast } = useAppToast();
+  const isBookmarked = threadId ? isBookmarkedByCurrentUser(threadId) : false;
+
   const handleCopyLink = useCallback(() => {
     const url = `https://threads.net/t/${threadId}`;
     if (Platform.OS === 'web' && typeof navigator !== 'undefined' && navigator.clipboard) {
       navigator.clipboard.writeText(url);
     }
     onClose();
-  }, [threadId, onClose]);
+    showToast('Link copied', TOAST_ICONS.copied);
+  }, [threadId, onClose, showToast]);
 
   const handleShareExternal = useCallback(() => {
     const url = `https://threads.net/t/${threadId}`;
@@ -44,15 +50,23 @@ export function ShareSheet({ isOpen, onClose, threadId }: ShareSheetProps) {
 
   const handleSendVia = useCallback(() => {
     onClose();
-  }, [onClose]);
+    showToast('Coming soon', TOAST_ICONS.success);
+  }, [onClose, showToast]);
 
   const handleBookmark = useCallback(() => {
+    if (!threadId) return;
+    const result = toggleBookmark(threadId);
     onClose();
-  }, [onClose]);
+    showToast(
+      result.bookmarked ? 'Saved to bookmarks' : 'Removed from bookmarks',
+      TOAST_ICONS.saved,
+    );
+  }, [threadId, onClose, showToast]);
 
   const handleReport = useCallback(() => {
     onClose();
-  }, [onClose]);
+    showToast('Thread reported', TOAST_ICONS.reported, '#ff3040');
+  }, [onClose, showToast]);
 
   return (
     <Actionsheet isOpen={isOpen} onClose={onClose}>
@@ -109,9 +123,14 @@ export function ShareSheet({ isOpen, onClose, threadId }: ShareSheetProps) {
             onPress={handleBookmark}
           >
             <HStack className="items-center flex-1" space="lg">
-              <Bookmark size={22} color="#f3f5f7" strokeWidth={1.8} />
+              <Bookmark
+                size={22}
+                color="#f3f5f7"
+                strokeWidth={1.8}
+                fill={isBookmarked ? '#f3f5f7' : 'none'}
+              />
               <ActionsheetItemText className="text-[#f3f5f7] text-[16px]">
-                Save
+                {isBookmarked ? 'Unsave' : 'Save'}
               </ActionsheetItemText>
             </HStack>
           </ActionsheetItem>

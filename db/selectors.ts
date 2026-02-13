@@ -187,17 +187,19 @@ export function getCurrentUser(): User {
 export function getExploreUsers(): User[] {
   return db
     .getAllUsers()
-    .filter((u) => u.id !== CURRENT_USER_ID)
+    .filter((u) => u.id !== CURRENT_USER_ID && !db.isUserMuted(u.id))
     .sort((a, b) => b.followers_count - a.followers_count);
 }
 
 export function getTrendingThreads(): ThreadWithAuthor[] {
   const rootThreads = db.getRootThreads();
-  const sorted = [...rootThreads].sort((a, b) => {
-    const scoreA = a.like_count + a.reply_count * 2 + a.repost_count * 1.5;
-    const scoreB = b.like_count + b.reply_count * 2 + b.repost_count * 1.5;
-    return scoreB - scoreA;
-  });
+  const sorted = [...rootThreads]
+    .filter((t) => !db.isUserMuted(t.user_id) && !db.isThreadHidden(t.id))
+    .sort((a, b) => {
+      const scoreA = a.like_count + a.reply_count * 2 + a.repost_count * 1.5;
+      const scoreB = b.like_count + b.reply_count * 2 + b.repost_count * 1.5;
+      return scoreB - scoreA;
+    });
   return sorted.map(hydrateThread);
 }
 
@@ -206,8 +208,13 @@ export function searchAll(query: string): {
   threads: ThreadWithAuthor[];
 } {
   if (!query.trim()) return { users: [], threads: [] };
-  const users = db.searchUsers(query);
-  const threads = db.searchThreads(query).map(hydrateThread);
+  const users = db
+    .searchUsers(query)
+    .filter((u) => !db.isUserMuted(u.id));
+  const threads = db
+    .searchThreads(query)
+    .filter((t) => !db.isUserMuted(t.user_id) && !db.isThreadHidden(t.id))
+    .map(hydrateThread);
   return { users, threads };
 }
 
@@ -407,4 +414,27 @@ export function getActivity(): ActivityItem[] {
   items.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
   return items;
+}
+
+// ─── Bookmark selectors ─────────────────────────────────────────────────────────
+
+export function isBookmarkedByCurrentUser(threadId: string): boolean {
+  return db.isBookmarkedByUser(CURRENT_USER_ID, threadId);
+}
+
+export function toggleBookmark(threadId: string): { bookmarked: boolean } {
+  const bookmarked = db.toggleBookmark(CURRENT_USER_ID, threadId);
+  return { bookmarked };
+}
+
+export function getBookmarkedThreads(): ThreadWithAuthor[] {
+  const bookmarks = db.getBookmarksByUserId(CURRENT_USER_ID);
+  const threads: ThreadWithAuthor[] = [];
+  for (const bm of bookmarks) {
+    const thread = db.getThreadById(bm.thread_id);
+    if (thread && !db.isUserMuted(thread.user_id) && !db.isThreadHidden(thread.id)) {
+      threads.push(hydrateThread(thread));
+    }
+  }
+  return threads;
 }

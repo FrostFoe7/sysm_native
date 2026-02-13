@@ -6,6 +6,8 @@ import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { ScreenLayout } from '@/components/ScreenLayout';
 import { ThreadCard } from '@/components/ThreadCard';
+import { ShareSheet } from '@/components/ShareSheet';
+import { ThreadOverflowMenu } from '@/components/ThreadOverflowMenu';
 import { AnimatedListItem } from '@/components/AnimatedListItem';
 import { AnimatedPressable } from '@/components/AnimatedPressable';
 import { Text } from '@/components/ui/text';
@@ -43,6 +45,8 @@ export default function ExploreScreen() {
   const [likedMap, setLikedMap] = useState<Record<string, boolean>>({});
   const [repostMap, setRepostMap] = useState<Record<string, boolean>>({});
   const [followMap, setFollowMap] = useState<Record<string, boolean>>({});
+  const [shareThreadId, setShareThreadId] = useState<string | null>(null);
+  const [overflowThread, setOverflowThread] = useState<ThreadWithAuthor | null>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -131,6 +135,32 @@ export default function ExploreScreen() {
     [router],
   );
 
+  const handleShare = useCallback((threadId: string) => {
+    setShareThreadId(threadId);
+  }, []);
+
+  const handleMore = useCallback(
+    (threadId: string) => {
+      const allThreads = exploreData
+        .filter((d): d is ExploreItem & { type: 'thread' } => d.type === 'thread')
+        .map((d) => d.thread);
+      setOverflowThread(allThreads.find((t) => t.id === threadId) ?? null);
+    },
+    [exploreData],
+  );
+
+  const handleThreadDeleted = useCallback((threadId: string) => {
+    setRefreshKey((k) => k + 1);
+  }, []);
+
+  const handleThreadHidden = useCallback((_threadId: string) => {
+    setRefreshKey((k) => k + 1);
+  }, []);
+
+  const handleUserMuted = useCallback((_userId: string) => {
+    setRefreshKey((k) => k + 1);
+  }, []);
+
   const renderItem = useCallback(
     ({ item, index }: { item: ExploreItem; index: number }) => {
       if (item.type === 'section-header') {
@@ -210,6 +240,8 @@ export default function ExploreScreen() {
               onLike={handleLike}
               onReply={handleReply}
               onRepost={handleRepost}
+              onShare={handleShare}
+              onMorePress={handleMore}
               showDivider
             />
           </AnimatedListItem>
@@ -218,7 +250,7 @@ export default function ExploreScreen() {
 
       return null;
     },
-    [handleLike, handleFollow, handleReply, handleRepost, router],
+    [handleLike, handleFollow, handleReply, handleRepost, handleShare, handleMore, router],
   );
 
   return (
@@ -263,6 +295,19 @@ export default function ExploreScreen() {
             </View>
           ) : null
         }
+      />
+      <ShareSheet
+        isOpen={shareThreadId !== null}
+        onClose={() => setShareThreadId(null)}
+        threadId={shareThreadId ?? ''}
+      />
+      <ThreadOverflowMenu
+        isOpen={overflowThread !== null}
+        onClose={() => setOverflowThread(null)}
+        thread={overflowThread}
+        onThreadDeleted={handleThreadDeleted}
+        onThreadHidden={handleThreadHidden}
+        onUserMuted={handleUserMuted}
       />
     </ScreenLayout>
   );

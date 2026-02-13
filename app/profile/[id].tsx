@@ -12,6 +12,8 @@ import Animated, {
 import { ScreenLayout } from '@/components/ScreenLayout';
 import { ProfileHeader } from '@/components/ProfileHeader';
 import { ThreadCard } from '@/components/ThreadCard';
+import { ShareSheet } from '@/components/ShareSheet';
+import { ThreadOverflowMenu } from '@/components/ThreadOverflowMenu';
 import { AnimatedListItem } from '@/components/AnimatedListItem';
 import { AnimatedTabBar } from '@/components/AnimatedTabBar';
 import { Text } from '@/components/ui/text';
@@ -45,6 +47,8 @@ export default function UserProfileScreen() {
   );
   const [likedMap, setLikedMap] = useState<Record<string, boolean>>({});
   const [repostMap, setRepostMap] = useState<Record<string, boolean>>({});
+  const [shareThreadId, setShareThreadId] = useState<string | null>(null);
+  const [overflowThread, setOverflowThread] = useState<ThreadWithAuthor | null>(null);
 
   // Follow button scale animation
   const followScale = useSharedValue(1);
@@ -119,6 +123,37 @@ export default function UserProfileScreen() {
     [router],
   );
 
+  const handleShare = useCallback((threadId: string) => {
+    setShareThreadId(threadId);
+  }, []);
+
+  const handleMore = useCallback(
+    (threadId: string) => {
+      if (!profile) return;
+      const all = [...profile.threads, ...profile.replies];
+      setOverflowThread(all.find((t) => t.id === threadId) ?? null);
+    },
+    [profile],
+  );
+
+  const handleThreadDeleted = useCallback((_threadId: string) => {
+    if (!id) return;
+    const p = getProfile(id);
+    if (p) setProfile(p);
+  }, [id]);
+
+  const handleThreadHidden = useCallback((_threadId: string) => {
+    if (!id) return;
+    const p = getProfile(id);
+    if (p) setProfile(p);
+  }, [id]);
+
+  const handleUserMuted = useCallback((_userId: string) => {
+    if (!id) return;
+    const p = getProfile(id);
+    if (p) setProfile(p);
+  }, [id]);
+
   if (!profile) return null;
 
   const data = activeTab === 'threads' ? profile.threads : profile.replies;
@@ -148,6 +183,8 @@ export default function UserProfileScreen() {
               onLike={handleLike}
               onReply={handleReply}
               onRepost={handleRepost}
+              onShare={handleShare}
+              onMorePress={handleMore}
               showDivider={index < data.length - 1}
             />
           </AnimatedListItem>
@@ -162,6 +199,19 @@ export default function UserProfileScreen() {
             </Text>
           </View>
         }
+      />
+      <ShareSheet
+        isOpen={shareThreadId !== null}
+        onClose={() => setShareThreadId(null)}
+        threadId={shareThreadId ?? ''}
+      />
+      <ThreadOverflowMenu
+        isOpen={overflowThread !== null}
+        onClose={() => setOverflowThread(null)}
+        thread={overflowThread}
+        onThreadDeleted={handleThreadDeleted}
+        onThreadHidden={handleThreadHidden}
+        onUserMuted={handleUserMuted}
       />
     </ScreenLayout>
   );

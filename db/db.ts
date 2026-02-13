@@ -65,6 +65,13 @@ export interface Repost {
   created_at: string;
 }
 
+export interface Bookmark {
+  id: string;
+  user_id: string;
+  thread_id: string;
+  created_at: string;
+}
+
 export type ThreadWithAuthor = Thread & { author: User; reposted_by?: User };
 
 export type ThreadWithReplies = ThreadWithAuthor & {
@@ -616,6 +623,7 @@ class Database {
   likes: Like[];
   follows: Follow[];
   reposts: Repost[];
+  bookmarks: Bookmark[];
   muted_users: string[];
   hidden_threads: string[];
 
@@ -634,6 +642,7 @@ class Database {
     this.likes = [...LIKES];
     this.follows = [...FOLLOWS];
     this.reposts = [...REPOSTS];
+    this.bookmarks = [];
     this.muted_users = [];
     this.hidden_threads = [];
   }
@@ -819,6 +828,35 @@ class Database {
 
   getRepostsByUserId(userId: string): Repost[] {
     return this.reposts.filter((r) => r.user_id === userId);
+  }
+
+  // ── Bookmark CRUD ───────────────────────────────────────────────────────────
+
+  isBookmarkedByUser(userId: string, threadId: string): boolean {
+    return this.bookmarks.some((b) => b.user_id === userId && b.thread_id === threadId);
+  }
+
+  toggleBookmark(userId: string, threadId: string): boolean {
+    const existing = this.bookmarks.find(
+      (b) => b.user_id === userId && b.thread_id === threadId,
+    );
+    if (existing) {
+      this.bookmarks = this.bookmarks.filter((b) => b.id !== existing.id);
+      return false;
+    }
+    this.bookmarks.push({
+      id: uuid(),
+      user_id: userId,
+      thread_id: threadId,
+      created_at: new Date().toISOString(),
+    });
+    return true;
+  }
+
+  getBookmarksByUserId(userId: string): Bookmark[] {
+    return this.bookmarks
+      .filter((b) => b.user_id === userId)
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   }
 
   // ── User Update ─────────────────────────────────────────────────────────────

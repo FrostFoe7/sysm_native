@@ -1,6 +1,7 @@
 // components/ThreadOverflowMenu.tsx
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
+import { Platform, Alert } from 'react-native';
 import {
   Actionsheet,
   ActionsheetContent,
@@ -14,6 +15,7 @@ import { HStack } from '@/components/ui/hstack';
 import { VStack } from '@/components/ui/vstack';
 import { Text } from '@/components/ui/text';
 import { Divider } from '@/components/ui/divider';
+import { useAppToast, TOAST_ICONS } from '@/components/AppToast';
 import {
   muteUser,
   unmuteUser,
@@ -52,35 +54,56 @@ export function ThreadOverflowMenu({
 }: ThreadOverflowMenuProps) {
   const isOwnThread = thread?.user_id === CURRENT_USER_ID;
   const muted = thread ? isUserMuted(thread.user_id) : false;
+  const { showToast } = useAppToast();
 
   const handleMuteToggle = useCallback(() => {
     if (!thread) return;
     if (muted) {
       unmuteUser(thread.user_id);
+      showToast(`Unmuted @${thread.author.username}`, TOAST_ICONS.unmuted);
     } else {
       muteUser(thread.user_id);
       onUserMuted?.(thread.user_id);
+      showToast(`Muted @${thread.author.username}`, TOAST_ICONS.muted);
     }
     onClose();
-  }, [thread, muted, onClose, onUserMuted]);
+  }, [thread, muted, onClose, onUserMuted, showToast]);
 
   const handleHide = useCallback(() => {
     if (!thread) return;
     hideThread(thread.id);
     onThreadHidden?.(thread.id);
     onClose();
-  }, [thread, onClose, onThreadHidden]);
+    showToast('Thread hidden', TOAST_ICONS.hidden);
+  }, [thread, onClose, onThreadHidden, showToast]);
 
   const handleDelete = useCallback(() => {
     if (!thread) return;
-    deleteThreadAction(thread.id);
-    onThreadDeleted?.(thread.id);
     onClose();
-  }, [thread, onClose, onThreadDeleted]);
+    const doDelete = () => {
+      deleteThreadAction(thread.id);
+      onThreadDeleted?.(thread.id);
+      showToast('Thread deleted', TOAST_ICONS.deleted, '#ff3040');
+    };
+    if (Platform.OS === 'web') {
+      const confirmed = window.confirm('Delete this thread? This action cannot be undone.');
+      if (confirmed) doDelete();
+    } else {
+      Alert.alert(
+        'Delete thread?',
+        'This action cannot be undone.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Delete', style: 'destructive', onPress: doDelete },
+        ],
+      );
+    }
+  }, [thread, onClose, onThreadDeleted, showToast]);
 
   const handleReport = useCallback(() => {
     onClose();
-  }, [onClose]);
+    showToast('Thread reported', TOAST_ICONS.reported, '#ff3040');
+  }, [onClose, showToast]);
 
   const handleCopyLink = useCallback(() => {
     if (!thread) return;
@@ -89,7 +112,8 @@ export function ThreadOverflowMenu({
       navigator.clipboard.writeText(url);
     }
     onClose();
-  }, [thread, onClose]);
+    showToast('Link copied', TOAST_ICONS.copied);
+  }, [thread, onClose, showToast]);
 
   if (!thread) return null;
 

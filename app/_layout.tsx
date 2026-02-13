@@ -7,6 +7,7 @@ import 'react-native-reanimated';
 import '@/global.css';
 
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
+import { AppToastProvider } from '@/components/AppToast';
 
 const ThreadsDark = {
   ...DarkTheme,
@@ -28,6 +29,7 @@ export const unstable_settings = {
 export default function RootLayout() {
   return (
     <GluestackUIProvider mode="dark">
+      <AppToastProvider>
       <ThemeProvider value={ThreadsDark}>
         <Stack
           screenOptions={{
@@ -85,6 +87,7 @@ export default function RootLayout() {
         </Stack>
         <StatusBar style="light" />
       </ThemeProvider>
+      </AppToastProvider>
     </GluestackUIProvider>
   );
 }
