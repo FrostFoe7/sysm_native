@@ -1,29 +1,46 @@
-import { Link } from 'expo-router';
-import { StyleSheet } from 'react-native';
+// app/modal.tsx
 
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
+import React, { useCallback } from 'react';
+import { Platform, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import { Composer } from '@/components/Composer';
+import { Box } from '@/components/ui/box';
+import { createNewThread } from '@/db/selectors';
 
-export default function ModalScreen() {
+export default function ComposerModal() {
+  const router = useRouter();
+
+  const handleSubmit = useCallback(
+    (content: string) => {
+      createNewThread(content);
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.navigate('/(tabs)');
+      }
+    },
+    [router],
+  );
+
   return (
-    <ThemedView style={styles.container}>
-      <ThemedText type="title">This is a modal</ThemedText>
-      <Link href="/" dismissTo style={styles.link}>
-        <ThemedText type="link">Go to home screen</ThemedText>
-      </Link>
-    </ThemedView>
+    <View className="flex-1 bg-[#181818]">
+      <Animated.View
+        entering={FadeInDown.duration(300).springify().damping(20).stiffness(200)}
+        className="flex-1"
+      >
+        <Box
+          className={`flex-1 ${
+            Platform.OS === 'web' ? 'max-w-[680px] self-center w-full' : ''
+          }`}
+        >
+          <Composer
+            onSubmit={handleSubmit}
+            placeholder="What's new?"
+            autoFocus
+          />
+        </Box>
+      </Animated.View>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-  },
-  link: {
-    marginTop: 15,
-    paddingVertical: 15,
-  },
-});

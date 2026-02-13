@@ -1,103 +1,149 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+// app/(tabs)/index.tsx
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import React, { useState, useCallback, useRef } from 'react';
+import { FlatList, RefreshControl, Platform, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
+import { ScreenLayout } from '@/components/ScreenLayout';
+import { ThreadCard } from '@/components/ThreadCard';
+import { AnimatedListItem } from '@/components/AnimatedListItem';
+import { AnimatedTabBar } from '@/components/AnimatedTabBar';
+import { Text } from '@/components/ui/text';
+import { Spinner } from '@/components/ui/spinner';
+import {
+  getFeed,
+  isThreadLikedByCurrentUser,
+  toggleThreadLike,
+} from '@/db/selectors';
+import type { ThreadWithAuthor } from '@/db/db';
+
+const TABS = [
+  { key: 'foryou', label: 'For you' },
+  { key: 'following', label: 'Following' },
+];
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView className="bg-blue-500 p-4 rounded-lg my-4">
-        <ThemedText className="text-white font-bold text-center">
-          NativeWind is now installed!
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const router = useRouter();
+  const [feed, setFeed] = useState<ThreadWithAuthor[]>(() => getFeed());
+  const [likedMap, setLikedMap] = useState<Record<string, boolean>>(() => {
+    const map: Record<string, boolean> = {};
+    for (const t of getFeed()) {
+      map[t.id] = isThreadLikedByCurrentUser(t.id);
+    }
+    return map;
+  });
+  const [refreshing, setRefreshing] = useState(false);
+  const [activeTab, setActiveTab] = useState('foryou');
+  const flatListRef = useRef<FlatList>(null);
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  const refreshFeed = useCallback(() => {
+    const freshFeed = getFeed();
+    setFeed(freshFeed);
+    const map: Record<string, boolean> = {};
+    for (const t of freshFeed) {
+      map[t.id] = isThreadLikedByCurrentUser(t.id);
+    }
+    setLikedMap(map);
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      refreshFeed();
+    }, [refreshFeed]),
+  );
+
+  const handleRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      refreshFeed();
+      setRefreshing(false);
+    }, 600);
+  }, [refreshFeed]);
+
+  const handleLike = useCallback((threadId: string) => {
+    const result = toggleThreadLike(threadId);
+    setLikedMap((prev) => ({ ...prev, [threadId]: result.liked }));
+    setFeed((prev) =>
+      prev.map((t) =>
+        t.id === threadId ? { ...t, like_count: result.likeCount } : t,
+      ),
+    );
+  }, []);
+
+  const handleReply = useCallback(
+    (threadId: string) => {
+      router.push(`/thread/${threadId}`);
+    },
+    [router],
+  );
+
+  const renderItem = useCallback(
+    ({ item, index }: { item: ThreadWithAuthor; index: number }) => (
+      <AnimatedListItem index={index}>
+        <ThreadCard
+          thread={item}
+          isLiked={likedMap[item.id] ?? false}
+          onLike={handleLike}
+          onReply={handleReply}
+          showDivider={index < feed.length - 1}
+        />
+      </AnimatedListItem>
+    ),
+    [likedMap, handleLike, handleReply, feed.length],
+  );
+
+  const keyExtractor = useCallback((item: ThreadWithAuthor) => item.id, []);
+
+  const renderHeader = useCallback(
+    () => (
+      <View>
+        <View className="items-center pt-2 pb-1">
+          <Text className="text-[#f3f5f7] text-[28px] font-bold tracking-tight mb-3">
+            𝕋
+          </Text>
+        </View>
+        <AnimatedTabBar
+          tabs={TABS}
+          activeKey={activeTab}
+          onTabPress={setActiveTab}
+        />
+      </View>
+    ),
+    [activeTab],
+  );
+
+  const renderEmpty = useCallback(
+    () => (
+      <View className="flex-1 items-center justify-center py-20">
+        <Spinner size="large" className="text-[#555555]" />
+      </View>
+    ),
+    [],
+  );
+
+  return (
+    <ScreenLayout>
+      <FlatList
+        ref={flatListRef}
+        data={feed}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
+        ListHeaderComponent={renderHeader}
+        ListEmptyComponent={renderEmpty}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor="#555555"
+            colors={['#555555']}
+          />
+        }
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingBottom: 20,
+          ...(Platform.OS === 'web' ? { minHeight: '100%' } : {}),
+        }}
+      />
+    </ScreenLayout>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
