@@ -15,6 +15,8 @@ import {
   getProfile,
   toggleThreadLike,
   isThreadLikedByCurrentUser,
+  isRepostedByCurrentUser,
+  toggleRepost,
 } from '@/db/selectors';
 import { CURRENT_USER_ID } from '@/db/db';
 import { Menu, Settings } from 'lucide-react-native';
@@ -30,6 +32,7 @@ export default function ProfileScreen() {
   const [activeTab, setActiveTab] = useState('threads');
   const [profile, setProfile] = useState(() => getProfile(CURRENT_USER_ID));
   const [likedMap, setLikedMap] = useState<Record<string, boolean>>({});
+  const [repostMap, setRepostMap] = useState<Record<string, boolean>>({});
 
   useFocusEffect(
     useCallback(() => {
@@ -37,10 +40,13 @@ export default function ProfileScreen() {
       if (p) {
         setProfile(p);
         const newLiked: Record<string, boolean> = {};
+        const newReposted: Record<string, boolean> = {};
         for (const t of [...p.threads, ...p.replies]) {
           newLiked[t.id] = isThreadLikedByCurrentUser(t.id);
+          newReposted[t.id] = isRepostedByCurrentUser(t.id);
         }
         setLikedMap(newLiked);
+        setRepostMap(newReposted);
       }
     }, []),
   );
@@ -53,6 +59,23 @@ export default function ProfileScreen() {
       const updateThreads = (arr: ThreadWithAuthor[]) =>
         arr.map((t) =>
           t.id === threadId ? { ...t, like_count: result.likeCount } : t,
+        );
+      return {
+        ...prev,
+        threads: updateThreads(prev.threads),
+        replies: updateThreads(prev.replies),
+      };
+    });
+  }, []);
+
+  const handleRepost = useCallback((threadId: string) => {
+    const result = toggleRepost(threadId);
+    setRepostMap((prev) => ({ ...prev, [threadId]: result.reposted }));
+    setProfile((prev) => {
+      if (!prev) return prev;
+      const updateThreads = (arr: ThreadWithAuthor[]) =>
+        arr.map((t) =>
+          t.id === threadId ? { ...t, repost_count: result.repostCount } : t,
         );
       return {
         ...prev,
@@ -91,6 +114,7 @@ export default function ProfileScreen() {
         followerCount={profile.followersCount}
         followingCount={profile.followingCount}
         isCurrentUser
+        onEditProfile={() => router.push('/profile/edit')}
       />
 
       <AnimatedTabBar tabs={TABS} activeKey={activeTab} onTabPress={setActiveTab} />
@@ -102,8 +126,10 @@ export default function ProfileScreen() {
             <ThreadCard
               thread={item}
               isLiked={likedMap[item.id] ?? isThreadLikedByCurrentUser(item.id)}
+              isReposted={repostMap[item.id] ?? isRepostedByCurrentUser(item.id)}
               onLike={handleLike}
               onReply={handleReply}
+              onRepost={handleRepost}
               showDivider={index < data.length - 1}
             />
           </AnimatedListItem>

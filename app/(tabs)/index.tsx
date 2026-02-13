@@ -8,12 +8,16 @@ import { ScreenLayout } from '@/components/ScreenLayout';
 import { ThreadCard } from '@/components/ThreadCard';
 import { AnimatedListItem } from '@/components/AnimatedListItem';
 import { AnimatedTabBar } from '@/components/AnimatedTabBar';
+import { ShareSheet } from '@/components/ShareSheet';
+import { ThreadOverflowMenu } from '@/components/ThreadOverflowMenu';
 import { Text } from '@/components/ui/text';
 import { Spinner } from '@/components/ui/spinner';
 import {
   getFeed,
   isThreadLikedByCurrentUser,
+  isRepostedByCurrentUser,
   toggleThreadLike,
+  toggleRepost,
 } from '@/db/selectors';
 import type { ThreadWithAuthor } from '@/db/db';
 
@@ -32,18 +36,30 @@ export default function HomeScreen() {
     }
     return map;
   });
+  const [repostMap, setRepostMap] = useState<Record<string, boolean>>(() => {
+    const map: Record<string, boolean> = {};
+    for (const t of getFeed()) {
+      map[t.id] = isRepostedByCurrentUser(t.id);
+    }
+    return map;
+  });
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState('foryou');
+  const [shareThreadId, setShareThreadId] = useState<string | null>(null);
+  const [overflowThread, setOverflowThread] = useState<ThreadWithAuthor | null>(null);
   const flatListRef = useRef<FlatList>(null);
 
   const refreshFeed = useCallback(() => {
     const freshFeed = getFeed();
     setFeed(freshFeed);
-    const map: Record<string, boolean> = {};
+    const likeMap: Record<string, boolean> = {};
+    const rpMap: Record<string, boolean> = {};
     for (const t of freshFeed) {
-      map[t.id] = isThreadLikedByCurrentUser(t.id);
+      likeMap[t.id] = isThreadLikedByCurrentUser(t.id);
+      rpMap[t.id] = isRepostedByCurrentUser(t.id);
     }
-    setLikedMap(map);
+    setLikedMap(likeMap);
+    setRepostMap(rpMap);
   }, []);
 
   useFocusEffect(
@@ -70,6 +86,16 @@ export default function HomeScreen() {
     );
   }, []);
 
+  const handleRepost = useCallback((threadId: string) => {
+    const result = toggleRepost(threadId);
+    setRepostMap((prev) => ({ ...prev, [threadId]: result.reposted }));
+    setFeed((prev) =>
+      prev.map((t) =>
+        t.id === threadId ? { ...t, repost_count: result.repostCount } : t,
+      ),
+    );
+  }, []);
+
   const handleReply = useCallback(
     (threadId: string) => {
       router.push(`/thread/${threadId}`);
@@ -77,19 +103,47 @@ export default function HomeScreen() {
     [router],
   );
 
+  const handleShare = useCallback((threadId: string) => {
+    setShareThreadId(threadId);
+  }, []);
+
+  const handleMore = useCallback(
+    (threadId: string) => {
+      const thread = feed.find((t) => t.id === threadId) ?? null;
+      setOverflowThread(thread);
+    },
+    [feed],
+  );
+
+  const handleThreadDeleted = useCallback((threadId: string) => {
+    setFeed((prev) => prev.filter((t) => t.id !== threadId));
+  }, []);
+
+  const handleThreadHidden = useCallback((threadId: string) => {
+    setFeed((prev) => prev.filter((t) => t.id !== threadId));
+  }, []);
+
+  const handleUserMuted = useCallback((userId: string) => {
+    setFeed((prev) => prev.filter((t) => t.user_id !== userId));
+  }, []);
+
   const renderItem = useCallback(
     ({ item, index }: { item: ThreadWithAuthor; index: number }) => (
       <AnimatedListItem index={index}>
         <ThreadCard
           thread={item}
           isLiked={likedMap[item.id] ?? false}
+          isReposted={repostMap[item.id] ?? false}
           onLike={handleLike}
           onReply={handleReply}
+          onRepost={handleRepost}
+          onShare={handleShare}
+          onMorePress={handleMore}
           showDivider={index < feed.length - 1}
         />
       </AnimatedListItem>
     ),
-    [likedMap, handleLike, handleReply, feed.length],
+    [likedMap, repostMap, handleLike, handleReply, handleRepost, handleShare, handleMore, feed.length],
   );
 
   const keyExtractor = useCallback((item: ThreadWithAuthor) => item.id, []);
@@ -143,6 +197,19 @@ export default function HomeScreen() {
           paddingBottom: 20,
           ...(Platform.OS === 'web' ? { minHeight: '100%' } : {}),
         }}
+      />
+      <ShareSheet
+        isOpen={shareThreadId !== null}
+        onClose={() => setShareThreadId(null)}
+        threadId={shareThreadId ?? ''}
+      />
+      <ThreadOverflowMenu
+        isOpen={overflowThread !== null}
+        onClose={() => setOverflowThread(null)}
+        thread={overflowThread}
+        onThreadDeleted={handleThreadDeleted}
+        onThreadHidden={handleThreadHidden}
+        onUserMuted={handleUserMuted}
       />
     </ScreenLayout>
   );

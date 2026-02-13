@@ -22,6 +22,8 @@ import {
   toggleUserFollow,
   isThreadLikedByCurrentUser,
   isUserFollowedByCurrentUser,
+  isRepostedByCurrentUser,
+  toggleRepost,
 } from '@/db/selectors';
 import type { ThreadWithAuthor } from '@/db/db';
 
@@ -42,6 +44,7 @@ export default function UserProfileScreen() {
     () => profile?.followersCount ?? 0,
   );
   const [likedMap, setLikedMap] = useState<Record<string, boolean>>({});
+  const [repostMap, setRepostMap] = useState<Record<string, boolean>>({});
 
   // Follow button scale animation
   const followScale = useSharedValue(1);
@@ -58,10 +61,13 @@ export default function UserProfileScreen() {
         setIsFollowing(isUserFollowedByCurrentUser(id));
         setFollowersCount(p.followersCount);
         const newLiked: Record<string, boolean> = {};
+        const newReposted: Record<string, boolean> = {};
         for (const t of [...p.threads, ...p.replies]) {
           newLiked[t.id] = isThreadLikedByCurrentUser(t.id);
+          newReposted[t.id] = isRepostedByCurrentUser(t.id);
         }
         setLikedMap(newLiked);
+        setRepostMap(newReposted);
       }
     }, [id]),
   );
@@ -88,6 +94,19 @@ export default function UserProfileScreen() {
       const update = (arr: ThreadWithAuthor[]) =>
         arr.map((t) =>
           t.id === threadId ? { ...t, like_count: result.likeCount } : t,
+        );
+      return { ...prev, threads: update(prev.threads), replies: update(prev.replies) };
+    });
+  }, []);
+
+  const handleRepost = useCallback((threadId: string) => {
+    const result = toggleRepost(threadId);
+    setRepostMap((prev) => ({ ...prev, [threadId]: result.reposted }));
+    setProfile((prev) => {
+      if (!prev) return prev;
+      const update = (arr: ThreadWithAuthor[]) =>
+        arr.map((t) =>
+          t.id === threadId ? { ...t, repost_count: result.repostCount } : t,
         );
       return { ...prev, threads: update(prev.threads), replies: update(prev.replies) };
     });
@@ -125,8 +144,10 @@ export default function UserProfileScreen() {
             <ThreadCard
               thread={item}
               isLiked={likedMap[item.id] ?? isThreadLikedByCurrentUser(item.id)}
+              isReposted={repostMap[item.id] ?? isRepostedByCurrentUser(item.id)}
               onLike={handleLike}
               onReply={handleReply}
+              onRepost={handleRepost}
               showDivider={index < data.length - 1}
             />
           </AnimatedListItem>

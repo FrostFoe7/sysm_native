@@ -12,6 +12,8 @@ import {
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { ThreadCard } from '@/components/ThreadCard';
+import { ShareSheet } from '@/components/ShareSheet';
+import { ThreadOverflowMenu } from '@/components/ThreadOverflowMenu';
 import { Avatar, AvatarImage, AvatarFallbackText } from '@/components/ui/avatar';
 import { Text } from '@/components/ui/text';
 import { HStack } from '@/components/ui/hstack';
@@ -22,7 +24,9 @@ import {
   getThreadDetail,
   getThreadAncestors,
   isThreadLikedByCurrentUser,
+  isRepostedByCurrentUser,
   toggleThreadLike,
+  toggleRepost,
   createReply,
   getCurrentUser,
   formatFullDate,
@@ -45,6 +49,9 @@ export default function ThreadDetailScreen() {
   const [detail, setDetail] = useState<ThreadWithReplies | null>(null);
   const [ancestors, setAncestors] = useState<ThreadWithAuthor[]>([]);
   const [likedMap, setLikedMap] = useState<Record<string, boolean>>({});
+  const [repostMap, setRepostMap] = useState<Record<string, boolean>>({});
+  const [shareThreadId, setShareThreadId] = useState<string | null>(null);
+  const [overflowThread, setOverflowThread] = useState<ThreadWithAuthor | null>(null);
   const [threadLikeCounts, setThreadLikeCounts] = useState<Record<string, number>>({});
 
   const currentUser = useMemo(() => getCurrentUser(), []);
@@ -58,13 +65,20 @@ export default function ThreadDetailScreen() {
     if (d) {
       const allThreads = [d, ...d.replies];
       const newLiked: Record<string, boolean> = {};
+      const newReposted: Record<string, boolean> = {};
       for (const t of allThreads) {
         if (!(t.id in likedMap)) {
           newLiked[t.id] = isThreadLikedByCurrentUser(t.id);
         }
+        if (!(t.id in repostMap)) {
+          newReposted[t.id] = isRepostedByCurrentUser(t.id);
+        }
       }
       if (Object.keys(newLiked).length > 0) {
         setLikedMap((prev) => ({ ...prev, ...newLiked }));
+      }
+      if (Object.keys(newReposted).length > 0) {
+        setRepostMap((prev) => ({ ...prev, ...newReposted }));
       }
     }
   }, [id]);
@@ -106,6 +120,71 @@ export default function ThreadDetailScreen() {
         inputRef.current?.focus();
       } else {
         router.push(`/thread/${threadId}`);
+      }
+    },
+    [id, router],
+  );
+
+  const handleRepost = useCallback((threadId: string) => {
+    const result = toggleRepost(threadId);
+    setRepostMap((prev) => ({ ...prev, [threadId]: result.reposted }));
+    setDetail((prev) => {
+      if (!prev) return prev;
+      if (prev.id === threadId) {
+        return { ...prev, repost_count: result.repostCount };
+      }
+      return {
+        ...prev,
+        replies: prev.replies.map((r) =>
+          r.id === threadId ? { ...r, repost_count: result.repostCount } : r,
+        ),
+      };
+    });
+  }, []);
+
+  const handleShare = useCallback((threadId: string) => {
+    setShareThreadId(threadId);
+  }, []);
+
+  const handleMore = useCallback(
+    (threadId: string) => {
+      const allThreads = detail ? [detail, ...ancestors, ...detail.replies] : ancestors;
+      const found = allThreads.find((t) => t.id === threadId) ?? null;
+      setOverflowThread(found);
+    },
+    [detail, ancestors],
+  );
+
+  const handleThreadDeleted = useCallback(
+    (threadId: string) => {
+      if (threadId === id) {
+        router.back();
+      } else {
+        setDetail((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            replies: prev.replies.filter((r) => r.id !== threadId),
+            reply_count: Math.max(0, prev.reply_count - 1),
+          };
+        });
+      }
+    },
+    [id, router],
+  );
+
+  const handleThreadHidden = useCallback(
+    (threadId: string) => {
+      if (threadId === id) {
+        router.back();
+      } else {
+        setDetail((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            replies: prev.replies.filter((r) => r.id !== threadId),
+          };
+        });
       }
     },
     [id, router],
@@ -154,8 +233,12 @@ export default function ThreadDetailScreen() {
             like_count: threadLikeCounts[item.thread.id] ?? item.thread.like_count,
           }}
           isLiked={likedMap[item.thread.id] ?? isThreadLikedByCurrentUser(item.thread.id)}
+          isReposted={repostMap[item.thread.id] ?? isRepostedByCurrentUser(item.thread.id)}
           onLike={handleLike}
           onReply={handleReply}
+          onRepost={handleRepost}
+          onShare={handleShare}
+          onMorePress={handleMore}
           showDivider={false}
         />
       );
@@ -170,8 +253,12 @@ export default function ThreadDetailScreen() {
               like_count: threadLikeCounts[item.thread.id] ?? item.thread.like_count,
             }}
             isLiked={likedMap[item.thread.id] ?? isThreadLikedByCurrentUser(item.thread.id)}
+            isReposted={repostMap[item.thread.id] ?? isRepostedByCurrentUser(item.thread.id)}
             onLike={handleLike}
             onReply={() => inputRef.current?.focus()}
+            onRepost={handleRepost}
+            onShare={handleShare}
+            onMorePress={handleMore}
             showDivider={false}
             isDetailView
           />
@@ -205,8 +292,12 @@ export default function ThreadDetailScreen() {
             like_count: threadLikeCounts[item.thread.id] ?? item.thread.like_count,
           }}
           isLiked={likedMap[item.thread.id] ?? isThreadLikedByCurrentUser(item.thread.id)}
+          isReposted={repostMap[item.thread.id] ?? isRepostedByCurrentUser(item.thread.id)}
           onLike={handleLike}
           onReply={handleReply}
+          onRepost={handleRepost}
+          onShare={handleShare}
+          onMorePress={handleMore}
           showDivider={index < listData.length - 1 && listData[index + 1]?.type === 'reply'}
         />
       );
@@ -266,6 +357,18 @@ export default function ThreadDetailScreen() {
           </Pressable>
         </HStack>
       </Box>
+      <ShareSheet
+        isOpen={shareThreadId !== null}
+        onClose={() => setShareThreadId(null)}
+        threadId={shareThreadId ?? ''}
+      />
+      <ThreadOverflowMenu
+        isOpen={overflowThread !== null}
+        onClose={() => setOverflowThread(null)}
+        thread={overflowThread}
+        onThreadDeleted={handleThreadDeleted}
+        onThreadHidden={handleThreadHidden}
+      />
     </KeyboardAvoidingView>
   );
 }

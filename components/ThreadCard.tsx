@@ -12,13 +12,17 @@ import { ActionRow } from '@/components/ActionRow';
 import { AnimatedPressable } from '@/components/AnimatedPressable';
 import { formatRelativeTime, formatCount } from '@/db/selectors';
 import type { ThreadWithAuthor } from '@/db/db';
-import { BadgeCheck, MoreHorizontal } from 'lucide-react-native';
+import { BadgeCheck, MoreHorizontal, Repeat2 } from 'lucide-react-native';
 
 interface ThreadCardProps {
   thread: ThreadWithAuthor;
   isLiked: boolean;
+  isReposted?: boolean;
   onLike: (threadId: string) => void;
   onReply?: (threadId: string) => void;
+  onRepost?: (threadId: string) => void;
+  onShare?: (threadId: string) => void;
+  onMorePress?: (threadId: string) => void;
   showDivider?: boolean;
   isDetailView?: boolean;
 }
@@ -26,8 +30,12 @@ interface ThreadCardProps {
 export function ThreadCard({
   thread,
   isLiked,
+  isReposted = false,
   onLike,
   onReply,
+  onRepost,
+  onShare,
+  onMorePress,
   showDivider = true,
   isDetailView = false,
 }: ThreadCardProps) {
@@ -59,86 +67,117 @@ export function ThreadCard({
     }
   }, [thread.id, onReply, router]);
 
+  const handleRepost = useCallback(() => {
+    onRepost?.(thread.id);
+  }, [thread.id, onRepost]);
+
+  const handleShare = useCallback(() => {
+    onShare?.(thread.id);
+  }, [thread.id, onShare]);
+
+  const handleMore = useCallback(() => {
+    onMorePress?.(thread.id);
+  }, [thread.id, onMorePress]);
+
   const cardContent = (
-    <HStack className="px-4 py-3" space="md">
-      {/* Left column: avatar + thread line */}
-      <VStack className="items-center">
-        <Pressable onPress={handleAvatarPress}>
-          <Avatar size="sm">
-            <AvatarImage source={{ uri: thread.author.avatar_url }} />
-            <AvatarFallbackText>
-              {thread.author.display_name}
-            </AvatarFallbackText>
-          </Avatar>
-        </Pressable>
-        {thread.reply_count > 0 && !isDetailView && (
-          <View className="flex-1 w-[2px] bg-[#2a2a2a] mt-2 min-h-[20px] rounded-full" />
-        )}
-      </VStack>
-
-      {/* Right column: content */}
-      <VStack className="flex-1 flex-shrink" space="xs">
-        {/* Header row */}
-        <HStack className="items-center justify-between">
-          <HStack className="items-center flex-1" space="xs">
-            <Pressable onPress={handleUsernamePress}>
-              <Text className="text-[#f3f5f7] font-semibold text-[15px]">
-                {thread.author.username}
-              </Text>
-            </Pressable>
-            {thread.author.verified && (
-              <BadgeCheck size={14} color="#0095f6" fill="#0095f6" strokeWidth={0} />
-            )}
-          </HStack>
-          <HStack className="items-center" space="sm">
-            <Text className="text-[#555555] text-[13px]">
-              {formatRelativeTime(thread.created_at)}
-            </Text>
-            <Pressable hitSlop={10} className="p-1 -mr-1 rounded-full active:bg-white/5">
-              <MoreHorizontal size={16} color="#555555" />
-            </Pressable>
-          </HStack>
+    <VStack>
+      {/* Reposted by header */}
+      {thread.reposted_by && (
+        <HStack className="items-center px-4 pt-2 pl-[60px]" space="xs">
+          <Repeat2 size={13} color="#555555" strokeWidth={2} />
+          <Text className="text-[#555555] text-[13px]">
+            {thread.reposted_by.display_name} reposted
+          </Text>
         </HStack>
+      )}
 
-        {/* Content */}
-        <Text
-          className={`text-[#f3f5f7] text-[15px] leading-[21px] ${
-            isDetailView ? '' : 'pr-2'
-          }`}
-        >
-          {thread.content}
-        </Text>
+      <HStack className="px-4 py-3" space="md">
+        {/* Left column: avatar + thread line */}
+        <VStack className="items-center">
+          <Pressable onPress={handleAvatarPress}>
+            <Avatar size="sm">
+              <AvatarImage source={{ uri: thread.author.avatar_url }} />
+              <AvatarFallbackText>
+                {thread.author.display_name}
+              </AvatarFallbackText>
+            </Avatar>
+          </Pressable>
+          {thread.reply_count > 0 && !isDetailView && (
+            <View className="flex-1 w-[2px] bg-[#2a2a2a] mt-2 min-h-[20px] rounded-full" />
+          )}
+        </VStack>
 
-        {/* Action row */}
-        <ActionRow
-          likeCount={thread.like_count}
-          replyCount={thread.reply_count}
-          repostCount={thread.repost_count}
-          isLiked={isLiked}
-          onLike={handleLike}
-          onReply={handleReply}
-        />
-
-        {/* Engagement summary for detail view */}
-        {isDetailView && (
-          <HStack className="mt-1" space="md">
-            <Text className="text-[#555555] text-[13px]">
-              {formatCount(thread.reply_count)}{' '}
+        {/* Right column: content */}
+        <VStack className="flex-1 flex-shrink" space="xs">
+          {/* Header row */}
+          <HStack className="items-center justify-between">
+            <HStack className="items-center flex-1" space="xs">
+              <Pressable onPress={handleUsernamePress}>
+                <Text className="text-[#f3f5f7] font-semibold text-[15px]">
+                  {thread.author.username}
+                </Text>
+              </Pressable>
+              {thread.author.verified && (
+                <BadgeCheck size={14} color="#0095f6" fill="#0095f6" strokeWidth={0} />
+              )}
+            </HStack>
+            <HStack className="items-center" space="sm">
               <Text className="text-[#555555] text-[13px]">
-                {thread.reply_count === 1 ? 'reply' : 'replies'}
+                {formatRelativeTime(thread.created_at)}
               </Text>
-            </Text>
-            <Text className="text-[#555555] text-[13px]">·</Text>
-            <Text className="text-[#555555] text-[13px]">
-              {formatCount(thread.like_count)}{' '}
-              <Text className="text-[#555555] text-[13px]">
-                {thread.like_count === 1 ? 'like' : 'likes'}
-              </Text>
-            </Text>
+              <Pressable
+                hitSlop={10}
+                className="p-1 -mr-1 rounded-full active:bg-white/5"
+                onPress={handleMore}
+              >
+                <MoreHorizontal size={16} color="#555555" />
+              </Pressable>
+            </HStack>
           </HStack>
-        )}
-      </VStack>
-    </HStack>
+
+          {/* Content */}
+          <Text
+            className={`text-[#f3f5f7] text-[15px] leading-[21px] ${
+              isDetailView ? '' : 'pr-2'
+            }`}
+          >
+            {thread.content}
+          </Text>
+
+          {/* Action row */}
+          <ActionRow
+            likeCount={thread.like_count}
+            replyCount={thread.reply_count}
+            repostCount={thread.repost_count}
+            isLiked={isLiked}
+            isReposted={isReposted}
+            onLike={handleLike}
+            onReply={handleReply}
+            onRepost={handleRepost}
+            onShare={handleShare}
+          />
+
+          {/* Engagement summary for detail view */}
+          {isDetailView && (
+            <HStack className="mt-1" space="md">
+              <Text className="text-[#555555] text-[13px]">
+                {formatCount(thread.reply_count)}{' '}
+                <Text className="text-[#555555] text-[13px]">
+                  {thread.reply_count === 1 ? 'reply' : 'replies'}
+                </Text>
+              </Text>
+              <Text className="text-[#555555] text-[13px]">·</Text>
+              <Text className="text-[#555555] text-[13px]">
+                {formatCount(thread.like_count)}{' '}
+                <Text className="text-[#555555] text-[13px]">
+                  {thread.like_count === 1 ? 'like' : 'likes'}
+                </Text>
+              </Text>
+            </HStack>
+          )}
+        </VStack>
+      </HStack>
+    </VStack>
   );
 
   return (

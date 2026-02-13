@@ -24,6 +24,8 @@ import {
   toggleUserFollow,
   isThreadLikedByCurrentUser,
   isUserFollowedByCurrentUser,
+  isRepostedByCurrentUser,
+  toggleRepost,
   formatCount,
 } from '@/db/selectors';
 import { Search, X, BadgeCheck } from 'lucide-react-native';
@@ -32,13 +34,14 @@ import type { User, ThreadWithAuthor } from '@/db/db';
 type ExploreItem =
   | { type: 'section-header'; title: string }
   | { type: 'user'; user: User; isFollowed: boolean }
-  | { type: 'thread'; thread: ThreadWithAuthor; isLiked: boolean };
+  | { type: 'thread'; thread: ThreadWithAuthor; isLiked: boolean; isReposted: boolean };
 
 export default function ExploreScreen() {
   const router = useRouter();
   const [query, setQuery] = useState('');
   const [refreshKey, setRefreshKey] = useState(0);
   const [likedMap, setLikedMap] = useState<Record<string, boolean>>({});
+  const [repostMap, setRepostMap] = useState<Record<string, boolean>>({});
   const [followMap, setFollowMap] = useState<Record<string, boolean>>({});
 
   useFocusEffect(
@@ -69,6 +72,7 @@ export default function ExploreScreen() {
             type: 'thread',
             thread: t,
             isLiked: likedMap[t.id] ?? isThreadLikedByCurrentUser(t.id),
+            isReposted: repostMap[t.id] ?? isRepostedByCurrentUser(t.id),
           });
         }
       }
@@ -97,16 +101,22 @@ export default function ExploreScreen() {
           type: 'thread',
           thread: t,
           isLiked: likedMap[t.id] ?? isThreadLikedByCurrentUser(t.id),
+          isReposted: repostMap[t.id] ?? isRepostedByCurrentUser(t.id),
         });
       }
     }
 
     return items;
-  }, [query, refreshKey, likedMap, followMap]);
+  }, [query, refreshKey, likedMap, repostMap, followMap]);
 
   const handleLike = useCallback((threadId: string) => {
     const result = toggleThreadLike(threadId);
     setLikedMap((prev) => ({ ...prev, [threadId]: result.liked }));
+  }, []);
+
+  const handleRepost = useCallback((threadId: string) => {
+    const result = toggleRepost(threadId);
+    setRepostMap((prev) => ({ ...prev, [threadId]: result.reposted }));
   }, []);
 
   const handleFollow = useCallback((userId: string) => {
@@ -196,8 +206,10 @@ export default function ExploreScreen() {
             <ThreadCard
               thread={item.thread}
               isLiked={item.isLiked}
+              isReposted={item.isReposted}
               onLike={handleLike}
               onReply={handleReply}
+              onRepost={handleRepost}
               showDivider
             />
           </AnimatedListItem>
@@ -206,7 +218,7 @@ export default function ExploreScreen() {
 
       return null;
     },
-    [handleLike, handleFollow, handleReply, router],
+    [handleLike, handleFollow, handleReply, handleRepost, router],
   );
 
   return (

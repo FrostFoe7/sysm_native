@@ -66,7 +66,47 @@ export function formatCount(count: number): string {
 
 export function getFeed(): ThreadWithAuthor[] {
   const rootThreads = db.getRootThreads();
-  return rootThreads.map(hydrateThread);
+  const filtered = rootThreads.filter(
+    (t) => !db.isUserMuted(t.user_id) && !db.isThreadHidden(t.id),
+  );
+  const hydrated = filtered.map(hydrateThread);
+
+  const followingIds = db
+    .getFollowing(CURRENT_USER_ID)
+    .map((u) => u.id);
+
+  const repostItems: ThreadWithAuthor[] = [];
+  for (const uid of followingIds) {
+    const reposts = db.getRepostsByUserId(uid);
+    for (const rp of reposts) {
+      const thread = db.getThreadById(rp.thread_id);
+      if (
+        !thread ||
+        thread.parent_id !== null ||
+        thread.user_id === CURRENT_USER_ID ||
+        db.isUserMuted(thread.user_id) ||
+        db.isThreadHidden(thread.id)
+      )
+        continue;
+      if (hydrated.some((h) => h.id === thread.id)) continue;
+      if (repostItems.some((r) => r.id === thread.id)) continue;
+      const reposter = db.getUserById(uid);
+      if (!reposter) continue;
+      const author = db.getUserById(thread.user_id);
+      if (!author) continue;
+      repostItems.push({
+        ...thread,
+        author,
+        reposted_by: reposter,
+      });
+    }
+  }
+
+  const combined = [...hydrated, ...repostItems];
+  combined.sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+  );
+  return combined;
 }
 
 export function getFeedPaginated(page: number, pageSize: number = 10): ThreadWithAuthor[] {
@@ -220,6 +260,58 @@ export function createReply(
     root_id: rootId,
   });
   return hydrateThread(thread);
+}
+
+// ─── Repost mutations ───────────────────────────────────────────────────────────
+
+export function isRepostedByCurrentUser(threadId: string): boolean {
+  return db.isRepostedByUser(CURRENT_USER_ID, threadId);
+}
+
+export function toggleRepost(threadId: string): { reposted: boolean; repostCount: number } {
+  const reposted = db.toggleRepost(CURRENT_USER_ID, threadId);
+  const thread = db.getThreadById(threadId);
+  return { reposted, repostCount: thread?.repost_count ?? 0 };
+}
+
+// ─── Profile update ─────────────────────────────────────────────────────────────
+
+export function updateCurrentUser(
+  updates: Partial<Pick<User, 'display_name' | 'username' | 'bio' | 'avatar_url'>>,
+): User {
+  const user = db.updateUser(CURRENT_USER_ID, updates);
+  if (!user) throw new Error('Current user not found');
+  return user;
+}
+
+// ─── Mute / Hide / Delete mutations ─────────────────────────────────────────────
+
+export function muteUser(userId: string): void {
+  db.muteUser(userId);
+}
+
+export function unmuteUser(userId: string): void {
+  db.unmuteUser(userId);
+}
+
+export function isUserMuted(userId: string): boolean {
+  return db.isUserMuted(userId);
+}
+
+export function hideThread(threadId: string): void {
+  db.hideThread(threadId);
+}
+
+export function unhideThread(threadId: string): void {
+  db.unhideThread(threadId);
+}
+
+export function isThreadHidden(threadId: string): boolean {
+  return db.isThreadHidden(threadId);
+}
+
+export function deleteThread(threadId: string): boolean {
+  return db.deleteThread(threadId);
 }
 
 // ─── Suggested follows ──────────────────────────────────────────────────────────

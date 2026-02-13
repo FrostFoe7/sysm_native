@@ -60,6 +60,17 @@ export default function RootLayout() {
             }}
           />
           <Stack.Screen
+            name="profile/edit"
+            options={{
+              headerShown: true,
+              headerTitle: 'Edit Profile',
+              headerTintColor: '#f3f5f7',
+              headerStyle: { backgroundColor: '#101010' },
+              headerShadowVisible: false,
+              animation: 'slide_from_right',
+            }}
+          />
+          <Stack.Screen
             name="modal"
             options={{
               presentation: 'modal',

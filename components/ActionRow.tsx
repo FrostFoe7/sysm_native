@@ -13,6 +13,7 @@ interface ActionRowProps {
   replyCount: number;
   repostCount: number;
   isLiked: boolean;
+  isReposted?: boolean;
   onLike: () => void;
   onReply: () => void;
   onRepost?: () => void;
@@ -24,11 +25,14 @@ export function ActionRow({
   replyCount,
   repostCount,
   isLiked,
+  isReposted = false,
   onLike,
   onReply,
   onRepost,
   onShare,
 }: ActionRowProps) {
+  const repostColor = isReposted ? '#00ba7c' : '#777777';
+
   return (
     <HStack className="items-center mt-1 -ml-2" space="xs">
       {/* Like — animated bounce */}
@@ -65,9 +69,9 @@ export function ActionRow({
         className="flex-row items-center p-2 rounded-full active:bg-white/5"
         hitSlop={8}
       >
-        <Repeat2 size={19} color="#777777" strokeWidth={1.8} />
+        <Repeat2 size={19} color={repostColor} strokeWidth={1.8} />
         {repostCount > 0 && (
-          <Text className="text-[#777777] text-[13px] ml-1">
+          <Text style={{ color: repostColor }} className="text-[13px] ml-1">
             {formatCount(repostCount)}
           </Text>
         )}

@@ -58,7 +58,14 @@ export interface Follow {
   created_at: string;
 }
 
-export type ThreadWithAuthor = Thread & { author: User };
+export interface Repost {
+  id: string;
+  user_id: string;
+  thread_id: string;
+  created_at: string;
+}
+
+export type ThreadWithAuthor = Thread & { author: User; reposted_by?: User };
 
 export type ThreadWithReplies = ThreadWithAuthor & {
   replies: ThreadWithAuthor[];
@@ -588,6 +595,19 @@ const FOLLOWS: Follow[] = [
   { id: 'f-018', follower_id: 'u-007', following_id: 'u-006', created_at: '2023-08-16T00:00:00Z' },
 ];
 
+// ─── Seeded Reposts ─────────────────────────────────────────────────────────────
+
+const REPOSTS: Repost[] = [
+  { id: 'rp-001', user_id: 'u-000', thread_id: 't-003', created_at: '2026-02-13T07:10:00Z' },
+  { id: 'rp-002', user_id: 'u-001', thread_id: 't-001', created_at: '2026-02-13T08:20:00Z' },
+  { id: 'rp-003', user_id: 'u-002', thread_id: 't-007', created_at: '2026-02-12T19:00:00Z' },
+  { id: 'rp-004', user_id: 'u-003', thread_id: 't-005', created_at: '2026-02-12T22:45:00Z' },
+  { id: 'rp-005', user_id: 'u-005', thread_id: 't-012', created_at: '2026-02-11T20:00:00Z' },
+  { id: 'rp-006', user_id: 'u-006', thread_id: 't-004', created_at: '2026-02-13T05:45:00Z' },
+  { id: 'rp-007', user_id: 'u-007', thread_id: 't-001', created_at: '2026-02-13T08:30:00Z' },
+  { id: 'rp-008', user_id: 'u-004', thread_id: 't-008', created_at: '2026-02-12T16:30:00Z' },
+];
+
 // ─── In-Memory Database ─────────────────────────────────────────────────────────
 
 class Database {
@@ -595,6 +615,9 @@ class Database {
   threads: Thread[];
   likes: Like[];
   follows: Follow[];
+  reposts: Repost[];
+  muted_users: string[];
+  hidden_threads: string[];
 
   constructor() {
     this.users = [
@@ -610,6 +633,9 @@ class Database {
     this.threads = [...THREADS, ...REPLIES];
     this.likes = [...LIKES];
     this.follows = [...FOLLOWS];
+    this.reposts = [...REPOSTS];
+    this.muted_users = [];
+    this.hidden_threads = [];
   }
 
   // ── User CRUD ───────────────────────────────────────────────────────────────
@@ -763,6 +789,106 @@ class Database {
       .filter((f) => f.follower_id === userId)
       .map((f) => f.following_id);
     return this.users.filter((u) => followingIds.includes(u.id));
+  }
+
+  // ── Repost CRUD ─────────────────────────────────────────────────────────────
+
+  isRepostedByUser(userId: string, threadId: string): boolean {
+    return this.reposts.some((r) => r.user_id === userId && r.thread_id === threadId);
+  }
+
+  toggleRepost(userId: string, threadId: string): boolean {
+    const existing = this.reposts.find((r) => r.user_id === userId && r.thread_id === threadId);
+    const thread = this.getThreadById(threadId);
+
+    if (existing) {
+      this.reposts = this.reposts.filter((r) => r.id !== existing.id);
+      if (thread) thread.repost_count = Math.max(0, thread.repost_count - 1);
+      return false;
+    }
+
+    this.reposts.push({
+      id: uuid(),
+      user_id: userId,
+      thread_id: threadId,
+      created_at: new Date().toISOString(),
+    });
+    if (thread) thread.repost_count += 1;
+    return true;
+  }
+
+  getRepostsByUserId(userId: string): Repost[] {
+    return this.reposts.filter((r) => r.user_id === userId);
+  }
+
+  // ── User Update ─────────────────────────────────────────────────────────────
+
+  updateUser(
+    userId: string,
+    updates: Partial<Pick<User, 'display_name' | 'username' | 'bio' | 'avatar_url'>>,
+  ): User | undefined {
+    const user = this.getUserById(userId);
+    if (!user) return undefined;
+
+    if (updates.display_name !== undefined) user.display_name = updates.display_name;
+    if (updates.username !== undefined) user.username = updates.username;
+    if (updates.bio !== undefined) user.bio = updates.bio;
+    if (updates.avatar_url !== undefined) user.avatar_url = updates.avatar_url;
+
+    return user;
+  }
+
+  // ── Mute / Hide / Delete ────────────────────────────────────────────────────
+
+  muteUser(userId: string): void {
+    if (!this.muted_users.includes(userId)) {
+      this.muted_users.push(userId);
+    }
+  }
+
+  unmuteUser(userId: string): void {
+    this.muted_users = this.muted_users.filter((id) => id !== userId);
+  }
+
+  isUserMuted(userId: string): boolean {
+    return this.muted_users.includes(userId);
+  }
+
+  hideThread(threadId: string): void {
+    if (!this.hidden_threads.includes(threadId)) {
+      this.hidden_threads.push(threadId);
+    }
+  }
+
+  unhideThread(threadId: string): void {
+    this.hidden_threads = this.hidden_threads.filter((id) => id !== threadId);
+  }
+
+  isThreadHidden(threadId: string): boolean {
+    return this.hidden_threads.includes(threadId);
+  }
+
+  deleteThread(threadId: string): boolean {
+    const thread = this.getThreadById(threadId);
+    if (!thread) return false;
+
+    if (thread.parent_id) {
+      const parent = this.getThreadById(thread.parent_id);
+      if (parent) {
+        parent.reply_count = Math.max(0, parent.reply_count - 1);
+      }
+    }
+
+    const childReplies = this.threads.filter((t) => t.parent_id === threadId);
+    for (const child of childReplies) {
+      this.deleteThread(child.id);
+    }
+
+    this.threads = this.threads.filter((t) => t.id !== threadId);
+    this.likes = this.likes.filter((l) => l.thread_id !== threadId);
+    this.reposts = this.reposts.filter((r) => r.thread_id !== threadId);
+
+    return true;
   }
 
   // ── Search ──────────────────────────────────────────────────────────────────
