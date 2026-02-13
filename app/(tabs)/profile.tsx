@@ -99,11 +99,11 @@ export default function ProfileScreen() {
   return (
     <ScreenLayout>
       {/* Toolbar */}
-      <HStack className="px-4 h-[48px] items-center justify-between">
-        <Pressable hitSlop={8} className="active:opacity-60">
+      <HStack className="px-4 h-[44px] items-center justify-between">
+        <Pressable hitSlop={8} className="p-1 active:opacity-60">
           <Menu size={24} color="#f3f5f7" />
         </Pressable>
-        <Pressable hitSlop={8} className="active:opacity-60">
+        <Pressable hitSlop={8} className="p-1 active:opacity-60">
           <Settings size={24} color="#f3f5f7" />
         </Pressable>
       </HStack>
@@ -136,6 +136,7 @@ export default function ProfileScreen() {
         )}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 24 }}
         ListEmptyComponent={
           <View className="items-center justify-center py-16">
             <Text className="text-[#555555] text-[15px]">

@@ -98,6 +98,7 @@ export function Composer({
                 ...(Platform.OS === 'web'
                   ? { outlineStyle: 'none' as any }
                   : {}),
+                overflow: 'hidden',
               }}
             />
 
@@ -122,7 +123,7 @@ export function Composer({
         <Divider className="bg-[#1e1e1e]" />
 
         {/* Bottom bar */}
-        <HStack className="px-4 py-3 items-center justify-between">
+        <HStack className="px-4 py-3 pb-4 items-center justify-between">
           <Text className="text-[#555555] text-[13px]">
             Anyone can reply & quote
           </Text>

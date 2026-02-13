@@ -157,16 +157,16 @@ export default function ExploreScreen() {
                   <AvatarImage source={{ uri: item.user.avatar_url }} />
                   <AvatarFallbackText>{item.user.display_name}</AvatarFallbackText>
                 </Avatar>
-                <VStack className="flex-1">
+                <VStack className="flex-1 overflow-hidden">
                   <HStack className="items-center" space="xs">
-                    <Text className="text-[#f3f5f7] font-bold text-[15px]">
+                    <Text className="text-[#f3f5f7] font-bold text-[15px]" numberOfLines={1} style={{ flexShrink: 1 }}>
                       {item.user.display_name}
                     </Text>
                     {item.user.verified && (
                       <BadgeCheck size={14} color="#0095f6" fill="#0095f6" />
                     )}
                   </HStack>
-                  <Text className="text-[#555555] text-[14px]">
+                  <Text className="text-[#555555] text-[14px]" numberOfLines={1}>
                     @{item.user.username}
                   </Text>
                   {item.user.bio ? (
@@ -224,8 +224,8 @@ export default function ExploreScreen() {
   return (
     <ScreenLayout>
       {/* Search bar */}
-      <Box className="px-4 pt-2 pb-3">
-        <HStack className="bg-[#1e1e1e] rounded-xl px-3 items-center h-[38px]" space="sm">
+      <Box className="px-4 pt-3 pb-3">
+        <HStack className="bg-[#1e1e1e] rounded-xl px-3 items-center h-[40px]" space="sm">
           <Search size={16} color="#555555" />
           <TextInput
             value={query}
@@ -255,6 +255,7 @@ export default function ExploreScreen() {
           return `item-${index}`;
         }}
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 24 }}
         ListEmptyComponent={
           query.trim() ? (
             <View className="items-center justify-center py-16">

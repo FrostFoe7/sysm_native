@@ -154,6 +154,7 @@ export default function UserProfileScreen() {
         )}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 24 }}
         ListEmptyComponent={
           <View className="items-center justify-center py-16">
             <Text className="text-[#555555] text-[15px]">

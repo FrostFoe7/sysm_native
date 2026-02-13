@@ -151,8 +151,8 @@ export default function HomeScreen() {
   const renderHeader = useCallback(
     () => (
       <View>
-        <View className="items-center pt-2 pb-1">
-          <Text className="text-[#f3f5f7] text-[28px] font-bold tracking-tight mb-3">
+        <View className="items-center pt-3 pb-2">
+          <Text className="text-[#f3f5f7] text-[28px] font-bold tracking-tight mb-2">
             𝕋
           </Text>
         </View>
@@ -194,7 +194,7 @@ export default function HomeScreen() {
         }
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
-          paddingBottom: 20,
+          paddingBottom: 24,
           ...(Platform.OS === 'web' ? { minHeight: '100%' } : {}),
         }}
       />

@@ -106,6 +106,7 @@ export function ThreadOverflowMenu({
           <Text
             className="text-[#777777] text-[13px] text-center mb-3 px-6"
             numberOfLines={1}
+            style={{ overflow: 'hidden' }}
           >
             @{thread.author.username}'s thread
           </Text>
@@ -150,7 +151,7 @@ export function ThreadOverflowMenu({
                   ) : (
                     <VolumeX size={22} color="#f3f5f7" strokeWidth={1.8} />
                   )}
-                  <ActionsheetItemText className="text-[#f3f5f7] text-[16px]">
+                  <ActionsheetItemText className="text-[#f3f5f7] text-[16px]" numberOfLines={1}>
                     {muted ? `Unmute @${thread.author.username}` : `Mute @${thread.author.username}`}
                   </ActionsheetItemText>
                 </HStack>

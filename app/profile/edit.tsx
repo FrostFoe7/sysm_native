@@ -76,6 +76,7 @@ function EditField({
           paddingHorizontal: 0,
           minHeight: multiline ? 80 : undefined,
           textAlignVertical: multiline ? 'top' : 'center',
+          ...(Platform.OS === 'web' ? { outlineStyle: 'none' as any } : {}),
         }}
       />
       <Divider className="bg-[#2a2a2a] mt-1" />

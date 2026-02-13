@@ -34,7 +34,7 @@ export function ActionRow({
   const repostColor = isReposted ? '#00ba7c' : '#777777';
 
   return (
-    <HStack className="items-center mt-1 -ml-2" space="xs">
+    <HStack className="items-center mt-1 -ml-2 mr-[-8px]" space="xs">
       {/* Like — animated bounce */}
       <HStack className="items-center">
         <AnimatedHeart isLiked={isLiked} onPress={onLike} />

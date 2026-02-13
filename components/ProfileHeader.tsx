@@ -39,18 +39,23 @@ export function ProfileHeader({
     <VStack className="px-4 pt-4 pb-2">
       {/* Top row: name + avatar */}
       <HStack className="items-start justify-between mb-3">
-        <VStack className="flex-1 mr-4" space="xs">
-          <Heading size="xl" className="text-[#f3f5f7] font-bold">
+        <VStack className="flex-1 mr-4 overflow-hidden" space="xs">
+          <Heading
+            size="xl"
+            className="text-[#f3f5f7] font-bold"
+            numberOfLines={1}
+            style={{ overflow: 'hidden' }}
+          >
             {user.display_name}
           </Heading>
           <HStack className="items-center" space="xs">
-            <Text className="text-[#f3f5f7] text-[15px]">
+            <Text className="text-[#f3f5f7] text-[15px]" numberOfLines={1} style={{ flexShrink: 1 }}>
               {user.username}
             </Text>
             {user.verified && (
               <BadgeCheck size={14} color="#0095f6" fill="#0095f6" strokeWidth={0} />
             )}
-            <Box className="bg-[#1e1e1e] rounded-full px-2 py-0.5 ml-1">
+            <Box className="bg-[#1e1e1e] rounded-full px-2 py-0.5 ml-1 flex-shrink-0">
               <Text className="text-[#555555] text-[11px]">threads.net</Text>
             </Box>
           </HStack>
@@ -64,7 +69,7 @@ export function ProfileHeader({
 
       {/* Bio */}
       {user.bio.length > 0 && (
-        <Text className="text-[#f3f5f7] text-[15px] leading-[21px] mb-3">
+        <Text className="text-[#f3f5f7] text-[15px] leading-[21px] mb-3" numberOfLines={5}>
           {user.bio}
         </Text>
       )}

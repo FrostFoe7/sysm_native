@@ -323,11 +323,11 @@ export default function ThreadDetailScreen() {
             return `item-${index}`;
           }}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 10 }}
+          contentContainerStyle={{ paddingBottom: 12 }}
         />
 
         <Divider className="bg-[#1e1e1e]" />
-        <HStack className="px-4 py-2 items-center bg-[#101010]" space="md">
+        <HStack className="px-4 py-2 pb-3 items-center bg-[#101010]" space="md">
           <Avatar size="xs">
             <AvatarImage source={{ uri: currentUser.avatar_url }} />
             <AvatarFallbackText>{currentUser.display_name}</AvatarFallbackText>
@@ -339,9 +339,13 @@ export default function ThreadDetailScreen() {
             placeholder={`Reply to ${detail.author.username}...`}
             placeholderTextColor="#555555"
             className="flex-1 text-[#f3f5f7] text-[15px] h-[36px]"
-            style={Platform.OS === 'web' ? { outlineStyle: 'none' as any } : undefined}
+            style={{
+              ...(Platform.OS === 'web' ? { outlineStyle: 'none' as any } : {}),
+              overflow: 'hidden',
+            }}
             returnKeyType="send"
             onSubmitEditing={handleSubmitReply}
+            numberOfLines={1}
           />
           <Pressable
             onPress={handleSubmitReply}

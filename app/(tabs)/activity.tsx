@@ -125,19 +125,19 @@ export default function ActivityScreen() {
                   />
                 </View>
               </View>
-              <VStack className="flex-1">
+              <VStack className="flex-1 overflow-hidden">
                 <HStack className="items-center" space="xs">
-                  <Text className="text-[#f3f5f7] font-bold text-[14px]">
+                  <Text className="text-[#f3f5f7] font-bold text-[14px]" numberOfLines={1} style={{ flexShrink: 1 }}>
                     {item.actor.username}
                   </Text>
                   {item.actor.verified && (
                     <BadgeCheck size={14} color="#0095f6" fill="#0095f6" />
                   )}
-                  <Text className="text-[#555555] text-[13px]">
+                  <Text className="text-[#555555] text-[13px] flex-shrink-0">
                     {formatRelativeTime(item.created_at)}
                   </Text>
                 </HStack>
-                <Text className="text-[#999] text-[14px]">{meta.label}</Text>
+                <Text className="text-[#999] text-[14px]" numberOfLines={1}>{meta.label}</Text>
                 {item.thread && item.thread.content ? (
                   <Text className="text-[#777] text-[13px] mt-0.5" numberOfLines={2}>
                     {item.thread.content}
@@ -175,19 +175,19 @@ export default function ActivityScreen() {
 
   return (
     <ScreenLayout>
-      <Box className="px-4 pt-2 pb-1">
+      <Box className="px-4 pt-3 pb-1">
         <Heading size="2xl" className="text-[#f3f5f7]">
           Activity
         </Heading>
       </Box>
 
       {/* Animated pill tabs */}
-      <HStack className="px-4 py-2" space="sm">
+      <HStack className="px-4 py-2 overflow-hidden" space="sm">
         {tabs.map((tab) => (
           <Pressable
             key={tab.key}
             onPress={() => setActiveTab(tab.key)}
-            className={`px-4 py-[6px] rounded-full border ${
+            className={`px-4 py-[6px] rounded-full border flex-shrink-0 ${
               activeTab === tab.key
                 ? 'bg-[#f3f5f7] border-[#f3f5f7]'
                 : 'bg-transparent border-[#333]'
@@ -209,6 +209,7 @@ export default function ActivityScreen() {
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 24 }}
         ListEmptyComponent={
           <View className="items-center justify-center py-16">
             <Text className="text-[#555555] text-[15px]">No activity yet</Text>

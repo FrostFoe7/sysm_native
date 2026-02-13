@@ -85,7 +85,7 @@ export function ThreadCard({
       {thread.reposted_by && (
         <HStack className="items-center px-4 pt-2 pl-[60px]" space="xs">
           <Repeat2 size={13} color="#555555" strokeWidth={2} />
-          <Text className="text-[#555555] text-[13px]">
+          <Text className="text-[#555555] text-[13px]" numberOfLines={1}>
             {thread.reposted_by.display_name} reposted
           </Text>
         </HStack>
@@ -111,9 +111,9 @@ export function ThreadCard({
         <VStack className="flex-1 flex-shrink" space="xs">
           {/* Header row */}
           <HStack className="items-center justify-between">
-            <HStack className="items-center flex-1" space="xs">
-              <Pressable onPress={handleUsernamePress}>
-                <Text className="text-[#f3f5f7] font-semibold text-[15px]">
+            <HStack className="items-center flex-1 mr-2 overflow-hidden" space="xs">
+              <Pressable onPress={handleUsernamePress} style={{ flexShrink: 1 }}>
+                <Text className="text-[#f3f5f7] font-semibold text-[15px]" numberOfLines={1}>
                   {thread.author.username}
                 </Text>
               </Pressable>
@@ -121,7 +121,7 @@ export function ThreadCard({
                 <BadgeCheck size={14} color="#0095f6" fill="#0095f6" strokeWidth={0} />
               )}
             </HStack>
-            <HStack className="items-center" space="sm">
+            <HStack className="items-center flex-shrink-0" space="sm">
               <Text className="text-[#555555] text-[13px]">
                 {formatRelativeTime(thread.created_at)}
               </Text>
@@ -137,9 +137,9 @@ export function ThreadCard({
 
           {/* Content */}
           <Text
-            className={`text-[#f3f5f7] text-[15px] leading-[21px] ${
-              isDetailView ? '' : 'pr-2'
-            }`}
+            className="text-[#f3f5f7] text-[15px] leading-[21px]"
+            numberOfLines={isDetailView ? undefined : 12}
+            style={{ overflow: 'hidden' }}
           >
             {thread.content}
           </Text>

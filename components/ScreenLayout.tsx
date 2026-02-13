@@ -10,13 +10,11 @@ const DESKTOP_BREAKPOINT = 1024;
 interface ScreenLayoutProps {
   children: React.ReactNode;
   edges?: ('top' | 'bottom' | 'left' | 'right')[];
-  noPadding?: boolean;
 }
 
 export function ScreenLayout({
   children,
   edges = ['top'],
-  noPadding = false,
 }: ScreenLayoutProps) {
   const { width } = useWindowDimensions();
   const isDesktop = Platform.OS === 'web' && width >= DESKTOP_BREAKPOINT;
@@ -28,9 +26,9 @@ export function ScreenLayout({
       className="flex-1 bg-[#101010]"
     >
       <Box
-        className={`flex-1 w-full ${
+        className={`flex-1 w-full overflow-hidden ${
           Platform.OS === 'web' ? `${maxWidth} self-center` : ''
-        } ${noPadding ? '' : ''}`}
+        }`}
       >
         {children}
       </Box>
