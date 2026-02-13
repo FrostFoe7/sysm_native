@@ -19,7 +19,6 @@ import { Text } from '@/components/ui/text';
 import { HStack } from '@/components/ui/hstack';
 import { Divider } from '@/components/ui/divider';
 import { Box } from '@/components/ui/box';
-import { Spinner } from '@/components/ui/spinner';
 import {
   getThreadDetail,
   getThreadAncestors,
@@ -32,6 +31,7 @@ import {
   formatFullDate,
 } from '@/db/selectors';
 import { Send } from 'lucide-react-native';
+import { ThreadDetailSkeleton } from '@/components/skeletons';
 import type { ThreadWithAuthor, ThreadWithReplies } from '@/db/db';
 
 type ListItem =
@@ -211,8 +211,10 @@ export default function ThreadDetailScreen() {
 
   if (!detail) {
     return (
-      <View className="flex-1 bg-[#101010] items-center justify-center">
-        <Spinner size="large" className="text-[#555555]" />
+      <View className="flex-1 bg-[#101010]">
+        <Box className={`flex-1 ${Platform.OS === 'web' ? 'max-w-[680px] self-center w-full' : ''}`}>
+          <ThreadDetailSkeleton />
+        </Box>
       </View>
     );
   }

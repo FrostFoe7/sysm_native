@@ -22,6 +22,7 @@ import {
 } from '@/db/selectors';
 import { CURRENT_USER_ID } from '@/db/db';
 import { Menu, Settings } from 'lucide-react-native';
+import { ProfileHeaderSkeleton, FeedSkeleton, TabBarSkeleton } from '@/components/skeletons';
 import type { ThreadWithAuthor } from '@/db/db';
 
 const TABS = [
@@ -37,6 +38,7 @@ export default function ProfileScreen() {
   const [repostMap, setRepostMap] = useState<Record<string, boolean>>({});
   const [shareThreadId, setShareThreadId] = useState<string | null>(null);
   const [overflowThread, setOverflowThread] = useState<ThreadWithAuthor | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useFocusEffect(
     useCallback(() => {
@@ -52,7 +54,11 @@ export default function ProfileScreen() {
         setLikedMap(newLiked);
         setRepostMap(newReposted);
       }
-    }, []),
+      if (isLoading) {
+        const t = setTimeout(() => setIsLoading(false), 500);
+        return () => clearTimeout(t);
+      }
+    }, [isLoading]),
   );
 
   const handleLike = useCallback((threadId: string) => {
@@ -125,6 +131,24 @@ export default function ProfileScreen() {
   }, []);
 
   if (!profile) return null;
+
+  if (isLoading) {
+    return (
+      <ScreenLayout>
+        <HStack className="px-4 h-[44px] items-center justify-between">
+          <Pressable hitSlop={8} className="p-1 active:opacity-60">
+            <Menu size={24} color="#f3f5f7" />
+          </Pressable>
+          <Pressable hitSlop={8} className="p-1 active:opacity-60">
+            <Settings size={24} color="#f3f5f7" />
+          </Pressable>
+        </HStack>
+        <ProfileHeaderSkeleton isCurrentUser />
+        <TabBarSkeleton />
+        <FeedSkeleton count={4} />
+      </ScreenLayout>
+    );
+  }
 
   const data = activeTab === 'threads' ? profile.threads : profile.replies;
 

@@ -31,6 +31,7 @@ import {
   formatCount,
 } from '@/db/selectors';
 import { Search, X, BadgeCheck } from 'lucide-react-native';
+import { ExploreSkeleton } from '@/components/skeletons';
 import type { User, ThreadWithAuthor } from '@/db/db';
 
 type ExploreItem =
@@ -47,11 +48,16 @@ export default function ExploreScreen() {
   const [followMap, setFollowMap] = useState<Record<string, boolean>>({});
   const [shareThreadId, setShareThreadId] = useState<string | null>(null);
   const [overflowThread, setOverflowThread] = useState<ThreadWithAuthor | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useFocusEffect(
     useCallback(() => {
       setRefreshKey((k) => k + 1);
-    }, []),
+      if (isLoading) {
+        const t = setTimeout(() => setIsLoading(false), 500);
+        return () => clearTimeout(t);
+      }
+    }, [isLoading]),
   );
 
   const exploreData = useMemo(() => {
@@ -289,7 +295,9 @@ export default function ExploreScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 24 }}
         ListEmptyComponent={
-          query.trim() ? (
+          isLoading ? (
+            <ExploreSkeleton />
+          ) : query.trim() ? (
             <View className="items-center justify-center py-16">
               <Text className="text-[#555555] text-[15px]">No results for "{query}"</Text>
             </View>

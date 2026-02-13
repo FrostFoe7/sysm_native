@@ -36,6 +36,7 @@ import {
   BadgeCheck,
 } from 'lucide-react-native';
 import type { ActivityItem } from '@/db/selectors';
+import { ActivitySkeleton } from '@/components/skeletons';
 
 type TabKey = 'all' | 'replies' | 'mentions' | 'follows';
 
@@ -44,11 +45,16 @@ export default function ActivityScreen() {
   const [activeTab, setActiveTab] = useState<TabKey>('all');
   const [refreshKey, setRefreshKey] = useState(0);
   const [followMap, setFollowMap] = useState<Record<string, boolean>>({});
+  const [isLoading, setIsLoading] = useState(true);
 
   useFocusEffect(
     useCallback(() => {
       setRefreshKey((k) => k + 1);
-    }, []),
+      if (isLoading) {
+        const t = setTimeout(() => setIsLoading(false), 500);
+        return () => clearTimeout(t);
+      }
+    }, [isLoading]),
   );
 
   const allActivity = useMemo(() => {
@@ -211,9 +217,13 @@ export default function ActivityScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 24 }}
         ListEmptyComponent={
-          <View className="items-center justify-center py-16">
-            <Text className="text-[#555555] text-[15px]">No activity yet</Text>
-          </View>
+          isLoading ? (
+            <ActivitySkeleton />
+          ) : (
+            <View className="items-center justify-center py-16">
+              <Text className="text-[#555555] text-[15px]">No activity yet</Text>
+            </View>
+          )
         }
       />
     </ScreenLayout>

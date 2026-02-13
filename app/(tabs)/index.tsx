@@ -11,7 +11,6 @@ import { AnimatedTabBar } from '@/components/AnimatedTabBar';
 import { ShareSheet } from '@/components/ShareSheet';
 import { ThreadOverflowMenu } from '@/components/ThreadOverflowMenu';
 import { Text } from '@/components/ui/text';
-import { Spinner } from '@/components/ui/spinner';
 import { Fab, FabIcon } from '@/components/ui/fab';
 import {
   getFeed,
@@ -21,6 +20,7 @@ import {
   toggleRepost,
 } from '@/db/selectors';
 import { SquarePen } from 'lucide-react-native';
+import { FeedSkeleton } from '@/components/skeletons';
 import type { ThreadWithAuthor } from '@/db/db';
 
 const TABS = [
@@ -48,6 +48,7 @@ export default function HomeScreen() {
     }
     return map;
   });
+  const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState('foryou');
   const [shareThreadId, setShareThreadId] = useState<string | null>(null);
@@ -70,7 +71,11 @@ export default function HomeScreen() {
   useFocusEffect(
     useCallback(() => {
       refreshFeed();
-    }, [refreshFeed]),
+      if (isLoading) {
+        const t = setTimeout(() => setIsLoading(false), 600);
+        return () => clearTimeout(t);
+      }
+    }, [refreshFeed, isLoading]),
   );
 
   const handleRefresh = useCallback(() => {
@@ -173,11 +178,13 @@ export default function HomeScreen() {
 
   const renderEmpty = useCallback(
     () => (
-      <View className="flex-1 items-center justify-center py-20">
-        <Spinner size="large" className="text-[#555555]" />
-      </View>
+      isLoading ? <FeedSkeleton /> : (
+        <View className="flex-1 items-center justify-center py-20">
+          <Text className="text-[#555555] text-[15px]">No threads yet</Text>
+        </View>
+      )
     ),
-    [],
+    [isLoading],
   );
 
   return (
@@ -221,7 +228,7 @@ export default function HomeScreen() {
           size="lg"
           placement="bottom right"
           onPress={() => router.push('/modal')}
-          className="mr-4 mb-[16px]"
+          className="mr-4 mb-[16px] w-[56px] h-[56px]"
         >
           <FabIcon as={SquarePen} size="lg" />
         </Fab>

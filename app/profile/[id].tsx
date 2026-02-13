@@ -28,6 +28,7 @@ import {
   toggleRepost,
 } from '@/db/selectors';
 import type { ThreadWithAuthor } from '@/db/db';
+import { ProfileHeaderSkeleton, FeedSkeleton, TabBarSkeleton } from '@/components/skeletons';
 
 const TABS = [
   { key: 'threads', label: 'Threads' },
@@ -49,6 +50,7 @@ export default function UserProfileScreen() {
   const [repostMap, setRepostMap] = useState<Record<string, boolean>>({});
   const [shareThreadId, setShareThreadId] = useState<string | null>(null);
   const [overflowThread, setOverflowThread] = useState<ThreadWithAuthor | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Follow button scale animation
   const followScale = useSharedValue(1);
@@ -73,7 +75,11 @@ export default function UserProfileScreen() {
         setLikedMap(newLiked);
         setRepostMap(newReposted);
       }
-    }, [id]),
+      if (isLoading) {
+        const t = setTimeout(() => setIsLoading(false), 500);
+        return () => clearTimeout(t);
+      }
+    }, [id, isLoading]),
   );
 
   const handleFollow = useCallback(() => {
@@ -155,6 +161,16 @@ export default function UserProfileScreen() {
   }, [id]);
 
   if (!profile) return null;
+
+  if (isLoading) {
+    return (
+      <ScreenLayout>
+        <ProfileHeaderSkeleton isCurrentUser={false} />
+        <TabBarSkeleton />
+        <FeedSkeleton count={4} />
+      </ScreenLayout>
+    );
+  }
 
   const data = activeTab === 'threads' ? profile.threads : profile.replies;
 
