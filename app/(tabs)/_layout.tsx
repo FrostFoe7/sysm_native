@@ -3,7 +3,7 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { Platform, View, useWindowDimensions } from 'react-native';
-import { Home, Search, SquarePen, Heart, User } from 'lucide-react-native';
+import { Home, Search, Heart, User } from 'lucide-react-native';
 import { HapticTab } from '@/components/haptic-tab';
 import { DesktopSidebar } from '@/components/DesktopSidebar';
 
@@ -51,20 +51,6 @@ function TabsNavigator({ hideTabBar }: { hideTabBar: boolean }) {
           tabBarIcon: ({ color, focused }) => (
             <View className="items-center justify-center">
               <Search
-                size={26}
-                color={color}
-                strokeWidth={focused ? 2.5 : 1.8}
-              />
-            </View>
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="new"
-        options={{
-          tabBarIcon: ({ color, focused }) => (
-            <View className="items-center justify-center">
-              <SquarePen
                 size={26}
                 color={color}
                 strokeWidth={focused ? 2.5 : 1.8}

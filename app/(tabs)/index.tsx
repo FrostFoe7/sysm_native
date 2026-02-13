@@ -1,7 +1,7 @@
 // app/(tabs)/index.tsx
 
 import React, { useState, useCallback, useRef } from 'react';
-import { FlatList, RefreshControl, Platform, View } from 'react-native';
+import { FlatList, RefreshControl, Platform, View, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { ScreenLayout } from '@/components/ScreenLayout';
@@ -12,6 +12,7 @@ import { ShareSheet } from '@/components/ShareSheet';
 import { ThreadOverflowMenu } from '@/components/ThreadOverflowMenu';
 import { Text } from '@/components/ui/text';
 import { Spinner } from '@/components/ui/spinner';
+import { Fab, FabIcon } from '@/components/ui/fab';
 import {
   getFeed,
   isThreadLikedByCurrentUser,
@@ -19,6 +20,7 @@ import {
   toggleThreadLike,
   toggleRepost,
 } from '@/db/selectors';
+import { SquarePen } from 'lucide-react-native';
 import type { ThreadWithAuthor } from '@/db/db';
 
 const TABS = [
@@ -28,6 +30,9 @@ const TABS = [
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { width } = useWindowDimensions();
+  const isDesktop = Platform.OS === 'web' && width >= 1024;
+  
   const [feed, setFeed] = useState<ThreadWithAuthor[]>(() => getFeed());
   const [likedMap, setLikedMap] = useState<Record<string, boolean>>(() => {
     const map: Record<string, boolean> = {};
@@ -211,6 +216,16 @@ export default function HomeScreen() {
         onThreadHidden={handleThreadHidden}
         onUserMuted={handleUserMuted}
       />
+      {!isDesktop && (
+        <Fab
+          size="lg"
+          placement="bottom right"
+          onPress={() => router.push('/modal')}
+          className="mr-4 mb-[16px]"
+        >
+          <FabIcon as={SquarePen} size="lg" />
+        </Fab>
+      )}
     </ScreenLayout>
   );
 }
