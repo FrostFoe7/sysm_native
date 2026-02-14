@@ -30,11 +30,20 @@ export interface User {
   created_at: string;
 }
 
+export interface MediaItem {
+  uri: string;
+  type: 'image' | 'video';
+  width?: number;
+  height?: number;
+  thumbnailUri?: string;
+}
+
 export interface Thread {
   id: string;
   user_id: string;
   content: string;
   images: string[];
+  media: MediaItem[];
   parent_id: string | null;
   root_id: string | null;
   reply_count: number;
@@ -185,6 +194,10 @@ const THREADS: Thread[] = [
     content:
       'Just shipped a massive refactor of our design system. Moved from styled-components to NativeWind + Tailwind variants. The DX improvement is unreal — build times dropped 40% and our component API is way cleaner now.',
     images: [],
+    media: [
+      { uri: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&h=600&fit=crop', type: 'image', width: 800, height: 600 },
+      { uri: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=600&fit=crop', type: 'image', width: 800, height: 600 },
+    ],
     parent_id: null,
     root_id: null,
     reply_count: 14,
@@ -199,6 +212,7 @@ const THREADS: Thread[] = [
     content:
       'Hot take: Most "design systems" are just component libraries with a Notion page. A real design system includes tokens, semantic naming, accessibility patterns, and usage guidelines. The components are maybe 30% of the work.',
     images: [],
+    media: [],
     parent_id: null,
     root_id: null,
     reply_count: 32,
@@ -213,6 +227,9 @@ const THREADS: Thread[] = [
     content:
       'BREAKING: Apple is reportedly working on a new framework that will let developers build native apps using a declarative syntax that compiles to both iOS and macOS. Sources say it\'s being tested internally and could ship with iOS 20.',
     images: [],
+    media: [
+      { uri: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&h=500&fit=crop', type: 'image', width: 800, height: 500 },
+    ],
     parent_id: null,
     root_id: null,
     reply_count: 89,
@@ -227,6 +244,7 @@ const THREADS: Thread[] = [
     content:
       'TypeScript tip that saved me hours today:\n\nInstead of writing separate types for create/update/response, use a single base type with mapped utilities:\n\ntype CreateUser = Omit<User, "id" | "created_at">\ntype UpdateUser = Partial<CreateUser>\ntype UserResponse = User & { posts_count: number }\n\nKeep your types DRY.',
     images: [],
+    media: [],
     parent_id: null,
     root_id: null,
     reply_count: 7,
@@ -241,6 +259,11 @@ const THREADS: Thread[] = [
     content:
       'Accessibility isn\'t a feature — it\'s a requirement. Just audited an app with 2M+ users and found 47 critical a11y violations. No alt text, no focus management, color contrast failures everywhere. We can do better.',
     images: [],
+    media: [
+      { uri: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop', type: 'image', width: 800, height: 600 },
+      { uri: 'https://images.unsplash.com/photo-1587620962725-abab7fe55159?w=800&h=600&fit=crop', type: 'image', width: 800, height: 600 },
+      { uri: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=600&fit=crop', type: 'image', width: 800, height: 600 },
+    ],
     parent_id: null,
     root_id: null,
     reply_count: 23,
@@ -255,6 +278,9 @@ const THREADS: Thread[] = [
     content:
       'Released v3.0 of our CLI tool today. Complete rewrite in Rust. What used to take 12 seconds now completes in 180ms. Sometimes the right optimization is choosing the right language for the job.',
     images: [],
+    media: [
+      { uri: 'https://avtshare01.rz.tu-ilmenau.de/avt-vqdb-uhd-1/test_1/segments/bigbuck_bunny_8bit_2000kbps_1080p_60.0fps_h264.mp4', type: 'video', width: 1280, height: 720, thumbnailUri: 'https://images.unsplash.com/photo-1629654297299-c8506221ca97?w=800&h=450&fit=crop' },
+    ],
     parent_id: null,
     root_id: null,
     reply_count: 41,
@@ -269,6 +295,12 @@ const THREADS: Thread[] = [
     content:
       'Our latest paper just dropped: we trained a 7B parameter model that outperforms GPT-4 on code generation benchmarks using 1/10th the compute. The trick? Better data curation beats bigger models every time. Link in bio.',
     images: [],
+    media: [
+      { uri: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=500&fit=crop', type: 'image', width: 800, height: 500 },
+      { uri: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=800&h=500&fit=crop', type: 'image', width: 800, height: 500 },
+      { uri: 'https://images.unsplash.com/photo-1655720828018-edd71de28476?w=800&h=500&fit=crop', type: 'image', width: 800, height: 500 },
+      { uri: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&h=500&fit=crop', type: 'image', width: 800, height: 500 },
+    ],
     parent_id: null,
     root_id: null,
     reply_count: 67,
@@ -283,6 +315,10 @@ const THREADS: Thread[] = [
     content:
       'The secret to 60fps animations in React Native:\n\n1. Use Reanimated worklets\n2. Avoid JS thread for gesture handling\n3. Batch state updates\n4. Use useAnimatedStyle, never inline\n5. Profile with Flipper\n\nStopped dropping frames the day I followed all five.',
     images: [],
+    media: [
+      { uri: 'https://avtshare01.rz.tu-ilmenau.de/avt-vqdb-uhd-1/test_1/segments/bigbuck_bunny_8bit_2000kbps_1080p_60.0fps_vp9.mkv', type: 'video', width: 1280, height: 720, thumbnailUri: 'https://images.unsplash.com/photo-1550439062-609e1531270e?w=800&h=450&fit=crop' },
+      { uri: 'https://images.unsplash.com/photo-1633356122102-3fe601e05bd2?w=800&h=600&fit=crop', type: 'image', width: 800, height: 600 },
+    ],
     parent_id: null,
     root_id: null,
     reply_count: 19,
@@ -297,6 +333,7 @@ const THREADS: Thread[] = [
     content:
       'I spent 6 months building a component library that nobody uses because I never talked to the developers who would consume it. Lesson learned: build WITH your users, not FOR them.',
     images: [],
+    media: [],
     parent_id: null,
     root_id: null,
     reply_count: 11,
@@ -311,6 +348,9 @@ const THREADS: Thread[] = [
     content:
       'Interviewed 15 CTOs this week about their 2026 tech stack decisions. The consensus:\n\n• TypeScript is non-negotiable\n• React Native for mobile\n• Postgres + Supabase rising fast\n• AI-assisted coding is table stakes\n• Monorepos winning over polyrepos\n\nFull article dropping Monday.',
     images: [],
+    media: [
+      { uri: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&h=600&fit=crop', type: 'image', width: 800, height: 600 },
+    ],
     parent_id: null,
     root_id: null,
     reply_count: 53,
@@ -325,6 +365,7 @@ const THREADS: Thread[] = [
     content:
       'Unpopular opinion: You don\'t need a state management library for most apps. React context + useReducer handles 90% of cases. The other 10% is where Zustand or Jotai shine. Stop reaching for Redux on day one.',
     images: [],
+    media: [],
     parent_id: null,
     root_id: null,
     reply_count: 45,
@@ -339,6 +380,10 @@ const THREADS: Thread[] = [
     content:
       'Open source maintainer burnout is real. I\'ve been maintaining a 40k star project for 3 years. Here\'s what helped me:\n\n• Set boundaries\n• Use "good first issue" labels aggressively\n• Automate everything you can\n• It\'s OK to say no\n• Take breaks without guilt\n\nYour health > your GitHub streak.',
     images: [],
+    media: [
+      { uri: 'https://images.unsplash.com/photo-1556075798-4825dfaaf498?w=800&h=600&fit=crop', type: 'image', width: 800, height: 600 },
+      { uri: 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=800&h=600&fit=crop', type: 'image', width: 800, height: 600 },
+    ],
     parent_id: null,
     root_id: null,
     reply_count: 28,
@@ -358,6 +403,7 @@ const REPLIES: Thread[] = [
     content:
       'This is huge. We\'re evaluating the same migration. Any gotchas with NativeWind on Android? We\'ve had some inconsistencies with shadow utilities.',
     images: [],
+    media: [],
     parent_id: 't-001',
     root_id: 't-001',
     reply_count: 2,
@@ -372,6 +418,7 @@ const REPLIES: Thread[] = [
     content:
       'Good callout — shadows are tricky on Android. We ended up using elevation utilities for Android and shadow for iOS. NativeWind\'s platform prefixes help: `ios:shadow-md android:elevation-4`.',
     images: [],
+    media: [],
     parent_id: 'r-001',
     root_id: 't-001',
     reply_count: 0,
@@ -386,6 +433,7 @@ const REPLIES: Thread[] = [
     content:
       'Absolutely agree. And I\'d add: documentation is the other 70%. A component without usage docs is a component nobody will use correctly.',
     images: [],
+    media: [],
     parent_id: 't-002',
     root_id: 't-002',
     reply_count: 1,
@@ -400,6 +448,7 @@ const REPLIES: Thread[] = [
     content:
       'Isn\'t this just SwiftUI with extra steps? I feel like Apple has been iterating on declarative UI since 2019. Curious what the differentiator is.',
     images: [],
+    media: [],
     parent_id: 't-003',
     root_id: 't-003',
     reply_count: 3,
@@ -414,6 +463,7 @@ const REPLIES: Thread[] = [
     content:
       'From what I\'m hearing, the key difference is compile-to-native performance. SwiftUI interprets at runtime. This new framework allegedly AOT compiles the declarative syntax to optimized machine code.',
     images: [],
+    media: [],
     parent_id: 'r-004',
     root_id: 't-003',
     reply_count: 0,
@@ -428,6 +478,7 @@ const REPLIES: Thread[] = [
     content:
       'Love this pattern. I\'d also recommend Zod for runtime validation of these types. Combine mapped types with Zod schemas and you get compile-time + runtime safety.',
     images: [],
+    media: [],
     parent_id: 't-004',
     root_id: 't-004',
     reply_count: 0,
@@ -442,6 +493,7 @@ const REPLIES: Thread[] = [
     content:
       'This needs to be shouted from the rooftops. I\'ve seen entire redesigns fail because color contrast wasn\'t considered until the final review. Accessibility should be in your Figma tokens from day one.',
     images: [],
+    media: [],
     parent_id: 't-005',
     root_id: 't-005',
     reply_count: 0,
@@ -456,6 +508,7 @@ const REPLIES: Thread[] = [
     content:
       'What were the biggest Rust learning curve moments for the team? We\'re considering moving some of our Node tooling to Rust but worried about the ramp-up time.',
     images: [],
+    media: [],
     parent_id: 't-006',
     root_id: 't-006',
     reply_count: 1,
@@ -470,6 +523,7 @@ const REPLIES: Thread[] = [
     content:
       'Honestly? The borrow checker was the main hurdle. Took about 3 weeks for the team to get comfortable. After that, it was smooth sailing. The compiler errors are actually incredibly helpful once you learn to read them.',
     images: [],
+    media: [],
     parent_id: 'r-008',
     root_id: 't-006',
     reply_count: 0,
@@ -484,6 +538,7 @@ const REPLIES: Thread[] = [
     content:
       'Can you share more about the data curation process? Was it manual labeling, synthetic data generation, or a combination? This could be a game changer for smaller teams.',
     images: [],
+    media: [],
     parent_id: 't-007',
     root_id: 't-007',
     reply_count: 1,
@@ -498,6 +553,7 @@ const REPLIES: Thread[] = [
     content:
       'It\'s a hybrid approach! We used LLM-generated synthetic data with human validation. Key insight: filtering low-quality examples matters more than generating more data. Quality over quantity.',
     images: [],
+    media: [],
     parent_id: 'r-010',
     root_id: 't-007',
     reply_count: 0,
@@ -512,6 +568,7 @@ const REPLIES: Thread[] = [
     content:
       'Point 4 is underrated. I see so many Reanimated examples with inline style objects that recreate on every render. useAnimatedStyle + useDerivedValue is the winning combo.',
     images: [],
+    media: [],
     parent_id: 't-008',
     root_id: 't-008',
     reply_count: 0,
@@ -526,6 +583,7 @@ const REPLIES: Thread[] = [
     content:
       'This resonates so much. I see the same pattern with content — writing for an audience you\'ve never spoken to. User research isn\'t optional, it\'s foundational.',
     images: [],
+    media: [],
     parent_id: 't-009',
     root_id: 't-009',
     reply_count: 0,
@@ -540,6 +598,7 @@ const REPLIES: Thread[] = [
     content:
       'Zustand is genuinely excellent for complex state. But for most apps? useState + context is all you need. The React team built these hooks for exactly this reason.',
     images: [],
+    media: [],
     parent_id: 't-011',
     root_id: 't-011',
     reply_count: 0,
@@ -554,6 +613,7 @@ const REPLIES: Thread[] = [
     content:
       'Thank you for talking about this openly. The expectation of 24/7 availability for OSS maintainers is toxic. We need to normalize sustainable contribution models.',
     images: [],
+    media: [],
     parent_id: 't-012',
     root_id: 't-012',
     reply_count: 0,
@@ -695,6 +755,7 @@ class Database {
     user_id: string;
     content: string;
     images?: string[];
+    media?: MediaItem[];
     parent_id?: string | null;
     root_id?: string | null;
   }): Thread {
@@ -704,6 +765,7 @@ class Database {
       user_id: params.user_id,
       content: params.content,
       images: params.images ?? [],
+      media: params.media ?? [],
       parent_id: params.parent_id ?? null,
       root_id: params.root_id ?? null,
       reply_count: 0,

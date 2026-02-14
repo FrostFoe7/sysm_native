@@ -1,6 +1,6 @@
 // components/ThreadCard.tsx
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Avatar, AvatarImage, AvatarFallbackText } from '@/components/ui/avatar';
@@ -10,6 +10,8 @@ import { VStack } from '@/components/ui/vstack';
 import { Divider } from '@/components/ui/divider';
 import { ActionRow } from '@/components/ActionRow';
 import { AnimatedPressable } from '@/components/AnimatedPressable';
+import { MediaGallery } from '@/components/MediaGallery';
+import { FullscreenMediaViewer } from '@/components/FullscreenMediaViewer';
 import { formatRelativeTime, formatCount } from '@/db/selectors';
 import type { ThreadWithAuthor } from '@/db/db';
 import { BadgeCheck, MoreHorizontal, Repeat2 } from 'lucide-react-native';
@@ -40,6 +42,8 @@ export function ThreadCard({
   isDetailView = false,
 }: ThreadCardProps) {
   const router = useRouter();
+  const [mediaViewerOpen, setMediaViewerOpen] = useState(false);
+  const [mediaViewerIndex, setMediaViewerIndex] = useState(0);
 
   const handlePress = useCallback(() => {
     if (!isDetailView) {
@@ -144,6 +148,20 @@ export function ThreadCard({
             {thread.content}
           </Text>
 
+          {/* Media gallery */}
+          {thread.media && thread.media.length > 0 && (
+            <View className="mt-2">
+              <MediaGallery
+                media={thread.media}
+                onMediaPress={(index) => {
+                  setMediaViewerIndex(index);
+                  setMediaViewerOpen(true);
+                }}
+                maxHeight={isDetailView ? 400 : 280}
+              />
+            </View>
+          )}
+
           {/* Action row */}
           <ActionRow
             likeCount={thread.like_count}
@@ -191,6 +209,16 @@ export function ThreadCard({
       )}
 
       {showDivider && <Divider className="bg-[#1e1e1e] ml-[60px]" />}
+
+      {/* Fullscreen media viewer */}
+      {thread.media && thread.media.length > 0 && (
+        <FullscreenMediaViewer
+          isOpen={mediaViewerOpen}
+          media={thread.media}
+          initialIndex={mediaViewerIndex}
+          onClose={() => setMediaViewerOpen(false)}
+        />
+      )}
     </View>
   );
 }

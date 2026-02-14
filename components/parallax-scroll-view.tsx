@@ -1,15 +1,23 @@
 import type { PropsWithChildren, ReactElement } from 'react';
-import { StyleSheet } from 'react-native';
-import Animated, {
-  interpolate,
-  useAnimatedRef,
-  useAnimatedStyle,
-  useScrollOffset,
-} from 'react-native-reanimated';
+import { StyleSheet, Platform, ScrollView, View } from 'react-native';
+import { useAnimatedStyle, isWeb } from '@/utils/animatedWebSafe';
 
 import { ThemedView } from '@/components/themed-view';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useThemeColor } from '@/hooks/use-theme-color';
+
+// Only import Reanimated on native
+let Animated: any = null;
+let interpolate: any = null;
+let useAnimatedRef: any = null;
+let useScrollOffset: any = null;
+
+if (!isWeb) {
+  Animated = require('react-native-reanimated').default;
+  interpolate = require('react-native-reanimated').interpolate;
+  useAnimatedRef = require('react-native-reanimated').useAnimatedRef;
+  useScrollOffset = require('react-native-reanimated').useScrollOffset;
+}
 
 const HEADER_HEIGHT = 250;
 
@@ -25,26 +33,36 @@ export default function ParallaxScrollView({
 }: Props) {
   const backgroundColor = useThemeColor({}, 'background');
   const colorScheme = useColorScheme() ?? 'light';
-  const scrollRef = useAnimatedRef<Animated.ScrollView>();
-  const scrollOffset = useScrollOffset(scrollRef);
-  const headerAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          translateY: interpolate(
-            scrollOffset.value,
-            [-HEADER_HEIGHT, 0, HEADER_HEIGHT],
-            [-HEADER_HEIGHT / 2, 0, HEADER_HEIGHT * 0.75]
-          ),
-        },
-        {
-          scale: interpolate(scrollOffset.value, [-HEADER_HEIGHT, 0, HEADER_HEIGHT], [2, 1, 1]),
-        },
-      ],
-    };
-  });
-
-  return (
+  
+  // Web fallback
+  const scrollRef = !isWeb ? useAnimatedRef?.() : null;
+  const scrollOffset = !isWeb ? useScrollOffset?.(scrollRef) : { value: 0 };
+  
+  const headerAnimatedStyle = !isWeb ? {
+    transform: [
+      {
+        translateY: interpolate(
+          scrollOffset.value,
+          [-HEADER_HEIGHT, 0, HEADER_HEIGHT],
+          [-HEADER_HEIGHT / 2, 0, HEADER_HEIGHT * 0.75]
+        ),
+      },
+      {
+        scale: interpolate(scrollOffset.value, [-HEADER_HEIGHT, 0, HEADER_HEIGHT], [2, 1, 1]),
+      },
+    ],
+  } : {};
+  return isWeb ? (
+    <View style={{ backgroundColor, flex: 1 } as any}>
+      <View style={[
+        styles.header,
+        { backgroundColor: headerBackgroundColor[colorScheme] },
+      ]}>
+        {headerImage}
+      </View>
+      <ThemedView style={styles.content}>{children}</ThemedView>
+    </View>
+  ) : (
     <Animated.ScrollView
       ref={scrollRef}
       style={{ backgroundColor, flex: 1 }}

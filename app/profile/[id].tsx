@@ -1,14 +1,14 @@
 // app/profile/[id].tsx
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { FlatList, View } from 'react-native';
+import { FlatList, View, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import Animated, {
   useSharedValue,
-  useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
+import { useAnimatedStyle } from '@/utils/animatedWebSafe';
 import { ScreenLayout } from '@/components/ScreenLayout';
 import { ProfileHeader } from '@/components/ProfileHeader';
 import { ThreadCard } from '@/components/ThreadCard';
@@ -84,11 +84,13 @@ export default function UserProfileScreen() {
 
   const handleFollow = useCallback(() => {
     if (!id) return;
-    // Bounce animation on follow toggle
-    followScale.value = withSpring(0.9, { damping: 15, stiffness: 400 });
-    setTimeout(() => {
-      followScale.value = withSpring(1, { damping: 10, stiffness: 300 });
-    }, 100);
+    // Bounce animation on follow toggle (native only)
+    if (Platform.OS !== 'web') {
+      followScale.value = withSpring(0.9, { damping: 15, stiffness: 400 });
+      setTimeout(() => {
+        followScale.value = withSpring(1, { damping: 10, stiffness: 300 });
+      }, 100);
+    }
     const result = toggleUserFollow(id);
     setIsFollowing(result.following);
     setFollowersCount((c) =>

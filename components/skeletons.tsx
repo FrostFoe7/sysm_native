@@ -11,7 +11,7 @@ const BONE = 'bg-[#1e1e1e]';
 
 // ─── Thread card skeleton ────────────────────────────
 
-export function ThreadCardSkeleton({ showDivider = true }: { showDivider?: boolean }) {
+export function ThreadCardSkeleton({ showDivider = true, showMedia = false }: { showDivider?: boolean; showMedia?: boolean }) {
   return (
     <View>
       <HStack className="px-4 py-3" space="md">
@@ -29,6 +29,10 @@ export function ThreadCardSkeleton({ showDivider = true }: { showDivider?: boole
           <Skeleton variant="rounded" className={`w-full h-[14px] ${BONE}`} />
           <Skeleton variant="rounded" className={`w-[85%] h-[14px] ${BONE}`} />
           <Skeleton variant="rounded" className={`w-[55%] h-[14px] ${BONE}`} />
+          {/* Media placeholder */}
+          {showMedia && (
+            <Skeleton variant="rounded" className={`w-full h-[180px] rounded-xl ${BONE}`} />
+          )}
           {/* Action row */}
           <HStack className="items-center mt-1" space="lg">
             <Skeleton variant="circular" className={`w-[20px] h-[20px] ${BONE}`} />
@@ -49,7 +53,7 @@ export function FeedSkeleton({ count = 6 }: { count?: number }) {
   return (
     <View>
       {Array.from({ length: count }).map((_, i) => (
-        <ThreadCardSkeleton key={`feed-sk-${i}`} showDivider={i < count - 1} />
+        <ThreadCardSkeleton key={`feed-sk-${i}`} showDivider={i < count - 1} showMedia={i % 3 === 1} />
       ))}
     </View>
   );

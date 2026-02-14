@@ -32,6 +32,31 @@ const Skeleton = forwardRef<
   },
   ref
 ) {
+  // On web, skip all animation setup to avoid Reanimated issues
+  const isWeb = Platform.OS === 'web' || (
+    Platform.OS !== 'ios' && Platform.OS !== 'android' && 
+    Platform.OS !== 'macos' && Platform.OS !== 'windows'
+  );
+
+  if (isWeb) {
+    // Web: render non-animated skeleton or children
+    if (!isLoaded) {
+      return (
+        <View
+          className={`${startColor} ${skeletonStyle({
+            variant,
+            class: className,
+          })}`}
+          {...props}
+          ref={ref as any}
+        />
+      );
+    } else {
+      return children;
+    }
+  }
+
+  // Native: use animated skeleton
   const pulseAnim = new Animated.Value(1);
   const customTimingFunction = Easing.bezier(0.4, 0, 0.6, 1);
   const fadeDuration = 0.6;
@@ -42,19 +67,19 @@ const Skeleton = forwardRef<
       toValue: 1, // Start with opacity 1
       duration: animationDuration / 2, // Third of the animation duration
       easing: customTimingFunction,
-      useNativeDriver: Platform.OS !== 'web',
+      useNativeDriver: true,
     }),
     Animated.timing(pulseAnim, {
       toValue: 0.75,
       duration: animationDuration / 2, // Third of the animation duration
       easing: customTimingFunction,
-      useNativeDriver: Platform.OS !== 'web',
+      useNativeDriver: true,
     }),
     Animated.timing(pulseAnim, {
       toValue: 1,
       duration: animationDuration / 2, // Third of the animation duration
       easing: customTimingFunction,
-      useNativeDriver: Platform.OS !== 'web',
+      useNativeDriver: true,
     }),
   ]);
 
@@ -73,7 +98,6 @@ const Skeleton = forwardRef<
     );
   } else {
     Animated.loop(pulse).stop();
-
     return children;
   }
 });

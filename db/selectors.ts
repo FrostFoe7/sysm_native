@@ -1,7 +1,7 @@
 // db/selectors.ts
 
 import { db, CURRENT_USER_ID } from './db';
-import type { User, Thread, ThreadWithAuthor, ThreadWithReplies } from './db';
+import type { User, Thread, ThreadWithAuthor, ThreadWithReplies, MediaItem } from './db';
 
 // ─── Hydration helpers ──────────────────────────────────────────────────────────
 
@@ -242,11 +242,12 @@ export function toggleUserFollow(userId: string): { following: boolean; follower
   return { following, followersCount: user?.followers_count ?? 0 };
 }
 
-export function createNewThread(content: string, images?: string[]): ThreadWithAuthor {
+export function createNewThread(content: string, images?: string[], media?: MediaItem[]): ThreadWithAuthor {
   const thread = db.createThread({
     user_id: CURRENT_USER_ID,
     content,
     images,
+    media,
   });
   return hydrateThread(thread);
 }
@@ -437,4 +438,36 @@ export function getBookmarkedThreads(): ThreadWithAuthor[] {
     }
   }
   return threads;
+}
+
+// ─── Media helpers ──────────────────────────────────────────────────────────────
+
+export function getThreadMediaCount(thread: Thread): number {
+  return thread.media.length;
+}
+
+export function threadHasVideo(thread: Thread): boolean {
+  return thread.media.some((m) => m.type === 'video');
+}
+
+export function threadHasMedia(thread: Thread): boolean {
+  return thread.media.length > 0;
+}
+
+export function getImageOnlyThreads(): ThreadWithAuthor[] {
+  return getFeed().filter(
+    (t) => t.media.length > 0 && t.media.every((m) => m.type === 'image'),
+  );
+}
+
+export function getVideoThreads(): ThreadWithAuthor[] {
+  return getFeed().filter((t) => t.media.some((m) => m.type === 'video'));
+}
+
+export function getMixedMediaThreads(): ThreadWithAuthor[] {
+  return getFeed().filter(
+    (t) =>
+      t.media.some((m) => m.type === 'image') &&
+      t.media.some((m) => m.type === 'video'),
+  );
 }
