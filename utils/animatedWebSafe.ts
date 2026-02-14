@@ -26,6 +26,7 @@ let EasingBase: any = {
   bezier: () => ({}),
 };
 let FadeInBase: any = null;
+let FadeInDownBase: any = null;
 let FadeOutBase: any = null;
 
 // Only load Reanimated on native to avoid web-side CSSStyleDeclaration errors
@@ -42,6 +43,7 @@ if (isNative) {
     withSequenceBase = Reanimated.withSequence;
     EasingBase = Reanimated.Easing;
     FadeInBase = Reanimated.FadeIn;
+    FadeInDownBase = Reanimated.FadeInDown;
     FadeOutBase = Reanimated.FadeOut;
   } catch (e) {
     console.warn('Reanimated failed to load on native:', e);
@@ -78,6 +80,7 @@ export const withDelay = withDelayBase;
 export const withSequence = withSequenceBase;
 export const Easing = EasingBase;
 export const FadeIn = FadeInBase;
+export const FadeInDown = FadeInDownBase;
 export const FadeOut = FadeOutBase;
 
 /**

@@ -1,10 +1,12 @@
-import { Text } from 'react-native';
+import { Text, Platform } from 'react-native';
 import { isWeb } from '@/utils/animatedWebSafe';
 
 // Only import Animated on native
 let Animated: any = null;
 if (!isWeb) {
-  Animated = require('react-native-reanimated').default;
+  try {
+    Animated = require('react-native-reanimated').default;
+  } catch (e) {}
 }
 
 export function HelloWave() {
@@ -15,18 +17,15 @@ export function HelloWave() {
           fontSize: 28,
           lineHeight: 32,
           marginTop: -6,
-          animationName: {
-            '50%': { transform: [{ rotate: '25deg' }] },
-          },
-          animationIterationCount: 4,
-          animationDuration: '300ms',
-        } as any}>
+        }}>
         👋
       </Text>
     );
   }
 
   // Native with Reanimated
+  if (!Animated) return <Text style={{ fontSize: 28 }}>👋</Text>;
+
   return (
     <Animated.Text
       style={{
