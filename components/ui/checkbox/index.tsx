@@ -39,7 +39,6 @@ const IconWrapper = React.forwardRef<
 
 const SCOPE = 'CHECKBOX';
 const UICheckbox = createCheckbox({
-  // @ts-expect-error : internal implementation for r-19/react-native-web
   Root:
     Platform.OS === 'web'
       ? withStyleContext(View, SCOPE)
@@ -48,7 +47,7 @@ const UICheckbox = createCheckbox({
   Icon: IconWrapper,
   Label: LabelWrapper,
   Indicator: IndicatorWrapper,
-});
+} as any);
 
 cssInterop(PrimitiveIcon, {
   className: {

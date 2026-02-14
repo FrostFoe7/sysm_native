@@ -164,10 +164,11 @@ export const BottomSheetBackdrop = ({
 }: Partial<IBottomSheetBackdrop> & { className?: string }) => {
   return (
     <GorhomBottomSheetBackdrop
-      // @ts-ignore
-      className={bottomSheetBackdropStyle({
-        className: className,
-      })}
+      {...({
+        className: bottomSheetBackdropStyle({
+          className: className,
+        }),
+      } as any)}
       disappearsOnIndex={disappearsOnIndex}
       appearsOnIndex={appearsOnIndex}
       {...props}
@@ -187,10 +188,11 @@ export const BottomSheetDragIndicator = ({
   return (
     <BottomSheetHandle
       {...props}
-      // @ts-ignore
-      className={bottomSheetIndicatorStyle({
-        className: className,
-      })}
+      {...({
+        className: bottomSheetIndicatorStyle({
+          className: className,
+        }),
+      } as any)}
     >
       {children}
     </BottomSheetHandle>
@@ -221,8 +223,7 @@ export const BottomSheetContent = ({ ...props }: IBottomSheetContent) => {
     return (
       <GorhomBottomSheetView
         {...props}
-        // @ts-ignore
-        {...keyDownHandlers}
+        {...(keyDownHandlers as any)}
         className={bottomSheetContentStyle({
           className: props.className,
         })}
@@ -238,8 +239,7 @@ export const BottomSheetContent = ({ ...props }: IBottomSheetContent) => {
   return (
     <GorhomBottomSheetView
       {...props}
-      // @ts-ignore
-      {...keyDownHandlers}
+      {...(keyDownHandlers as any)}
       className={bottomSheetContentStyle({
         className: props.className,
       })}

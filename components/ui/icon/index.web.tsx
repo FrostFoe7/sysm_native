@@ -7,7 +7,10 @@ import { PrimitiveIcon, Svg } from '@gluestack-ui/core/icon/creator';
 
 export const UIIcon = createIcon({
   Root: PrimitiveIcon,
-});
+}) as React.ForwardRefExoticComponent<
+  React.ComponentPropsWithoutRef<typeof PrimitiveIcon> &
+    React.RefAttributes<React.ComponentRef<typeof Svg>>
+>;
 
 const iconStyle = tva({
   base: 'text-typography-950 fill-none pointer-events-none',
@@ -34,7 +37,6 @@ export const Icon = React.forwardRef<
   if (typeof size === 'number') {
     return (
       <UIIcon
-        // @ts-expect-error : TODO: fix this
         ref={ref}
         {...props}
         style={props.style ? StyleSheet.flatten(props.style) : undefined}
@@ -48,7 +50,6 @@ export const Icon = React.forwardRef<
   ) {
     return (
       <UIIcon
-        // @ts-expect-error : TODO: fix this
         ref={ref}
         {...props}
         style={props.style ? StyleSheet.flatten(props.style) : undefined}
@@ -58,7 +59,6 @@ export const Icon = React.forwardRef<
   }
   return (
     <UIIcon
-      // @ts-expect-error : TODO: fix this
       ref={ref}
       {...props}
       style={props.style ? StyleSheet.flatten(props.style) : undefined}
@@ -76,7 +76,13 @@ const accessClassName = (style: any) => {
 };
 
 const createIconUI = ({ ...props }: ParameterTypes) => {
-  const NewUIIcon = createIcon({ Root: Svg, ...props });
+  const NewUIIcon = createIcon({
+    Root: Svg,
+    ...props,
+  }) as React.ForwardRefExoticComponent<
+    React.ComponentPropsWithoutRef<typeof PrimitiveIcon> &
+      React.RefAttributes<React.ComponentRef<typeof Svg>>
+  >;
   return React.forwardRef<
     React.ComponentRef<typeof UIIcon>,
     React.ComponentPropsWithoutRef<typeof UIIcon> &
@@ -92,7 +98,6 @@ const createIconUI = ({ ...props }: ParameterTypes) => {
     }, [className, inComingprops?.style]);
     return (
       <NewUIIcon
-        // @ts-expect-error : TODO: fix this
         ref={ref}
         {...inComingprops}
         className={calculateClassName}

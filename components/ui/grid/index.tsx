@@ -258,8 +258,9 @@ const GridItem = forwardRef<React.ComponentRef<typeof View>, IGridItemProps>(
     return (
       <SafeView
         ref={ref}
-        // @ts-expect-error : internal implementation for r-19/react-native-web
-        gridItemClass={gridItemClass}
+        {...({
+          gridItemClass: gridItemClass,
+        } as any)}
         className={gridItemStyle({
           class: className,
         })}

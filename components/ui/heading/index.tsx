@@ -17,7 +17,7 @@ cssInterop(H5, { className: 'style' });
 cssInterop(H6, { className: 'style' });
 
 const MappedHeading = memo(
-  forwardRef<React.ComponentRef<typeof H1>, IHeadingProps>(
+  forwardRef<any, IHeadingProps>(
     function MappedHeading(
       {
         size,
@@ -51,7 +51,6 @@ const MappedHeading = memo(
                 class: className,
               })}
               {...props}
-              // @ts-expect-error : type issue
               ref={ref}
             />
           );
@@ -70,7 +69,6 @@ const MappedHeading = memo(
                 class: className,
               })}
               {...props}
-              // @ts-expect-error : type issue
               ref={ref}
             />
           );
@@ -89,7 +87,6 @@ const MappedHeading = memo(
                 class: className,
               })}
               {...props}
-              // @ts-expect-error : type issue
               ref={ref}
             />
           );
@@ -108,7 +105,6 @@ const MappedHeading = memo(
                 class: className,
               })}
               {...props}
-              // @ts-expect-error : type issue
               ref={ref}
             />
           );
@@ -127,7 +123,6 @@ const MappedHeading = memo(
                 class: className,
               })}
               {...props}
-              // @ts-expect-error : type issue
               ref={ref}
             />
           );
@@ -147,7 +142,6 @@ const MappedHeading = memo(
                 class: className,
               })}
               {...props}
-              // @ts-expect-error : type issue
               ref={ref}
             />
           );
@@ -166,7 +160,6 @@ const MappedHeading = memo(
                 class: className,
               })}
               {...props}
-              // @ts-expect-error : type issue
               ref={ref}
             />
           );

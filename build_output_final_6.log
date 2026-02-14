@@ -1,0 +1,39 @@
+
+> sysm_native@1.0.0 build /workspaces/codespaces-blank/sysm
+> expo export --platform web
+
+React Compiler enabled
+Starting Metro Bundler
+Static rendering is enabled. Learn more: https://docs.expo.dev/router/reference/static-rendering/
+Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ node_modules/expo-router/node/render.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web node_modules/expo-router/entry.js ▓▓▓░░░░░░░░░░░░░ 22.1% ( 8/17)
+λ node_modules/expo-router/node/render.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 93.2% (2295/2377)
+λ node_modules/expo-router/node/render.js ▓▓░░░░░░░░░░░░░░ 15.7% (114/288)
+Web Bundled 17248ms node_modules/expo-router/entry.js (2377 modules)
+λ Bundled 17315ms node_modules/expo-router/node/render.js (2750 modules)
+
+› web bundles (2):
+_expo/static/css/web-dd18961fb77d792693266a6c1d464276.css (1.09 MB)
+_expo/static/js/web/entry-5fc1a89bde10c1e79b93f4b28b4bd178.js (3.65 MB)
+
+› Static routes (16):
+/new (36.6 kB)
+/modal (139 kB)
+/ (index) (129 kB)
+/explore (65.9 kB)
+/profile (41.6 kB)
+/_sitemap (18.4 kB)
+/activity (41.1 kB)
+/+not-found (18.4 kB)
+/(tabs)/new (36.6 kB)
+/thread/[id] (139 kB)
+/(tabs) (129 kB)
+/profile/[id] (131 kB)
+/profile/edit (138 kB)
+/(tabs)/explore (65.9 kB)
+/(tabs)/profile (41.6 kB)
+/(tabs)/activity (41.1 kB)
+
+Exported: dist
