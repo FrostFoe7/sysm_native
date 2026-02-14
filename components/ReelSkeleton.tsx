@@ -42,19 +42,19 @@ export function ReelSkeleton() {
         {/* Avatar */}
         <Skeleton
           variant="circular"
-          className="bg-[#2a2a2a]"
+          className="bg-brand-border-secondary"
           style={{ width: 44, height: 44 }}
         />
         {/* Like */}
         <View style={{ alignItems: 'center', gap: 4 }}>
           <Skeleton
             variant="circular"
-            className="bg-[#2a2a2a]"
+            className="bg-brand-border-secondary"
             style={{ width: 36, height: 36 }}
           />
           <Skeleton
             variant="rounded"
-            className="bg-[#2a2a2a]"
+            className="bg-brand-border-secondary"
             style={{ width: 24, height: 10, borderRadius: 4 }}
           />
         </View>
@@ -62,12 +62,12 @@ export function ReelSkeleton() {
         <View style={{ alignItems: 'center', gap: 4 }}>
           <Skeleton
             variant="circular"
-            className="bg-[#2a2a2a]"
+            className="bg-brand-border-secondary"
             style={{ width: 36, height: 36 }}
           />
           <Skeleton
             variant="rounded"
-            className="bg-[#2a2a2a]"
+            className="bg-brand-border-secondary"
             style={{ width: 24, height: 10, borderRadius: 4 }}
           />
         </View>
@@ -75,19 +75,19 @@ export function ReelSkeleton() {
         <View style={{ alignItems: 'center', gap: 4 }}>
           <Skeleton
             variant="circular"
-            className="bg-[#2a2a2a]"
+            className="bg-brand-border-secondary"
             style={{ width: 36, height: 36 }}
           />
           <Skeleton
             variant="rounded"
-            className="bg-[#2a2a2a]"
+            className="bg-brand-border-secondary"
             style={{ width: 24, height: 10, borderRadius: 4 }}
           />
         </View>
         {/* Menu */}
         <Skeleton
           variant="circular"
-          className="bg-[#2a2a2a]"
+          className="bg-brand-border-secondary"
           style={{ width: 28, height: 28 }}
         />
       </View>
@@ -105,25 +105,25 @@ export function ReelSkeleton() {
         {/* Username */}
         <Skeleton
           variant="rounded"
-          className="bg-[#2a2a2a]"
+          className="bg-brand-border-secondary"
           style={{ width: 120, height: 16, borderRadius: 4 }}
         />
         {/* Caption line 1 */}
         <Skeleton
           variant="rounded"
-          className="bg-[#2a2a2a]"
+          className="bg-brand-border-secondary"
           style={{ width: '90%', height: 14, borderRadius: 4 }}
         />
         {/* Caption line 2 */}
         <Skeleton
           variant="rounded"
-          className="bg-[#2a2a2a]"
+          className="bg-brand-border-secondary"
           style={{ width: '70%', height: 14, borderRadius: 4 }}
         />
         {/* Music label */}
         <Skeleton
           variant="rounded"
-          className="bg-[#2a2a2a]"
+          className="bg-brand-border-secondary"
           style={{ width: 160, height: 12, borderRadius: 4, marginTop: 4 }}
         />
       </View>

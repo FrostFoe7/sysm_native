@@ -22,7 +22,7 @@ export function ScreenLayout({
   return (
     <SafeAreaView
       edges={edges}
-      className="flex-1 bg-[#101010]"
+      className="flex-1 bg-brand-dark"
     >
       <Box
         className={`w-full flex-1 overflow-hidden ${

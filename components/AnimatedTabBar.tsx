@@ -58,7 +58,7 @@ export function AnimatedTabBar({ tabs, activeKey, onTabPress }: AnimatedTabBarPr
   }));
 
   return (
-    <View className="border-b border-[#1e1e1e] z-10 bg-[#101010]" style={{ position: 'relative' }} onLayout={handleLayout}>
+    <View className="border-b border-brand-border z-10 bg-brand-dark" style={{ position: 'relative' }} onLayout={handleLayout}>
       <HStack style={{ paddingBottom: 2 }}>
         {tabs.map((tab) => (
           <Pressable
@@ -68,7 +68,7 @@ export function AnimatedTabBar({ tabs, activeKey, onTabPress }: AnimatedTabBarPr
           >
             <Text
               className={`text-[15px] font-semibold ${
-                activeKey === tab.key ? 'text-[#f3f5f7]' : 'text-[#555555]'
+                activeKey === tab.key ? 'text-brand-light' : 'text-brand-muted'
               }`}
             >
               {tab.label}
@@ -83,13 +83,13 @@ export function AnimatedTabBar({ tabs, activeKey, onTabPress }: AnimatedTabBarPr
             bottom: 0,
             height: 1.5,
             borderRadius: 1,
-            backgroundColor: '#f3f5f7',
+            backgroundColor: 'brand-light',
           },
           animatedUnderlineStyle,
           isWeb && ({ transition: 'transform 300ms cubic-bezier(0.4, 0.0, 0.2, 1), width 300ms ease' } as any)
         ]}
       >
-        <View className="mx-auto h-full w-[60px] rounded-full bg-[#f3f5f7]" />
+        <View className="mx-auto h-full w-[60px] rounded-full bg-brand-light" />
       </SafeAnimatedView>
     </View>
   );

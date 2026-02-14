@@ -27,32 +27,19 @@ import {
   UserPlus,
   BadgeCheck,
 } from 'lucide-react-native';
-import type { ActivityItem } from '@/db/selectors';
+import type { ActivityItem } from '@/types/types';
 import { ActivitySkeleton } from '@/components/skeletons';
+import { useActivity } from '@/hooks/use-user';
+import { useInteractionStore } from '@/store/useInteractionStore';
 
 type TabKey = 'all' | 'replies' | 'mentions' | 'follows';
 
 export default function ActivityScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabKey>('all');
-  const [refreshKey, setRefreshKey] = useState(0);
-  const [followMap, setFollowMap] = useState<Record<string, boolean>>({});
-  const [isLoading, setIsLoading] = useState(true);
-
-  useFocusEffect(
-    useCallback(() => {
-      setRefreshKey((k) => k + 1);
-      if (isLoading) {
-        const t = setTimeout(() => setIsLoading(false), 500);
-        return () => clearTimeout(t);
-      }
-    }, [isLoading]),
-  );
-
-  const allActivity = useMemo(() => {
-    void refreshKey;
-    return getActivity();
-  }, [refreshKey]);
+  
+  const { followingUsers: followMap, setFollowing } = useInteractionStore();
+  const { data: allActivity, isLoading } = useActivity();
 
   const filteredActivity = useMemo(() => {
     if (activeTab === 'all') return allActivity;
@@ -62,21 +49,27 @@ export default function ActivityScreen() {
     return allActivity;
   }, [allActivity, activeTab]);
 
-  const handleFollow = useCallback((userId: string) => {
-    const result = toggleUserFollow(userId);
-    setFollowMap((prev) => ({ ...prev, [userId]: result.following }));
-  }, []);
+  const handleFollow = useCallback(async (userId: string) => {
+    const wasFollowing = !!followMap[userId];
+    setFollowing(userId, !wasFollowing);
+    try {
+      const result = await toggleUserFollow(userId);
+      setFollowing(userId, result.following);
+    } catch (error) {
+      setFollowing(userId, wasFollowing);
+    }
+  }, [followMap, setFollowing]);
 
   const getTypeMeta = (type: ActivityItem['type']) => {
     switch (type) {
       case 'like':
-        return { icon: Heart, color: '#ff3040', fill: '#ff3040', label: 'liked your thread' };
+        return { icon: Heart, color: 'brand-red', fill: 'brand-red', label: 'liked your thread' };
       case 'reply':
-        return { icon: MessageCircle, color: '#0095f6', fill: undefined, label: 'replied to your thread' };
+        return { icon: MessageCircle, color: 'brand-blue', fill: undefined, label: 'replied to your thread' };
       case 'follow':
         return { icon: UserPlus, color: '#bf5af2', fill: undefined, label: 'started following you' };
       default:
-        return { icon: Heart, color: '#555555', fill: undefined, label: '' };
+        return { icon: Heart, color: 'brand-muted', fill: undefined, label: '' };
     }
   };
 
@@ -111,7 +104,7 @@ export default function ActivityScreen() {
                   <AvatarImage source={{ uri: item.actor.avatar_url }} />
                 </Avatar>
                 <View
-                  className="absolute -bottom-1 -right-1 size-[18px] items-center justify-center rounded-full border-2 border-[#101010]"
+                  className="absolute -bottom-1 -right-1 size-[18px] items-center justify-center rounded-full border-2 border-brand-dark"
                   style={{ backgroundColor: meta.color }}
                 >
                   <IconComponent
@@ -124,13 +117,13 @@ export default function ActivityScreen() {
               </View>
               <VStack className="flex-1 overflow-hidden">
                 <HStack className="items-center" space="xs">
-                  <Text className="text-[14px] font-bold text-[#f3f5f7]" numberOfLines={1} style={{ flexShrink: 1 }}>
+                  <Text className="text-[14px] font-bold text-brand-light" numberOfLines={1} style={{ flexShrink: 1 }}>
                     {item.actor.username}
                   </Text>
                   {item.actor.verified && (
-                    <BadgeCheck size={14} color="#0095f6" fill="#0095f6" />
+                    <BadgeCheck size={14} color="brand-blue" fill="brand-blue" />
                   )}
-                  <Text className="shrink-0 text-[13px] text-[#555555]">
+                  <Text className="shrink-0 text-[13px] text-brand-muted">
                     {formatRelativeTime(item.created_at)}
                   </Text>
                 </HStack>
@@ -148,13 +141,13 @@ export default function ActivityScreen() {
                   className={
                     isFollowed
                       ? 'min-w-[90px] rounded-lg border-[#333] bg-transparent'
-                      : 'min-w-[90px] rounded-lg bg-[#f3f5f7]'
+                      : 'min-w-[90px] rounded-lg bg-brand-light'
                   }
                   onPress={() => handleFollow(item.actor.id)}
                 >
                   <ButtonText
                     className={`text-[13px] font-semibold ${
-                      isFollowed ? 'text-[#555555]' : 'text-[#101010]'
+                      isFollowed ? 'text-brand-muted' : 'text-brand-dark'
                     }`}
                   >
                     {isFollowed ? 'Following' : 'Follow back'}
@@ -162,7 +155,7 @@ export default function ActivityScreen() {
                 </Button>
               )}
             </HStack>
-            <Divider className="ml-[64px] bg-[#1e1e1e]" />
+            <Divider className="ml-[64px] bg-brand-border" />
           </AnimatedPressable>
         </AnimatedListItem>
       );
@@ -173,7 +166,7 @@ export default function ActivityScreen() {
   return (
     <ScreenLayout>
       <Box className="px-4 pb-1 pt-3">
-        <Heading size="2xl" className="text-[#f3f5f7]">
+        <Heading size="2xl" className="text-brand-light">
           Activity
         </Heading>
       </Box>
@@ -186,13 +179,13 @@ export default function ActivityScreen() {
             onPress={() => setActiveTab(tab.key)}
             className={`shrink-0 rounded-full border px-4 py-[6px] ${
               activeTab === tab.key
-                ? 'border-[#f3f5f7] bg-[#f3f5f7]'
+                ? 'border-brand-light bg-brand-light'
                 : 'border-[#333] bg-transparent'
             }`}
           >
             <Text
               className={`text-[13px] font-semibold ${
-                activeTab === tab.key ? 'text-[#101010]' : 'text-[#555555]'
+                activeTab === tab.key ? 'text-brand-dark' : 'text-brand-muted'
               }`}
             >
               {tab.label}
@@ -212,7 +205,7 @@ export default function ActivityScreen() {
             <ActivitySkeleton />
           ) : (
             <View className="items-center justify-center py-16">
-              <Text className="text-[15px] text-[#555555]">No activity yet</Text>
+              <Text className="text-[15px] text-brand-muted">No activity yet</Text>
             </View>
           )
         }

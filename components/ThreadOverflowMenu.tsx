@@ -83,7 +83,7 @@ export function ThreadOverflowMenu({
     const doDelete = () => {
       deleteThreadAction(thread.id);
       onThreadDeleted?.(thread.id);
-      showToast('Thread deleted', TOAST_ICONS.deleted, '#ff3040');
+      showToast('Thread deleted', TOAST_ICONS.deleted, 'brand-red');
     };
     if (Platform.OS === 'web') {
       const confirmed = window.confirm('Delete this thread? This action cannot be undone.');
@@ -102,7 +102,7 @@ export function ThreadOverflowMenu({
 
   const handleReport = useCallback(() => {
     onClose();
-    showToast('Thread reported', TOAST_ICONS.reported, '#ff3040');
+    showToast('Thread reported', TOAST_ICONS.reported, 'brand-red');
   }, [onClose, showToast]);
 
   const handleCopyLink = useCallback(() => {
@@ -120,21 +120,21 @@ export function ThreadOverflowMenu({
   return (
     <Actionsheet isOpen={isOpen} onClose={onClose}>
       <ActionsheetBackdrop className="bg-black/60" />
-      <ActionsheetContent className="rounded-t-3xl border-t border-[#2a2a2a] bg-[#181818] pb-8">
+      <ActionsheetContent className="rounded-t-3xl border-t border-brand-border-secondary bg-brand-elevated pb-8">
         <ActionsheetDragIndicatorWrapper>
-          <ActionsheetDragIndicator className="bg-[#555555]" />
+          <ActionsheetDragIndicator className="bg-brand-muted" />
         </ActionsheetDragIndicatorWrapper>
 
         <VStack className="mt-2 w-full">
           {/* Thread info header */}
           <Text
-            className="mb-3 px-6 text-center text-[13px] text-[#777777]"
+            className="mb-3 px-6 text-center text-[13px] text-brand-muted-alt"
             numberOfLines={1}
             style={{ overflow: 'hidden' }}
           >
             @{thread.author.username}&apos;s thread
           </Text>
-          <Divider className="mb-1 bg-[#2a2a2a]" />
+          <Divider className="mb-1 bg-brand-border-secondary" />
 
           {/* Copy link */}
           <ActionsheetItem
@@ -142,8 +142,8 @@ export function ThreadOverflowMenu({
             onPress={handleCopyLink}
           >
             <HStack className="flex-1 items-center" space="lg">
-              <Link2 size={22} color="#f3f5f7" strokeWidth={1.8} />
-              <ActionsheetItemText className="text-[16px] text-[#f3f5f7]">
+              <Link2 size={22} color="brand-light" strokeWidth={1.8} />
+              <ActionsheetItemText className="text-[16px] text-brand-light">
                 Copy link
               </ActionsheetItemText>
             </HStack>
@@ -155,8 +155,8 @@ export function ThreadOverflowMenu({
             onPress={handleHide}
           >
             <HStack className="flex-1 items-center" space="lg">
-              <EyeOff size={22} color="#f3f5f7" strokeWidth={1.8} />
-              <ActionsheetItemText className="text-[16px] text-[#f3f5f7]">
+              <EyeOff size={22} color="brand-light" strokeWidth={1.8} />
+              <ActionsheetItemText className="text-[16px] text-brand-light">
                 Hide
               </ActionsheetItemText>
             </HStack>
@@ -171,17 +171,17 @@ export function ThreadOverflowMenu({
               >
                 <HStack className="flex-1 items-center" space="lg">
                   {muted ? (
-                    <Volume2 size={22} color="#f3f5f7" strokeWidth={1.8} />
+                    <Volume2 size={22} color="brand-light" strokeWidth={1.8} />
                   ) : (
-                    <VolumeX size={22} color="#f3f5f7" strokeWidth={1.8} />
+                    <VolumeX size={22} color="brand-light" strokeWidth={1.8} />
                   )}
-                  <ActionsheetItemText className="text-[16px] text-[#f3f5f7]" numberOfLines={1}>
+                  <ActionsheetItemText className="text-[16px] text-brand-light" numberOfLines={1}>
                     {muted ? `Unmute @${thread.author.username}` : `Mute @${thread.author.username}`}
                   </ActionsheetItemText>
                 </HStack>
               </ActionsheetItem>
 
-              <Divider className="my-1 bg-[#2a2a2a]" />
+              <Divider className="my-1 bg-brand-border-secondary" />
 
               {/* Report */}
               <ActionsheetItem
@@ -189,8 +189,8 @@ export function ThreadOverflowMenu({
                 onPress={handleReport}
               >
                 <HStack className="flex-1 items-center" space="lg">
-                  <Flag size={22} color="#ff3040" strokeWidth={1.8} />
-                  <ActionsheetItemText className="text-[16px] text-[#ff3040]">
+                  <Flag size={22} color="brand-red" strokeWidth={1.8} />
+                  <ActionsheetItemText className="text-[16px] text-brand-red">
                     Report
                   </ActionsheetItemText>
                 </HStack>
@@ -200,7 +200,7 @@ export function ThreadOverflowMenu({
 
           {isOwnThread && (
             <>
-              <Divider className="my-1 bg-[#2a2a2a]" />
+              <Divider className="my-1 bg-brand-border-secondary" />
 
               {/* Delete thread */}
               <ActionsheetItem
@@ -208,8 +208,8 @@ export function ThreadOverflowMenu({
                 onPress={handleDelete}
               >
                 <HStack className="flex-1 items-center" space="lg">
-                  <Trash2 size={22} color="#ff3040" strokeWidth={1.8} />
-                  <ActionsheetItemText className="text-[16px] text-[#ff3040]">
+                  <Trash2 size={22} color="brand-red" strokeWidth={1.8} />
+                  <ActionsheetItemText className="text-[16px] text-brand-red">
                     Delete
                   </ActionsheetItemText>
                 </HStack>

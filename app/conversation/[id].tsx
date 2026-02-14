@@ -12,15 +12,7 @@ import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { MessageBubble, DateSeparator } from '@/components/MessageBubble';
 import { ChatComposer } from '@/components/ChatComposer';
 import { ChatSkeleton } from '@/components/skeletons';
-import {
-  getConversation,
-  getMessages,
-  sendMessage,
-  markConversationAsRead,
-  toggleMessageReaction,
-  formatRelativeTime,
-} from '@/db/selectors';
-import { CURRENT_USER_ID } from '@/constants/app';
+import { formatRelativeTime } from '@/db/selectors';
 import {
   ArrowLeft,
   Phone,
@@ -28,80 +20,23 @@ import {
   Info,
   BadgeCheck,
 } from 'lucide-react-native';
-import type { MessageWithSender, ConversationWithDetails } from '@/types/types';
-
-// Group messages by date for separator insertion
-type ChatItem =
-  | { type: 'date'; date: string; key: string }
-  | { type: 'message'; message: MessageWithSender; showAvatar: boolean; showTimestamp: boolean; key: string };
-
-function buildChatItems(messages: MessageWithSender[]): ChatItem[] {
-  const items: ChatItem[] = [];
-  let lastDate = '';
-  let lastSenderId = '';
-
-  for (let i = 0; i < messages.length; i++) {
-    const msg = messages[i];
-    const msgDate = new Date(msg.created_at).toDateString();
-    const nextMsg = messages[i + 1];
-    const prevMsg = messages[i - 1];
-
-    // Date separator
-    if (msgDate !== lastDate) {
-      items.push({ type: 'date', date: msg.created_at, key: `date-${msgDate}` });
-      lastDate = msgDate;
-      lastSenderId = '';
-    }
-
-    const showAvatar = msg.sender_id !== lastSenderId || msg.type === 'system';
-    const isLastFromSender = !nextMsg || nextMsg.sender_id !== msg.sender_id;
-
-    items.push({
-      type: 'message',
-      message: msg,
-      showAvatar,
-      showTimestamp: isLastFromSender,
-      key: msg.id,
-    });
-
-    lastSenderId = msg.sender_id;
-  }
-
-  return items;
-}
+import type { MessageWithSender } from '@/types/types';
+import { useChat } from '@/hooks/use-chat';
 
 export default function ChatScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const flatListRef = useRef<FlatList>(null);
-  const [refreshKey, setRefreshKey] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
   const [replyingTo, setReplyingTo] = useState<MessageWithSender | null>(null);
 
-  useFocusEffect(
-    useCallback(() => {
-      setRefreshKey((k) => k + 1);
-      if (id) markConversationAsRead(id);
-      if (isLoading) {
-        const t = setTimeout(() => setIsLoading(false), 300);
-        return () => clearTimeout(t);
-      }
-    }, [id, isLoading]),
-  );
-
-  const conversationDetails = useMemo(() => {
-    void refreshKey;
-    if (!id) return undefined;
-    return getConversation(id);
-  }, [id, refreshKey]);
-
-  const messages = useMemo(() => {
-    void refreshKey;
-    if (!id) return [];
-    return getMessages(id);
-  }, [id, refreshKey]);
-
-  const chatItems = useMemo(() => buildChatItems(messages), [messages]);
+  const {
+    messages,
+    chatItems,
+    details: conversationDetails,
+    isLoading,
+    sendMessage: triggerSendMessage,
+    toggleReaction,
+  } = useChat(id ?? '');
 
   const isGroup = conversationDetails?.conversation.type === 'group';
 
@@ -117,20 +52,14 @@ export default function ChatScreen() {
 
   const handleSendMessage = useCallback(
     (text: string) => {
-      if (!id) return;
-      sendMessage({
-        conversationId: id,
-        content: text,
-        replyToId: replyingTo?.id,
-      });
+      triggerSendMessage(text, replyingTo?.id);
       setReplyingTo(null);
-      setRefreshKey((k) => k + 1);
       // Scroll to bottom
       setTimeout(() => {
         flatListRef.current?.scrollToEnd({ animated: true });
       }, 100);
     },
-    [id, replyingTo],
+    [triggerSendMessage, replyingTo],
   );
 
   const handleReply = useCallback(
@@ -143,10 +72,9 @@ export default function ChatScreen() {
 
   const handleReaction = useCallback(
     (messageId: string, emoji: string) => {
-      toggleMessageReaction(messageId, emoji);
-      setRefreshKey((k) => k + 1);
+      toggleReaction(messageId, emoji);
     },
-    [],
+    [toggleReaction],
   );
 
   const handleBack = useCallback(() => {
@@ -195,25 +123,25 @@ export default function ChatScreen() {
 
   if (!conversationDetails) {
     return (
-      <SafeAreaView className="flex-1 bg-[#101010]">
+      <SafeAreaView className="flex-1 bg-brand-dark">
         <View className="flex-1 items-center justify-center">
-          <Text className="text-[#555555]">Conversation not found</Text>
+          <Text className="text-brand-muted">Conversation not found</Text>
         </View>
       </SafeAreaView>
     );
   }
 
   const chatContent = (
-    <View className="flex-1 bg-[#101010]">
+    <View className="flex-1 bg-brand-dark">
       {/* Header */}
-      <View className="border-b border-[#1e1e1e] bg-[#101010]">
+      <View className="border-b border-brand-border bg-brand-dark">
         <SafeAreaView edges={['top']}>
           <HStack className="items-center px-3 py-2" space="sm">
             <Pressable
               onPress={handleBack}
               className="rounded-full p-1.5 active:bg-white/10"
             >
-              <ArrowLeft size={24} color="#f3f5f7" />
+              <ArrowLeft size={24} color="brand-light" />
             </Pressable>
 
             <Pressable
@@ -229,15 +157,15 @@ export default function ChatScreen() {
               </Avatar>
               <VStack className="ml-2.5 flex-1">
                 <HStack className="items-center" space="xs">
-                  <Text className="text-[16px] font-bold text-[#f3f5f7]" numberOfLines={1}>
+                  <Text className="text-[16px] font-bold text-brand-light" numberOfLines={1}>
                     {displayName}
                   </Text>
                   {isVerified && (
-                    <BadgeCheck size={14} color="#0095f6" fill="#0095f6" />
+                    <BadgeCheck size={14} color="brand-blue" fill="brand-blue" />
                   )}
                 </HStack>
                 {isGroup ? (
-                  <Text className="text-[12px] text-[#555555]">
+                  <Text className="text-[12px] text-brand-muted">
                     {memberCount} members
                   </Text>
                 ) : (
@@ -248,17 +176,17 @@ export default function ChatScreen() {
 
             <HStack space="sm">
               <Pressable className="rounded-full p-2 active:bg-white/10">
-                <Phone size={20} color="#f3f5f7" />
+                <Phone size={20} color="brand-light" />
               </Pressable>
               <Pressable className="rounded-full p-2 active:bg-white/10">
-                <Video size={20} color="#f3f5f7" />
+                <Video size={20} color="brand-light" />
               </Pressable>
               {isGroup && (
                 <Pressable
                   onPress={handleInfoPress}
                   className="rounded-full p-2 active:bg-white/10"
                 >
-                  <Info size={20} color="#f3f5f7" />
+                  <Info size={20} color="brand-light" />
                 </Pressable>
               )}
             </HStack>

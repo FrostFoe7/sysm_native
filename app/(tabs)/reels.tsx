@@ -16,10 +16,10 @@ import { useNavigation } from '@react-navigation/native';
 import { Text } from '@/components/ui/text';
 import { ReelPlayer } from '@/components/ReelPlayer';
 import { ReelSkeleton } from '@/components/ReelSkeleton';
-import { getReelsFeed } from '@/db/selectors';
 import { DESKTOP_BREAKPOINT } from '@/constants/ui';
 import { ArrowLeft } from 'lucide-react-native';
 import type { ReelWithAuthor } from '@/types/types';
+import { useReels } from '@/hooks/use-reels';
 
 export default function ReelsScreen() {
   const router = useRouter();
@@ -27,9 +27,14 @@ export default function ReelsScreen() {
   const { width: windowW, height: windowH } = useWindowDimensions();
   const isDesktop = Platform.OS === 'web' && windowW >= DESKTOP_BREAKPOINT;
 
-  const [reels] = useState<ReelWithAuthor[]>(() => getReelsFeed());
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isMuted, setIsMuted] = useState(true);
+  const {
+    data: reels,
+    isLoading,
+    activeIndex,
+    setActiveIndex,
+    isMuted,
+    toggleMute,
+  } = useReels();
 
   const flatListRef = useRef<FlatList>(null);
 
@@ -41,8 +46,8 @@ export default function ReelsScreen() {
     return () => {
       navigation.setOptions({
         tabBarStyle: { 
-          backgroundColor: '#101010',
-          borderTopColor: '#1e1e1e',
+          backgroundColor: 'brand-dark',
+          borderTopColor: 'brand-border',
           borderTopWidth: 0.5,
           height: Platform.OS === 'web' ? 60 : 84,
           paddingTop: 8,
@@ -51,10 +56,6 @@ export default function ReelsScreen() {
       });
     };
   }, [navigation]);
-
-  const toggleMute = useCallback(() => {
-    setIsMuted((prev) => !prev);
-  }, []);
 
   // Viewability tracking: only one reel plays at a time
   const viewabilityConfig = useRef({
@@ -118,7 +119,7 @@ export default function ReelsScreen() {
   if (reels.length === 0) {
     return (
       <View className="flex-1 items-center justify-center bg-[#0a0a0a]">
-        <Text className="text-[16px] text-[#555555]">No reels yet</Text>
+        <Text className="text-[16px] text-brand-muted">No reels yet</Text>
       </View>
     );
   }
@@ -153,9 +154,9 @@ export default function ReelsScreen() {
             }}
             hitSlop={8}
           >
-            <ArrowLeft size={24} color="#f3f5f7" strokeWidth={2} />
+            <ArrowLeft size={24} color="brand-light" strokeWidth={2} />
           </Pressable>
-          <Text className="text-[20px] font-bold text-[#f3f5f7]">Reels</Text>
+          <Text className="text-[20px] font-bold text-brand-light">Reels</Text>
         </View>
 
         {/* Phone frame */}
@@ -167,7 +168,7 @@ export default function ReelsScreen() {
             overflow: 'hidden',
             backgroundColor: '#000000',
             borderWidth: 2,
-            borderColor: '#1e1e1e',
+            borderColor: 'brand-border',
           }}
         >
           <FlatList
@@ -198,7 +199,7 @@ export default function ReelsScreen() {
             alignItems: 'center',
           }}
         >
-          <Text className="text-[12px] text-[#555555]">
+          <Text className="text-[12px] text-brand-muted">
             {activeIndex + 1} / {reels.length}
           </Text>
         </View>
@@ -235,9 +236,9 @@ export default function ReelsScreen() {
           }}
           hitSlop={8}
         >
-          <ArrowLeft size={24} color="#f3f5f7" strokeWidth={2.2} />
+          <ArrowLeft size={24} color="brand-light" strokeWidth={2.2} />
         </Pressable>
-        <Text className="text-[18px] font-bold tracking-tight text-[#f3f5f7]">Reels</Text>
+        <Text className="text-[18px] font-bold tracking-tight text-brand-light">Reels</Text>
       </View>
 
       <FlatList

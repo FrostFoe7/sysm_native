@@ -41,20 +41,20 @@ export function ProfileHeader({
         <VStack className="flex-1 gap-1">
           <Heading
             size="xl"
-            className="font-bold text-[#f3f5f7]"
+            className="font-bold text-brand-light"
             numberOfLines={1}
           >
             {user.display_name}
           </Heading>
           <HStack className="items-center gap-1 flex-wrap">
-            <Text className="text-[15px] text-[#f3f5f7]" numberOfLines={1}>
+            <Text className="text-[15px] text-brand-light" numberOfLines={1}>
               @{user.username}
             </Text>
             {user.verified && (
-              <BadgeCheck size={14} color="#0095f6" fill="#0095f6" strokeWidth={0} />
+              <BadgeCheck size={14} color="brand-blue" fill="brand-blue" strokeWidth={0} />
             )}
-            <Box className="rounded-full bg-[#1e1e1e] px-2 py-0.5">
-              <Text className="text-[11px] text-[#555555]">threads.net</Text>
+            <Box className="rounded-full bg-brand-border px-2 py-0.5">
+              <Text className="text-[11px] text-brand-muted">threads.net</Text>
             </Box>
           </HStack>
         </VStack>
@@ -66,19 +66,19 @@ export function ProfileHeader({
 
       {/* Bio */}
       {user.bio.length > 0 && (
-        <Text className="text-[15px] leading-[21px] text-[#f3f5f7]">
+        <Text className="text-[15px] leading-[21px] text-brand-light">
           {user.bio}
         </Text>
       )}
 
       {/* Stats row */}
       <HStack className="items-center gap-2">
-        <Text className="text-[13px] text-[#777777]">
-          <Text className="font-semibold text-[#f3f5f7]">{formatCount(followerCount)}</Text> followers
+        <Text className="text-[13px] text-brand-muted-alt">
+          <Text className="font-semibold text-brand-light">{formatCount(followerCount)}</Text> followers
         </Text>
-        <Text className="text-[13px] text-[#777777]">·</Text>
-        <Text className="text-[13px] text-[#777777]">
-          <Text className="font-semibold text-[#f3f5f7]">{formatCount(followingCount)}</Text> following
+        <Text className="text-[13px] text-brand-muted-alt">·</Text>
+        <Text className="text-[13px] text-brand-muted-alt">
+          <Text className="font-semibold text-brand-light">{formatCount(followingCount)}</Text> following
         </Text>
       </HStack>
 
@@ -92,7 +92,7 @@ export function ProfileHeader({
               className="h-9 flex-1 rounded-lg border-[#333333] bg-transparent"
               onPress={onEditProfile}
             >
-              <ButtonText className="text-[14px] font-semibold text-[#f3f5f7]">
+              <ButtonText className="text-[14px] font-semibold text-brand-light">
                 Edit profile
               </ButtonText>
             </Button>
@@ -101,7 +101,7 @@ export function ProfileHeader({
               size="sm"
               className="h-9 flex-1 rounded-lg border-[#333333] bg-transparent"
             >
-              <ButtonText className="text-[14px] font-semibold text-[#f3f5f7]">
+              <ButtonText className="text-[14px] font-semibold text-brand-light">
                 Share
               </ButtonText>
             </Button>
@@ -119,7 +119,7 @@ export function ProfileHeader({
             >
               <ButtonText
                 className={`text-[14px] font-semibold ${
-                  isFollowing ? 'text-[#f3f5f7]' : 'text-black'
+                  isFollowing ? 'text-brand-light' : 'text-black'
                 }`}
               >
                 {isFollowing ? 'Following' : 'Follow'}
@@ -130,7 +130,7 @@ export function ProfileHeader({
               size="sm"
               className="h-9 flex-1 rounded-lg border-[#333333] bg-transparent"
             >
-              <ButtonText className="text-[14px] font-semibold text-[#f3f5f7]">
+              <ButtonText className="text-[14px] font-semibold text-brand-light">
                 Mention
               </ButtonText>
             </Button>
@@ -138,7 +138,7 @@ export function ProfileHeader({
         )}
       </HStack>
 
-      <Divider className="bg-[#1e1e1e]" />
+      <Divider className="bg-brand-border" />
     </VStack>
   );
 }

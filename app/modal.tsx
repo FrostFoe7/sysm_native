@@ -29,7 +29,7 @@ export default function ComposerModal() {
   );
 
   return (
-    <View className="flex-1 bg-[#181818]">
+    <View className="flex-1 bg-brand-elevated">
       <SafeAnimatedView
         entering={FadeInDown?.duration(300).springify().damping(20).stiffness(200)}
         className="flex-1"

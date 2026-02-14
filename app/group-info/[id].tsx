@@ -52,7 +52,7 @@ export default function GroupInfoScreen() {
 
   if (!details || details.conversation.type !== 'group') {
     return (
-      <SafeAreaView className="flex-1 bg-[#101010]">
+      <SafeAreaView className="flex-1 bg-brand-dark">
         <View className="flex-1 items-center justify-center">
           <Text className="text-[#555]">Group not found</Text>
         </View>
@@ -109,13 +109,13 @@ export default function GroupInfoScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#101010]" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-brand-dark" edges={['top']}>
       {/* Header */}
-      <HStack className="items-center border-b border-[#1e1e1e] px-3 py-2" space="sm">
+      <HStack className="items-center border-b border-brand-border px-3 py-2" space="sm">
         <Pressable onPress={handleBack} className="rounded-full p-1.5 active:bg-white/10">
-          <ArrowLeft size={24} color="#f3f5f7" />
+          <ArrowLeft size={24} color="brand-light" />
         </Pressable>
-        <Heading size="lg" className="flex-1 text-[#f3f5f7]">
+        <Heading size="lg" className="flex-1 text-brand-light">
           Group Info
         </Heading>
       </HStack>
@@ -133,11 +133,11 @@ export default function GroupInfoScreen() {
               <TextInput
                 value={newName}
                 onChangeText={setNewName}
-                className="border-b border-[#0095f6] pb-1 text-center text-[18px] font-bold text-[#f3f5f7]"
+                className="border-b border-brand-blue pb-1 text-center text-[18px] font-bold text-brand-light"
                 autoFocus
                 onSubmitEditing={handleSaveName}
               />
-              <Button size="xs" className="rounded-lg bg-[#0095f6]" onPress={handleSaveName}>
+              <Button size="xs" className="rounded-lg bg-brand-blue" onPress={handleSaveName}>
                 <ButtonText className="text-[12px] text-white">Save</ButtonText>
               </Button>
             </HStack>
@@ -150,26 +150,26 @@ export default function GroupInfoScreen() {
                 }
               }}
             >
-              <Text className="text-[20px] font-bold text-[#f3f5f7]">
+              <Text className="text-[20px] font-bold text-brand-light">
                 {conv.name}
               </Text>
             </Pressable>
           )}
-          <Text className="mt-1 text-[14px] text-[#555555]">
+          <Text className="mt-1 text-[14px] text-brand-muted">
             {participants.length} members
           </Text>
         </VStack>
 
-        <Divider className="bg-[#1e1e1e]" />
+        <Divider className="bg-brand-border" />
 
         {/* Action buttons */}
         <HStack className="justify-center gap-4 px-4 py-4">
           <Pressable onPress={handleToggleMute} className="items-center" style={{ width: 72 }}>
             <View className="mb-1.5 size-[44px] items-center justify-center rounded-full bg-[#262626]">
               {conv.is_muted ? (
-                <BellOff size={20} color="#f3f5f7" />
+                <BellOff size={20} color="brand-light" />
               ) : (
-                <Bell size={20} color="#f3f5f7" />
+                <Bell size={20} color="brand-light" />
               )}
             </View>
             <Text className="text-center text-[11px] text-[#999]">
@@ -179,7 +179,7 @@ export default function GroupInfoScreen() {
 
           <Pressable onPress={handleTogglePin} className="items-center" style={{ width: 72 }}>
             <View className="mb-1.5 size-[44px] items-center justify-center rounded-full bg-[#262626]">
-              <Pin size={20} color="#f3f5f7" fill={conv.is_pinned ? '#f3f5f7' : 'none'} />
+              <Pin size={20} color="brand-light" fill={conv.is_pinned ? 'brand-light' : 'none'} />
             </View>
             <Text className="text-center text-[11px] text-[#999]">
               {conv.is_pinned ? 'Unpin' : 'Pin'}
@@ -188,18 +188,18 @@ export default function GroupInfoScreen() {
 
           <Pressable className="items-center" style={{ width: 72 }}>
             <View className="mb-1.5 size-[44px] items-center justify-center rounded-full bg-[#262626]">
-              <ImageIcon size={20} color="#f3f5f7" />
+              <ImageIcon size={20} color="brand-light" />
             </View>
             <Text className="text-center text-[11px] text-[#999]">Media</Text>
           </Pressable>
         </HStack>
 
-        <Divider className="bg-[#1e1e1e]" />
+        <Divider className="bg-brand-border" />
 
         {/* Members section */}
         <View className="px-4 py-3">
           <HStack className="mb-2 items-center justify-between">
-            <Text className="text-[15px] font-semibold text-[#f3f5f7]">
+            <Text className="text-[15px] font-semibold text-brand-light">
               Members ({participants.length})
             </Text>
             {isAdmin && (
@@ -207,8 +207,8 @@ export default function GroupInfoScreen() {
                 onPress={handleAddMembers}
                 className="flex-row items-center rounded-full bg-[#262626] px-3 py-1.5 active:bg-white/10"
               >
-                <UserPlus size={14} color="#0095f6" />
-                <Text className="ml-1.5 text-[12px] font-medium text-[#0095f6]">Add</Text>
+                <UserPlus size={14} color="brand-blue" />
+                <Text className="ml-1.5 text-[12px] font-medium text-brand-blue">Add</Text>
               </Pressable>
             )}
           </HStack>
@@ -227,21 +227,21 @@ export default function GroupInfoScreen() {
                 </Avatar>
                 <VStack className="flex-1">
                   <HStack className="items-center" space="xs">
-                    <Text className="text-[14px] font-semibold text-[#f3f5f7]" numberOfLines={1}>
+                    <Text className="text-[14px] font-semibold text-brand-light" numberOfLines={1}>
                       {p.user.display_name}
                       {p.user_id === CURRENT_USER_ID ? ' (You)' : ''}
                     </Text>
                     {p.user.verified && (
-                      <BadgeCheck size={13} color="#0095f6" fill="#0095f6" />
+                      <BadgeCheck size={13} color="brand-blue" fill="brand-blue" />
                     )}
                   </HStack>
-                  <Text className="text-[12px] text-[#555555]">
+                  <Text className="text-[12px] text-brand-muted">
                     @{p.user.username}
                   </Text>
                 </VStack>
                 {p.role === 'admin' && (
-                  <View className="rounded-full bg-[#0095f6]/15 px-2 py-0.5">
-                    <Text className="text-[10px] font-semibold text-[#0095f6]">Admin</Text>
+                  <View className="rounded-full bg-brand-blue/15 px-2 py-0.5">
+                    <Text className="text-[10px] font-semibold text-brand-blue">Admin</Text>
                   </View>
                 )}
                 {isAdmin && p.user_id !== CURRENT_USER_ID && (
@@ -256,35 +256,35 @@ export default function GroupInfoScreen() {
                     }}
                     className="rounded-full p-1.5 active:bg-white/10"
                   >
-                    <MoreHorizontal size={18} color="#555555" />
+                    <MoreHorizontal size={18} color="brand-muted" />
                   </Pressable>
                 )}
               </HStack>
-              <Divider className="ml-[52px] bg-[#1e1e1e]" />
+              <Divider className="ml-[52px] bg-brand-border" />
             </Pressable>
           ))}
         </View>
 
-        <Divider className="bg-[#1e1e1e]" />
+        <Divider className="bg-brand-border" />
 
         {/* Leave group */}
         <Pressable
           onPress={handleLeave}
           className="flex-row items-center px-4 py-4 active:bg-white/5"
         >
-          <LogOut size={20} color="#ff3040" />
-          <Text className="ml-3 text-[15px] font-medium text-[#ff3040]">
+          <LogOut size={20} color="brand-red" />
+          <Text className="ml-3 text-[15px] font-medium text-brand-red">
             Leave Group
           </Text>
         </Pressable>
 
-        <Divider className="bg-[#1e1e1e]" />
+        <Divider className="bg-brand-border" />
 
         {/* Delete group (admin only) */}
         {isAdmin && (
           <Pressable className="flex-row items-center px-4 py-4 active:bg-white/5">
-            <Trash2 size={20} color="#ff3040" />
-            <Text className="ml-3 text-[15px] font-medium text-[#ff3040]">
+            <Trash2 size={20} color="brand-red" />
+            <Text className="ml-3 text-[15px] font-medium text-brand-red">
               Delete Group
             </Text>
           </Pressable>

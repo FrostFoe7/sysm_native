@@ -193,6 +193,13 @@ export interface MessageWithSender extends DirectMessage {
 }
 
 /**
+ * Chat UI types
+ */
+export type ChatItem =
+  | { type: 'date'; date: string; key: string }
+  | { type: 'message'; message: MessageWithSender; showAvatar: boolean; showTimestamp: boolean; key: string };
+
+/**
  * Component Props
  */
 export type ThemedViewProps = ViewProps & {

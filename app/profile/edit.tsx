@@ -44,8 +44,8 @@ function EditField({
   return (
     <VStack className="px-4 py-3">
       <HStack className="mb-1 items-center justify-between">
-        <Text className="text-[13px] text-[#777777]">{label}</Text>
-        <Text className="text-[12px] text-[#555555]">
+        <Text className="text-[13px] text-brand-muted-alt">{label}</Text>
+        <Text className="text-[12px] text-brand-muted">
           {value.length}/{maxLength}
         </Text>
       </HStack>
@@ -53,12 +53,12 @@ function EditField({
         value={value}
         onChangeText={(t) => onChangeText(t.slice(0, maxLength))}
         placeholder={placeholder}
-        placeholderTextColor="#555555"
+        placeholderTextColor="brand-muted"
         maxLength={maxLength}
         multiline={multiline}
         numberOfLines={multiline ? 4 : 1}
         style={{
-          color: '#f3f5f7',
+          color: 'brand-light',
           fontSize: 16,
           paddingVertical: 8,
           paddingHorizontal: 0,
@@ -67,7 +67,7 @@ function EditField({
           ...(Platform.OS === 'web' ? { outlineStyle: 'none' as any } : {}),
         }}
       />
-      <Divider className="mt-1 bg-[#2a2a2a]" />
+      <Divider className="mt-1 bg-brand-border-secondary" />
     </VStack>
   );
 }
@@ -131,7 +131,7 @@ export default function EditProfileScreen() {
     navigation.setOptions({
       headerLeft: () => (
         <Pressable onPress={handleCancel} hitSlop={12} className="p-1">
-          <Text className="text-[16px] text-[#f3f5f7]">Cancel</Text>
+          <Text className="text-[16px] text-brand-light">Cancel</Text>
         </Pressable>
       ),
       headerRight: () => (
@@ -143,7 +143,7 @@ export default function EditProfileScreen() {
         >
           <Text
             className={`text-[16px] font-semibold ${
-              hasChanges && isValid ? 'text-[#0095f6]' : 'text-[#333333]'
+              hasChanges && isValid ? 'text-brand-blue' : 'text-[#333333]'
             }`}
           >
             Done
@@ -173,11 +173,11 @@ export default function EditProfileScreen() {
               <Avatar size="xl">
                 <AvatarImage source={{ uri: avatarUrl }} />
               </Avatar>
-              <Box className="absolute bottom-0 right-0 rounded-full border-2 border-[#101010] bg-[#0095f6] p-1.5">
+              <Box className="absolute bottom-0 right-0 rounded-full border-2 border-brand-dark bg-brand-blue p-1.5">
                 <Camera size={14} color="#ffffff" strokeWidth={2.5} />
               </Box>
             </Pressable>
-            <Text className="mt-2 text-[14px] font-medium text-[#0095f6]">
+            <Text className="mt-2 text-[14px] font-medium text-brand-blue">
               Change photo
             </Text>
           </VStack>
@@ -186,12 +186,12 @@ export default function EditProfileScreen() {
           {showAvatarPicker && (
             <VStack className="mb-4 px-4">
               <HStack className="mb-3 items-center justify-between">
-                <Text className="text-[13px] text-[#777777]">Choose avatar</Text>
+                <Text className="text-[13px] text-brand-muted-alt">Choose avatar</Text>
                 <Pressable
                   onPress={() => setShowAvatarPicker(false)}
                   hitSlop={8}
                 >
-                  <X size={16} color="#555555" />
+                  <X size={16} color="brand-muted" />
                 </Pressable>
               </HStack>
               <HStack className="flex-wrap" style={{ gap: 10 }}>
@@ -203,7 +203,7 @@ export default function EditProfileScreen() {
                       setShowAvatarPicker(false);
                     }}
                     className={`rounded-full ${
-                      avatarUrl === url ? 'border-2 border-[#0095f6]' : ''
+                      avatarUrl === url ? 'border-2 border-brand-blue' : ''
                     }`}
                   >
                     <Avatar size="md">
@@ -212,7 +212,7 @@ export default function EditProfileScreen() {
                   </Pressable>
                 ))}
               </HStack>
-              <Divider className="mt-4 bg-[#2a2a2a]" />
+              <Divider className="mt-4 bg-brand-border-secondary" />
             </VStack>
           )}
 
@@ -244,7 +244,7 @@ export default function EditProfileScreen() {
 
           {/* Username validation */}
           {username.length > 0 && !isValid && (
-            <Text className="mt-1 px-4 text-[13px] text-[#ff3040]">
+            <Text className="mt-1 px-4 text-[13px] text-brand-red">
               Username can only contain letters, numbers, periods, and underscores.
             </Text>
           )}

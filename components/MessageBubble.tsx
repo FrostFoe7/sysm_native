@@ -44,7 +44,7 @@ export function MessageBubble({
   if (isSystem) {
     return (
       <View className="items-center px-4 py-2">
-        <Text className="text-center text-[12px] text-[#555555]">
+        <Text className="text-center text-[12px] text-brand-muted">
           {message.content}
         </Text>
       </View>
@@ -54,8 +54,8 @@ export function MessageBubble({
   if (message.is_deleted) {
     return (
       <View className={`flex-row px-4 py-1 ${isMe ? 'justify-end' : 'justify-start'}`}>
-        <View className="rounded-2xl border border-[#2a2a2a] px-4 py-2">
-          <Text className="text-[13px] italic text-[#555555]">
+        <View className="rounded-2xl border border-brand-border-secondary px-4 py-2">
+          <Text className="text-[13px] italic text-brand-muted">
             Message deleted
           </Text>
         </View>
@@ -88,8 +88,8 @@ export function MessageBubble({
     {} as Record<string, number>,
   );
 
-  const bubbleBg = isMe ? 'bg-[#0095f6]' : 'bg-[#262626]';
-  const textColor = isMe ? 'text-white' : 'text-[#f3f5f7]';
+  const bubbleBg = isMe ? 'bg-brand-blue' : 'bg-[#262626]';
+  const textColor = isMe ? 'text-white' : 'text-brand-light';
   const replyTextColor = isMe ? 'text-white/60' : 'text-[#777]';
 
   return (
@@ -136,7 +136,7 @@ export function MessageBubble({
                 {message.sender.display_name}
               </Text>
               {message.sender.verified && (
-                <BadgeCheck size={10} color="#0095f6" fill="#0095f6" />
+                <BadgeCheck size={10} color="brand-blue" fill="brand-blue" />
               )}
             </HStack>
           )}
@@ -144,7 +144,7 @@ export function MessageBubble({
           {/* Reply preview */}
           {message.replyTo && (
             <View
-              className={`mb-0.5 ml-3 mr-3 rounded-t-xl border-l-2 border-[#0095f6] px-3 py-1 ${isMe ? 'bg-[#0077cc]' : 'bg-[#1e1e1e]'}`}
+              className={`mb-0.5 ml-3 mr-3 rounded-t-xl border-l-2 border-brand-blue px-3 py-1 ${isMe ? 'bg-[#0077cc]' : 'bg-brand-border'}`}
             >
               <Text className={`text-[11px] font-semibold ${replyTextColor}`} numberOfLines={1}>
                 {message.replyTo.sender.display_name}
@@ -289,7 +289,7 @@ export function MessageBubble({
                   key={emoji}
                   onPress={() => onReaction?.(message.id, emoji)}
                   className={`flex-row items-center rounded-full border px-1.5 py-0.5 ${
-                    hasReacted(emoji) ? 'border-[#0095f6] bg-[#0095f6]/20' : 'border-[#333] bg-[#1e1e1e]'
+                    hasReacted(emoji) ? 'border-brand-blue bg-brand-blue/20' : 'border-[#333] bg-brand-border'
                   }`}
                 >
                   <Text className="text-[12px]">{emoji}</Text>
@@ -307,11 +307,11 @@ export function MessageBubble({
               className={`mt-0.5 items-center ${isMe ? 'justify-end pr-1' : isGroupChat ? 'pl-1' : 'pl-1'}`}
               space="xs"
             >
-              <Text className="text-[10px] text-[#555555]">
+              <Text className="text-[10px] text-brand-muted">
                 {formatRelativeTime(message.created_at)}
               </Text>
               {isMe && (
-                <Text className="text-[10px] text-[#555555]">
+                <Text className="text-[10px] text-brand-muted">
                   {message.status === 'sending'
                     ? '○'
                     : message.status === 'sent'
@@ -322,7 +322,7 @@ export function MessageBubble({
                 </Text>
               )}
               {isMe && message.status === 'seen' && (
-                <Text className="text-[10px] text-[#0095f6]">✓✓</Text>
+                <Text className="text-[10px] text-brand-blue">✓✓</Text>
               )}
             </HStack>
           )}
@@ -334,7 +334,7 @@ export function MessageBubble({
             onPress={() => onReply?.(message.id)}
             className="mb-2 ml-2 opacity-0 active:opacity-100"
           >
-            <CornerUpLeft size={16} color="#555555" />
+            <CornerUpLeft size={16} color="brand-muted" />
           </Pressable>
         )}
       </View>
@@ -361,7 +361,7 @@ export function DateSeparator({ date }: { date: string }) {
 
   return (
     <View className="items-center py-3">
-      <View className="rounded-full bg-[#1e1e1e] px-3 py-1">
+      <View className="rounded-full bg-brand-border px-3 py-1">
         <Text className="text-[11px] font-medium text-[#777]">{label}</Text>
       </View>
     </View>

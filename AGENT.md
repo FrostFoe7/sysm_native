@@ -63,14 +63,31 @@ This document tracks the setup and configuration of the `sysm_native` project.
   - Improper `catch` block variable usage.
 - **TypeScript Hardening**: Removed all `@ts-ignore` and `@ts-expect-error` comments by providing proper explicit typing (especially in the Icon system).
 
-### 5. Architectural Centralization
-- **Centralized Constants**: Created `constants/` directory with organized files:
-  - `app.ts`: Global config, limits, and seeded data identifiers.
-  - `ui.ts`: Layout measurements, breakpoints, and shared animation configs.
-  - `icons.ts`: Shared icon mappings and toast configurations.
-- **Centralized Types**: Created `types/types.ts` containing all core domain interfaces and common UI types, ensuring a single source of truth for the project's data structures.
+### 5. Architectural Centralization & Refactoring
+- **Service Layer**: Introduced a centralized service layer in `services/` to encapsulate all data operations.
+  - `thread.service.ts`: Thread feed, details, and mutations.
+  - `chat.service.ts`: Conversations, messages, and realtime preparation.
+  - `user.service.ts`: Profiles, following logic, and activity.
+  - *Goal*: Provides a single point of modification for Supabase integration.
+- **Custom Data Hooks**: Created custom hooks in `hooks/` to manage screen state and logic.
+  - `useThreadsFeed`, `useChat`, `useInbox`, `useUserProfile`, `useActivity`.
+  - Implemented **Optimistic Updates** for likes, reposts, and following.
+  - Standardized loading and refreshing states.
+- **Global State Management (Zustand)**: Integrated Zustand for high-performance client-side state.
+  - `store/useAuthStore.ts`: Manages user session and profile metadata.
+  - `store/useInteractionStore.ts`: Synchronizes likes, reposts, follows, and bookmarks across all screens instantly.
+- **Centralized Constants**: Created `constants/` directory with organized files (`app.ts`, `ui.ts`, `icons.ts`).
+- **Centralized Types**: Created `types/types.ts` as the single source of truth for all domain and UI types.
+
+### 6. Theme System Hardening
+- **Semantic Tokens**: Defined a `brand` color palette in `tailwind.config.js` (e.g., `brand-dark`, `brand-primary`, `brand-muted`).
+- **Global Refactor**: Replaced over 500 instances of hardcoded hex codes with semantic Tailwind classes (e.g., `bg-[#101010]` → `bg-brand-dark`).
+- **Consistency**: Standardized color usage across all screens, components, and skeletons.
 
 ## Current Project State
-- The project follows a strict architectural pattern with centralized types and constants.
-- 0 Linting errors/warnings and a successful web build pipeline.
-- The codebase is ready for high-scale feature development with a stable foundation.
+- Core application logic is decoupled from the UI via Services and Hooks.
+- UI components are lean, focusing only on presentation.
+- Optimized for performance with optimistic updates and minimal re-renders.
+- 0 Linting errors/warnings and a clean, type-safe codebase.
+- **Design System**: A robust, token-based styling system is in place, making future theme changes effortless.
+- Perfectly positioned for **Supabase** and **React Query** implementation.

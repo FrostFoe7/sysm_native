@@ -48,13 +48,13 @@ export function ChatComposer({
   const hasText = text.trim().length > 0;
 
   return (
-    <View className="border-t border-[#1e1e1e] bg-[#101010]">
+    <View className="border-t border-brand-border bg-brand-dark">
       {/* Reply preview bar */}
       {replyingTo && (
-        <HStack className="items-center border-b border-[#1e1e1e] px-4 py-2" space="sm">
-          <View className="h-full w-[3px] rounded-full bg-[#0095f6]" />
+        <HStack className="items-center border-b border-brand-border px-4 py-2" space="sm">
+          <View className="h-full w-[3px] rounded-full bg-brand-blue" />
           <VStack className="flex-1">
-            <Text className="text-[11px] font-semibold text-[#0095f6]">
+            <Text className="text-[11px] font-semibold text-brand-blue">
               Replying to {replyingTo.sender.display_name}
             </Text>
             <Text className="text-[12px] text-[#777]" numberOfLines={1}>
@@ -65,14 +65,14 @@ export function ChatComposer({
             onPress={onCancelReply}
             className="rounded-full p-1 active:bg-white/10"
           >
-            <X size={16} color="#555555" />
+            <X size={16} color="brand-muted" />
           </Pressable>
         </HStack>
       )}
 
       {/* Emoji quick picker */}
       {showEmojiPicker && (
-        <HStack className="border-b border-[#1e1e1e] px-4 py-2" space="sm">
+        <HStack className="border-b border-brand-border px-4 py-2" space="sm">
           {REACTION_EMOJIS.map((emoji) => (
             <Pressable
               key={emoji}
@@ -101,20 +101,20 @@ export function ChatComposer({
           className="mb-1 rounded-full p-1.5 active:bg-white/10"
           onPress={onSendImage}
         >
-          <Camera size={22} color="#0095f6" />
+          <Camera size={22} color="brand-blue" />
         </Pressable>
 
         {/* Text input */}
-        <View className="min-h-[40px] flex-1 flex-row items-center rounded-full border border-[#333] bg-[#1e1e1e] px-4 py-1.5">
+        <View className="min-h-[40px] flex-1 flex-row items-center rounded-full border border-[#333] bg-brand-border px-4 py-1.5">
           <TextInput
             ref={inputRef}
             value={text}
             onChangeText={setText}
             placeholder="Message..."
-            placeholderTextColor="#555555"
+            placeholderTextColor="brand-muted"
             multiline
             maxLength={MAX_MESSAGE_LENGTH}
-            className="max-h-[100px] flex-1 text-[15px] text-[#f3f5f7]"
+            className="max-h-[100px] flex-1 text-[15px] text-brand-light"
             style={{
               paddingTop: Platform.OS === 'ios' ? 8 : 4,
               paddingBottom: Platform.OS === 'ios' ? 8 : 4,
@@ -127,21 +127,21 @@ export function ChatComposer({
             className="ml-2 p-1 active:opacity-60"
             onPress={() => setShowEmojiPicker(!showEmojiPicker)}
           >
-            <Smile size={20} color="#555555" />
+            <Smile size={20} color="brand-muted" />
           </Pressable>
         </View>
 
         {/* Send or mic button */}
         {hasText ? (
           <Pressable
-            className="mb-1 items-center justify-center rounded-full bg-[#0095f6] p-2 active:opacity-80"
+            className="mb-1 items-center justify-center rounded-full bg-brand-blue p-2 active:opacity-80"
             onPress={handleSend}
           >
             <Send size={18} color="white" />
           </Pressable>
         ) : (
           <Pressable className="mb-1 rounded-full p-1.5 active:bg-white/10">
-            <Mic size={22} color="#f3f5f7" />
+            <Mic size={22} color="brand-light" />
           </Pressable>
         )}
       </HStack>

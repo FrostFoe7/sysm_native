@@ -189,7 +189,7 @@ export function ReelPlayer({ reel, isActive, isMuted, onMuteToggle }: ReelPlayer
             isWeb && ({ transition: 'transform 200ms ease-out, opacity 300ms ease-in-out' } as any),
           ]}
         >
-          <Heart size={88} color="#ff3040" fill="#ff3040" />
+          <Heart size={88} color="brand-red" fill="brand-red" />
         </SafeAnimatedView>
       )}
 

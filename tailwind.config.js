@@ -13,7 +13,7 @@ module.exports = {
   safelist: [
     {
       pattern:
-        /(bg|border|text|stroke|fill)-(primary|secondary|tertiary|error|success|warning|info|typography|outline|background|indicator)-(0|50|100|200|300|400|500|600|700|800|900|950|white|gray|black|error|warning|muted|success|info|light|dark|primary)/,
+        /(bg|border|text|stroke|fill)-(primary|secondary|tertiary|error|success|warning|info|typography|outline|background|indicator|brand)-(0|50|100|200|300|400|500|600|700|800|900|950|white|gray|black|error|warning|muted|success|info|light|dark|primary|elevated|border|border-secondary|muted-alt|blue|red|green)/,
     },
   ],
   theme: {
@@ -172,6 +172,18 @@ module.exports = {
           primary: 'rgb(var(--color-indicator-primary)/<alpha-value>)',
           info: 'rgb(var(--color-indicator-info)/<alpha-value>)',
           error: 'rgb(var(--color-indicator-error)/<alpha-value>)',
+        },
+        brand: {
+          dark: '#101010',
+          elevated: '#181818',
+          border: '#1e1e1e',
+          'border-secondary': '#2a2a2a',
+          light: '#f3f5f7',
+          muted: '#555555',
+          'muted-alt': '#777777',
+          blue: '#0095f6',
+          red: '#ff3040',
+          green: '#00ba7c',
         },
       },
       fontFamily: {

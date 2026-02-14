@@ -67,12 +67,12 @@ export function ConversationRow({ conversation, onPress, onLongPress }: Conversa
           </Avatar>
           {/* Online indicator for 1:1 */}
           {!isGroup && (
-            <View className="absolute -bottom-0.5 -right-0.5 size-[14px] rounded-full border-2 border-[#101010] bg-[#00c853]" />
+            <View className="absolute -bottom-0.5 -right-0.5 size-[14px] rounded-full border-2 border-brand-dark bg-[#00c853]" />
           )}
           {/* Group member count badge */}
           {isGroup && (
-            <View className="absolute -bottom-0.5 -right-0.5 min-w-[18px] items-center justify-center rounded-full border-[1.5px] border-[#101010] bg-[#333] px-1">
-              <Text className="text-[9px] font-bold text-[#f3f5f7]">
+            <View className="absolute -bottom-0.5 -right-0.5 min-w-[18px] items-center justify-center rounded-full border-[1.5px] border-brand-dark bg-[#333] px-1">
+              <Text className="text-[9px] font-bold text-brand-light">
                 {conversation.participants.length}
               </Text>
             </View>
@@ -84,33 +84,33 @@ export function ConversationRow({ conversation, onPress, onLongPress }: Conversa
           <HStack className="items-center justify-between">
             <HStack className="flex-1 items-center" space="xs">
               <Text
-                className={`text-[15px] ${hasUnread ? 'font-bold text-[#f3f5f7]' : 'font-semibold text-[#f3f5f7]'}`}
+                className={`text-[15px] ${hasUnread ? 'font-bold text-brand-light' : 'font-semibold text-brand-light'}`}
                 numberOfLines={1}
                 style={{ flexShrink: 1 }}
               >
                 {displayName}
               </Text>
               {isVerified && (
-                <BadgeCheck size={14} color="#0095f6" fill="#0095f6" />
+                <BadgeCheck size={14} color="brand-blue" fill="brand-blue" />
               )}
               {conv.is_muted && (
-                <BellOff size={12} color="#555555" />
+                <BellOff size={12} color="brand-muted" />
               )}
               {conv.is_pinned && (
-                <Pin size={12} color="#555555" fill="#555555" />
+                <Pin size={12} color="brand-muted" fill="brand-muted" />
               )}
             </HStack>
-            <Text className="ml-2 shrink-0 text-[12px] text-[#555555]">
+            <Text className="ml-2 shrink-0 text-[12px] text-brand-muted">
               {lastMessageTime}
             </Text>
           </HStack>
           <HStack className="items-center justify-between">
             <Text
-              className={`flex-1 text-[13px] ${hasUnread ? 'font-medium text-[#999]' : 'text-[#555555]'}`}
+              className={`flex-1 text-[13px] ${hasUnread ? 'font-medium text-[#999]' : 'text-brand-muted'}`}
               numberOfLines={1}
             >
               {typingText ? (
-                <Text className="text-[13px] font-medium text-[#0095f6]">{typingText}</Text>
+                <Text className="text-[13px] font-medium text-brand-blue">{typingText}</Text>
               ) : isLastMessageFromMe ? (
                 `You: ${lastMessageText}`
               ) : isGroup && lastMessage ? (
@@ -120,7 +120,7 @@ export function ConversationRow({ conversation, onPress, onLongPress }: Conversa
               )}
             </Text>
             {hasUnread && (
-              <View className="ml-2 min-w-[20px] items-center justify-center rounded-full bg-[#0095f6] px-[6px] py-[2px]">
+              <View className="ml-2 min-w-[20px] items-center justify-center rounded-full bg-brand-blue px-[6px] py-[2px]">
                 <Text className="text-[11px] font-bold text-white">
                   {unreadCount > 99 ? '99+' : unreadCount}
                 </Text>
@@ -129,7 +129,7 @@ export function ConversationRow({ conversation, onPress, onLongPress }: Conversa
           </HStack>
         </VStack>
       </HStack>
-      <Divider className="ml-[76px] bg-[#1e1e1e]" />
+      <Divider className="ml-[76px] bg-brand-border" />
     </Pressable>
   );
 }

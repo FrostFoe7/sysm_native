@@ -1,6 +1,6 @@
 // app/profile/[id].tsx
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { FlatList, View, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
@@ -16,145 +16,88 @@ import { ThreadOverflowMenu } from '@/components/ThreadOverflowMenu';
 import { AnimatedListItem } from '@/components/AnimatedListItem';
 import { AnimatedTabBar } from '@/components/AnimatedTabBar';
 import { Text } from '@/components/ui/text';
-import {
-  getProfile,
+import { 
   toggleThreadLike,
-  toggleUserFollow,
-  isThreadLikedByCurrentUser,
-  isUserFollowedByCurrentUser,
-  isRepostedByCurrentUser,
   toggleRepost,
+  isThreadLikedByCurrentUser,
+  isRepostedByCurrentUser,
 } from '@/db/selectors';
-import type { ThreadWithAuthor } from '@/db/db';
+import type { ThreadWithAuthor } from '@/types/types';
 import { ProfileHeaderSkeleton, FeedSkeleton, TabBarSkeleton } from '@/components/skeletons';
 import { PROFILE_TABS } from '@/constants/app';
 import { SPRING_CONFIG } from '@/constants/ui';
+import { useUserProfile } from '@/hooks/use-user';
+import { useInteractionStore } from '@/store/useInteractionStore';
 
 export default function UserProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('threads');
-  const [profile, setProfile] = useState(() => (id ? getProfile(id) : null));
-  const [isFollowing, setIsFollowing] = useState(() =>
-    id ? isUserFollowedByCurrentUser(id) : false,
-  );
-  const [followersCount, setFollowersCount] = useState(
-    () => profile?.followersCount ?? 0,
-  );
-  const [likedMap, setLikedMap] = useState<Record<string, boolean>>({});
-  const [repostMap, setRepostMap] = useState<Record<string, boolean>>({});
+  
+  const {
+    profile,
+    isLoading,
+    isFollowing,
+    followersCount,
+    handleFollowToggle
+  } = useUserProfile(id ?? '');
+
+  const { 
+    likedThreads: likedMap, 
+    repostedThreads: repostMap, 
+    setLiked, 
+    setReposted,
+    syncInteractions
+  } = useInteractionStore();
+
   const [shareThreadId, setShareThreadId] = useState<string | null>(null);
   const [overflowThread, setOverflowThread] = useState<ThreadWithAuthor | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
 
-  // Follow button scale animation
-  const followScale = useSharedValue(1);
-
-  useFocusEffect(
-    useCallback(() => {
-      if (!id) return;
-      const p = getProfile(id);
-      if (p) {
-        setProfile(p);
-        setIsFollowing(isUserFollowedByCurrentUser(id));
-        setFollowersCount(p.followersCount);
-        const newLiked: Record<string, boolean> = {};
-        const newReposted: Record<string, boolean> = {};
-        for (const t of [...p.threads, ...p.replies]) {
-          newLiked[t.id] = isThreadLikedByCurrentUser(t.id);
-          newReposted[t.id] = isRepostedByCurrentUser(t.id);
-        }
-        setLikedMap(newLiked);
-        setRepostMap(newReposted);
+  // Sync maps when profile loads
+  useEffect(() => {
+    if (profile) {
+      const newLiked: Record<string, boolean> = {};
+      const newReposted: Record<string, boolean> = {};
+      for (const t of [...profile.threads, ...profile.replies]) {
+        newLiked[t.id] = isThreadLikedByCurrentUser(t.id);
+        newReposted[t.id] = isRepostedByCurrentUser(t.id);
       }
-      if (isLoading) {
-        const t = setTimeout(() => setIsLoading(false), 500);
-        return () => clearTimeout(t);
-      }
-    }, [id, isLoading]),
-  );
-
-  const handleFollow = useCallback(() => {
-    if (!id) return;
-    // Bounce animation on follow toggle (native only)
-    if (Platform.OS !== 'web') {
-      followScale.value = withSpring(0.9, { damping: 15, stiffness: 400 });
-      setTimeout(() => {
-        followScale.value = withSpring(1, SPRING_CONFIG);
-      }, 100);
+      syncInteractions({ liked: newLiked, reposted: newReposted });
     }
-    const result = toggleUserFollow(id);
-    setIsFollowing(result.following);
-    setFollowersCount((c) =>
-      result.following ? c + 1 : Math.max(0, c - 1),
-    );
-  }, [id, followScale]);
+  }, [profile, syncInteractions]);
 
   const handleLike = useCallback((threadId: string) => {
-    const result = toggleThreadLike(threadId);
-    setLikedMap((prev) => ({ ...prev, [threadId]: result.liked }));
-    setProfile((prev) => {
-      if (!prev) return prev;
-      const update = (arr: ThreadWithAuthor[]) =>
-        arr.map((t) =>
-          t.id === threadId ? { ...t, like_count: result.likeCount } : t,
-        );
-      return { ...prev, threads: update(prev.threads), replies: update(prev.replies) };
-    });
-  }, []);
+    const wasLiked = !!likedMap[threadId];
+    setLiked(threadId, !wasLiked);
+    toggleThreadLike(threadId).catch(() => setLiked(threadId, wasLiked));
+  }, [likedMap, setLiked]);
 
   const handleRepost = useCallback((threadId: string) => {
-    const result = toggleRepost(threadId);
-    setRepostMap((prev) => ({ ...prev, [threadId]: result.reposted }));
-    setProfile((prev) => {
-      if (!prev) return prev;
-      const update = (arr: ThreadWithAuthor[]) =>
-        arr.map((t) =>
-          t.id === threadId ? { ...t, repost_count: result.repostCount } : t,
-        );
-      return { ...prev, threads: update(prev.threads), replies: update(prev.replies) };
-    });
-  }, []);
+    const wasReposted = !!repostMap[threadId];
+    setReposted(threadId, !wasReposted);
+    toggleRepost(threadId).catch(() => setReposted(threadId, wasReposted));
+  }, [repostMap, setReposted]);
 
-  const handleReply = useCallback(
-    (threadId: string) => {
-      router.push(`/thread/${threadId}`);
-    },
-    [router],
-  );
+  const handleReply = useCallback((threadId: string) => {
+    router.push(`/thread/${threadId}`);
+  }, [router]);
 
   const handleShare = useCallback((threadId: string) => {
     setShareThreadId(threadId);
   }, []);
 
-  const handleMore = useCallback(
-    (threadId: string) => {
-      if (!profile) return;
-      const all = [...profile.threads, ...profile.replies];
-      setOverflowThread(all.find((t) => t.id === threadId) ?? null);
-    },
-    [profile],
-  );
+  const handleMore = useCallback((threadId: string) => {
+    if (!profile) return;
+    const all = [...profile.threads, ...profile.replies];
+    setOverflowThread(all.find((t) => t.id === threadId) ?? null);
+  }, [profile]);
 
-  const handleThreadDeleted = useCallback((_threadId: string) => {
-    if (!id) return;
-    const p = getProfile(id);
-    if (p) setProfile(p);
-  }, [id]);
+  const handleThreadDeleted = useCallback(() => {
+    // Re-fetch via hook if needed
+  }, []);
 
-  const handleThreadHidden = useCallback((_threadId: string) => {
-    if (!id) return;
-    const p = getProfile(id);
-    if (p) setProfile(p);
-  }, [id]);
-
-  const handleUserMuted = useCallback((_userId: string) => {
-    if (!id) return;
-    const p = getProfile(id);
-    if (p) setProfile(p);
-  }, [id]);
-
-  if (!profile) return null;
+  const handleThreadHidden = useCallback(() => {}, []);
+  const handleUserMuted = useCallback(() => {}, []);
 
   if (isLoading) {
     return (
@@ -165,6 +108,8 @@ export default function UserProfileScreen() {
       </ScreenLayout>
     );
   }
+
+  if (!profile) return null;
 
   const data = activeTab === 'threads' ? profile.threads : profile.replies;
 
@@ -177,7 +122,7 @@ export default function UserProfileScreen() {
         followingCount={profile.followingCount}
         isCurrentUser={false}
         isFollowing={isFollowing}
-        onFollowToggle={handleFollow}
+        onFollowToggle={handleFollowToggle}
       />
 
       <AnimatedTabBar tabs={PROFILE_TABS} activeKey={activeTab} onTabPress={setActiveTab} />
@@ -204,7 +149,7 @@ export default function UserProfileScreen() {
         contentContainerStyle={{ paddingBottom: 24 }}
         ListEmptyComponent={
           <View className="items-center justify-center py-16">
-            <Text className="text-[15px] text-[#555555]">
+            <Text className="text-[15px] text-brand-muted">
               {activeTab === 'threads' ? 'No threads yet' : 'No replies yet'}
             </Text>
           </View>

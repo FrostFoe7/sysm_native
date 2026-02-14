@@ -41,7 +41,7 @@ export function ActionRow({
         {likeCount > 0 && (
           <Text
             className={`-ml-1 text-[13px] ${
-              isLiked ? 'text-[#ff3040]' : 'text-[#777777]'
+              isLiked ? 'text-brand-red' : 'text-brand-muted-alt'
             }`}
           >
             {formatCount(likeCount)}
@@ -57,7 +57,7 @@ export function ActionRow({
       >
         <MessageCircle size={19} color="#777777" strokeWidth={1.8} />
         {replyCount > 0 && (
-          <Text className="ml-1 text-[13px] text-[#777777]">
+          <Text className="ml-1 text-[13px] text-brand-muted-alt">
             {formatCount(replyCount)}
           </Text>
         )}

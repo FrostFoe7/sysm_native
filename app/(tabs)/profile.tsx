@@ -1,6 +1,6 @@
 // app/(tabs)/profile.tsx
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { FlatList, Pressable, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
@@ -14,82 +14,59 @@ import { AnimatedTabBar } from '@/components/AnimatedTabBar';
 import { Text } from '@/components/ui/text';
 import { HStack } from '@/components/ui/hstack';
 import {
-  getProfile,
   toggleThreadLike,
   isThreadLikedByCurrentUser,
   isRepostedByCurrentUser,
   toggleRepost,
 } from '@/db/selectors';
-import { CURRENT_USER_ID } from '@/constants/app';
 import { Menu, Settings } from 'lucide-react-native';
 import { ProfileHeaderSkeleton, FeedSkeleton, TabBarSkeleton } from '@/components/skeletons';
-import type { ThreadWithAuthor } from '@/db/db';
+import type { ThreadWithAuthor } from '@/types/types';
 import { PROFILE_TABS } from '@/constants/app';
+import { useCurrentUserProfile } from '@/hooks/use-user-profile';
+import { useInteractionStore } from '@/store/useInteractionStore';
 
 export default function ProfileScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('threads');
-  const [profile, setProfile] = useState(() => getProfile(CURRENT_USER_ID));
-  const [likedMap, setLikedMap] = useState<Record<string, boolean>>({});
-  const [repostMap, setRepostMap] = useState<Record<string, boolean>>({});
+  
+  const { profile, isLoading } = useCurrentUserProfile();
+
+  const { 
+    likedThreads: likedMap, 
+    repostedThreads: repostMap, 
+    setLiked, 
+    setReposted,
+    syncInteractions
+  } = useInteractionStore();
+
   const [shareThreadId, setShareThreadId] = useState<string | null>(null);
   const [overflowThread, setOverflowThread] = useState<ThreadWithAuthor | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
 
-  useFocusEffect(
-    useCallback(() => {
-      const p = getProfile(CURRENT_USER_ID);
-      if (p) {
-        setProfile(p);
-        const newLiked: Record<string, boolean> = {};
-        const newReposted: Record<string, boolean> = {};
-        for (const t of [...p.threads, ...p.replies]) {
-          newLiked[t.id] = isThreadLikedByCurrentUser(t.id);
-          newReposted[t.id] = isRepostedByCurrentUser(t.id);
-        }
-        setLikedMap(newLiked);
-        setRepostMap(newReposted);
+  // Sync maps when profile loads
+  useEffect(() => {
+    if (profile) {
+      const newLiked: Record<string, boolean> = {};
+      const newReposted: Record<string, boolean> = {};
+      for (const t of [...profile.threads, ...profile.replies]) {
+        newLiked[t.id] = isThreadLikedByCurrentUser(t.id);
+        newReposted[t.id] = isRepostedByCurrentUser(t.id);
       }
-      if (isLoading) {
-        const t = setTimeout(() => setIsLoading(false), 500);
-        return () => clearTimeout(t);
-      }
-    }, [isLoading]),
-  );
+      syncInteractions({ liked: newLiked, reposted: newReposted });
+    }
+  }, [profile, syncInteractions]);
 
   const handleLike = useCallback((threadId: string) => {
-    const result = toggleThreadLike(threadId);
-    setLikedMap((prev) => ({ ...prev, [threadId]: result.liked }));
-    setProfile((prev) => {
-      if (!prev) return prev;
-      const updateThreads = (arr: ThreadWithAuthor[]) =>
-        arr.map((t) =>
-          t.id === threadId ? { ...t, like_count: result.likeCount } : t,
-        );
-      return {
-        ...prev,
-        threads: updateThreads(prev.threads),
-        replies: updateThreads(prev.replies),
-      };
-    });
-  }, []);
+    const wasLiked = !!likedMap[threadId];
+    setLiked(threadId, !wasLiked);
+    toggleThreadLike(threadId).catch(() => setLiked(threadId, wasLiked));
+  }, [likedMap, setLiked]);
 
   const handleRepost = useCallback((threadId: string) => {
-    const result = toggleRepost(threadId);
-    setRepostMap((prev) => ({ ...prev, [threadId]: result.reposted }));
-    setProfile((prev) => {
-      if (!prev) return prev;
-      const updateThreads = (arr: ThreadWithAuthor[]) =>
-        arr.map((t) =>
-          t.id === threadId ? { ...t, repost_count: result.repostCount } : t,
-        );
-      return {
-        ...prev,
-        threads: updateThreads(prev.threads),
-        replies: updateThreads(prev.replies),
-      };
-    });
-  }, []);
+    const wasReposted = !!repostMap[threadId];
+    setReposted(threadId, !wasReposted);
+    toggleRepost(threadId).catch(() => setReposted(threadId, wasReposted));
+  }, [repostMap, setReposted]);
 
   const handleReply = useCallback(
     (threadId: string) => {
@@ -133,10 +110,10 @@ export default function ProfileScreen() {
       <ScreenLayout>
         <HStack className="h-[44px] items-center justify-between px-4">
           <Pressable hitSlop={8} className="p-1 active:opacity-60">
-            <Menu size={24} color="#f3f5f7" />
+            <Menu size={24} color="brand-light" />
           </Pressable>
           <Pressable hitSlop={8} className="p-1 active:opacity-60">
-            <Settings size={24} color="#f3f5f7" />
+            <Settings size={24} color="brand-light" />
           </Pressable>
         </HStack>
         <ProfileHeaderSkeleton isCurrentUser />
@@ -153,10 +130,10 @@ export default function ProfileScreen() {
       {/* Toolbar */}
       <HStack className="h-[44px] items-center justify-between px-4">
         <Pressable hitSlop={8} className="p-1 active:opacity-60">
-          <Menu size={24} color="#f3f5f7" />
+          <Menu size={24} color="brand-light" />
         </Pressable>
         <Pressable hitSlop={8} className="p-1 active:opacity-60">
-          <Settings size={24} color="#f3f5f7" />
+          <Settings size={24} color="brand-light" />
         </Pressable>
       </HStack>
 
@@ -195,7 +172,7 @@ export default function ProfileScreen() {
         nestedScrollEnabled
         ListEmptyComponent={
           <View className="items-center justify-center py-16">
-            <Text className="text-[15px] text-[#555555]">
+            <Text className="text-[15px] text-brand-muted">
               {activeTab === 'threads' ? 'No threads yet' : 'No replies yet'}
             </Text>
           </View>

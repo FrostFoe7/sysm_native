@@ -14,14 +14,14 @@ function TabsNavigator({ hideTabBar }: { hideTabBar: boolean }) {
       screenOptions={{
         headerShown: false,
         tabBarButton: HapticTab,
-        tabBarActiveTintColor: '#f3f5f7',
-        tabBarInactiveTintColor: '#555555',
+        tabBarActiveTintColor: 'brand-light',
+        tabBarInactiveTintColor: 'brand-muted',
         tabBarShowLabel: false,
         tabBarStyle: hideTabBar
           ? { display: 'none' }
           : {
-              backgroundColor: '#101010',
-              borderTopColor: '#1e1e1e',
+              backgroundColor: 'brand-dark',
+              borderTopColor: 'brand-border',
               borderTopWidth: 0.5,
               height: Platform.OS === 'web' ? 60 : 84,
               paddingTop: 8,
@@ -128,7 +128,7 @@ export default function TabLayout() {
 
   if (isDesktop) {
     return (
-      <View className="flex-1 flex-row bg-[#101010]">
+      <View className="flex-1 flex-row bg-brand-dark">
         <DesktopSidebar />
         <View className="flex-1">
           <TabsNavigator hideTabBar />

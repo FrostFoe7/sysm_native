@@ -32,7 +32,8 @@ import {
 } from '@/db/selectors';
 import { Send } from 'lucide-react-native';
 import { ThreadDetailSkeleton } from '@/components/skeletons';
-import type { ThreadWithAuthor, ThreadWithReplies } from '@/db/db';
+import type { ThreadWithAuthor, ThreadWithReplies } from '@/types/types';
+import { useInteractionStore } from '@/store/useInteractionStore';
 
 type ListItem =
   | { type: 'ancestor'; thread: ThreadWithAuthor }
@@ -48,11 +49,17 @@ export default function ThreadDetailScreen() {
   const [replyText, setReplyText] = useState('');
   const [detail, setDetail] = useState<ThreadWithReplies | null>(null);
   const [ancestors, setAncestors] = useState<ThreadWithAuthor[]>([]);
-  const [likedMap, setLikedMap] = useState<Record<string, boolean>>({});
-  const [repostMap, setRepostMap] = useState<Record<string, boolean>>({});
+  
+  const { 
+    likedThreads: likedMap, 
+    repostedThreads: repostMap, 
+    setLiked, 
+    setReposted,
+    syncInteractions 
+  } = useInteractionStore();
+
   const [shareThreadId, setShareThreadId] = useState<string | null>(null);
   const [overflowThread, setOverflowThread] = useState<ThreadWithAuthor | null>(null);
-  const [threadLikeCounts, setThreadLikeCounts] = useState<Record<string, number>>({});
 
   const currentUser = useMemo(() => getCurrentUser(), []);
 
@@ -67,21 +74,12 @@ export default function ThreadDetailScreen() {
       const newLiked: Record<string, boolean> = {};
       const newReposted: Record<string, boolean> = {};
       for (const t of allThreads) {
-        if (!(t.id in likedMap)) {
-          newLiked[t.id] = isThreadLikedByCurrentUser(t.id);
-        }
-        if (!(t.id in repostMap)) {
-          newReposted[t.id] = isRepostedByCurrentUser(t.id);
-        }
+        newLiked[t.id] = isThreadLikedByCurrentUser(t.id);
+        newReposted[t.id] = isRepostedByCurrentUser(t.id);
       }
-      if (Object.keys(newLiked).length > 0) {
-        setLikedMap((prev) => ({ ...prev, ...newLiked }));
-      }
-      if (Object.keys(newReposted).length > 0) {
-        setRepostMap((prev) => ({ ...prev, ...newReposted }));
-      }
+      syncInteractions({ liked: newLiked, reposted: newReposted });
     }
-  }, [id, likedMap, repostMap]);
+  }, [id, syncInteractions]);
 
   // Load on mount and when id changes
   useEffect(() => {
@@ -96,23 +94,23 @@ export default function ThreadDetailScreen() {
   );
 
   const handleLike = useCallback((threadId: string) => {
-    const result = toggleThreadLike(threadId);
-    setLikedMap((prev) => ({ ...prev, [threadId]: result.liked }));
-    setThreadLikeCounts((prev) => ({ ...prev, [threadId]: result.likeCount }));
-    // Update detail if it's the main thread
+    const wasLiked = !!likedMap[threadId];
+    setLiked(threadId, !wasLiked);
+    toggleThreadLike(threadId).catch(() => setLiked(threadId, wasLiked));
+    
     setDetail((prev) => {
       if (!prev) return prev;
       if (prev.id === threadId) {
-        return { ...prev, like_count: result.likeCount };
+        return { ...prev, like_count: wasLiked ? prev.like_count - 1 : prev.like_count + 1 };
       }
       return {
         ...prev,
         replies: prev.replies.map((r) =>
-          r.id === threadId ? { ...r, like_count: result.likeCount } : r,
+          r.id === threadId ? { ...r, like_count: wasLiked ? r.like_count - 1 : r.like_count + 1 } : r,
         ),
       };
     });
-  }, []);
+  }, [likedMap, setLiked]);
 
   const handleReply = useCallback(
     (threadId: string) => {
@@ -126,21 +124,23 @@ export default function ThreadDetailScreen() {
   );
 
   const handleRepost = useCallback((threadId: string) => {
-    const result = toggleRepost(threadId);
-    setRepostMap((prev) => ({ ...prev, [threadId]: result.reposted }));
+    const wasReposted = !!repostMap[threadId];
+    setReposted(threadId, !wasReposted);
+    toggleRepost(threadId).catch(() => setReposted(threadId, wasReposted));
+
     setDetail((prev) => {
       if (!prev) return prev;
       if (prev.id === threadId) {
-        return { ...prev, repost_count: result.repostCount };
+        return { ...prev, repost_count: wasReposted ? prev.repost_count - 1 : prev.repost_count + 1 };
       }
       return {
         ...prev,
         replies: prev.replies.map((r) =>
-          r.id === threadId ? { ...r, repost_count: result.repostCount } : r,
+          r.id === threadId ? { ...r, repost_count: wasReposted ? r.repost_count - 1 : r.repost_count + 1 } : r,
         ),
       };
     });
-  }, []);
+  }, [repostMap, setReposted]);
 
   const handleShare = useCallback((threadId: string) => {
     setShareThreadId(threadId);
@@ -211,7 +211,7 @@ export default function ThreadDetailScreen() {
 
   if (!detail) {
     return (
-      <View className="flex-1 bg-[#101010]">
+      <View className="flex-1 bg-brand-dark">
         <Box className={`flex-1 ${Platform.OS === 'web' ? 'w-full max-w-[680px] self-center' : ''}`}>
           <ThreadDetailSkeleton />
         </Box>
@@ -265,11 +265,11 @@ export default function ThreadDetailScreen() {
             isDetailView
           />
           <View className="px-4 pb-2">
-            <Text className="text-[13px] text-[#555555]">
+            <Text className="text-[13px] text-brand-muted">
               {formatFullDate(item.thread.created_at)}
             </Text>
           </View>
-          <Divider className="bg-[#1e1e1e]" />
+          <Divider className="bg-brand-border" />
         </View>
       );
     }
@@ -278,7 +278,7 @@ export default function ThreadDetailScreen() {
       if (detail.replies.length === 0) {
         return (
           <View className="items-center justify-center py-12">
-            <Text className="text-[15px] text-[#555555]">No replies yet</Text>
+            <Text className="text-[15px] text-brand-muted">No replies yet</Text>
             <Text className="mt-1 text-[13px] text-[#444444]">Be the first to reply</Text>
           </View>
         );
@@ -311,7 +311,7 @@ export default function ThreadDetailScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-[#101010]"
+      className="flex-1 bg-brand-dark"
       keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 0}
     >
       <Box className={`flex-1 ${Platform.OS === 'web' ? 'w-full max-w-[680px] self-center' : ''}`}>
@@ -328,8 +328,8 @@ export default function ThreadDetailScreen() {
           contentContainerStyle={{ paddingBottom: 12 }}
         />
 
-        <Divider className="bg-[#1e1e1e]" />
-        <HStack className="items-center bg-[#101010] px-4 py-2 pb-3" space="md">
+        <Divider className="bg-brand-border" />
+        <HStack className="items-center bg-brand-dark px-4 py-2 pb-3" space="md">
           <Avatar size="xs">
             <AvatarImage source={{ uri: currentUser.avatar_url }} />
           </Avatar>
@@ -338,8 +338,8 @@ export default function ThreadDetailScreen() {
             value={replyText}
             onChangeText={setReplyText}
             placeholder={`Reply to ${detail.author.username}...`}
-            placeholderTextColor="#555555"
-            className="h-[36px] flex-1 text-[15px] text-[#f3f5f7]"
+            placeholderTextColor="brand-muted"
+            className="h-[36px] flex-1 text-[15px] text-brand-light"
             style={{
               ...(Platform.OS === 'web' ? { outlineStyle: 'none' as any } : {}),
               overflow: 'hidden',
@@ -356,7 +356,7 @@ export default function ThreadDetailScreen() {
           >
             <Send
               size={20}
-              color={replyText.trim() ? '#0095f6' : '#555555'}
+              color={replyText.trim() ? 'brand-blue' : 'brand-muted'}
               strokeWidth={2}
             />
           </Pressable>

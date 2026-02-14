@@ -161,7 +161,7 @@ export function Composer({
       className="flex-1"
       keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 0}
     >
-      <VStack className="flex-1 bg-[#181818]">
+      <VStack className="flex-1 bg-brand-elevated">
         {/* Composer body */}
         <ScrollView
           style={{ flex: 1 }}
@@ -174,18 +174,18 @@ export function Composer({
               <Avatar size="sm">
                 <AvatarImage source={{ uri: currentUser.avatar_url }} />
               </Avatar>
-              <Box className="mt-2 min-h-[24px] w-[2px] flex-1 rounded-full bg-[#2a2a2a]" />
+              <Box className="mt-2 min-h-[24px] w-[2px] flex-1 rounded-full bg-brand-border-secondary" />
             </VStack>
 
             {/* Input column */}
             <VStack className="flex-1 shrink" space="xs">
-              <Text className="text-[15px] font-semibold text-[#f3f5f7]">
+              <Text className="text-[15px] font-semibold text-brand-light">
                 {currentUser.username}
               </Text>
               {replyToUsername && (
-                <Text className="text-[13px] text-[#555555]">
+                <Text className="text-[13px] text-brand-muted">
                   Replying to{' '}
-                  <Text className="text-[13px] text-[#0095f6]">
+                  <Text className="text-[13px] text-brand-blue">
                     @{replyToUsername}
                   </Text>
                 </Text>
@@ -199,11 +199,11 @@ export function Composer({
                     ? `Reply to ${replyToUsername}...`
                     : placeholder
                 }
-                placeholderTextColor="#555555"
+                placeholderTextColor="brand-muted"
                 multiline
                 autoFocus={autoFocus}
                 maxLength={maxLength}
-                className="min-h-[80px] py-1 text-[15px] leading-[21px] text-[#f3f5f7]"
+                className="min-h-[80px] py-1 text-[15px] leading-[21px] text-brand-light"
                 style={{
                   textAlignVertical: 'top',
                   ...(Platform.OS === 'web'
@@ -229,11 +229,11 @@ export function Composer({
                           height: media.length === 1 ? 200 : 140,
                           borderRadius: 12,
                           overflow: 'hidden',
-                          backgroundColor: '#1e1e1e',
+                          backgroundColor: 'brand-border',
                         }}
                       >
                         {item.loading ? (
-                          <Skeleton variant="rounded" className="size-full bg-[#1e1e1e]" />
+                          <Skeleton variant="rounded" className="size-full bg-brand-border" />
                         ) : (
                           <Image
                             source={{ uri: item.uri }}
@@ -291,7 +291,7 @@ export function Composer({
                   disabled={media.length >= maxMedia}
                   style={{ opacity: media.length >= maxMedia ? 0.3 : 1 }}
                 >
-                  <ImagePlus size={20} color="#555555" strokeWidth={1.8} />
+                  <ImagePlus size={20} color="brand-muted" strokeWidth={1.8} />
                 </Pressable>
                 <Pressable
                   hitSlop={8}
@@ -300,29 +300,29 @@ export function Composer({
                   disabled={media.length >= maxMedia}
                   style={{ opacity: media.length >= maxMedia ? 0.3 : 1 }}
                 >
-                  <Video size={20} color="#555555" strokeWidth={1.8} />
+                  <Video size={20} color="brand-muted" strokeWidth={1.8} />
                 </Pressable>
                 <Pressable hitSlop={8} className="active:opacity-60">
-                  <Hash size={20} color="#555555" strokeWidth={1.8} />
+                  <Hash size={20} color="brand-muted" strokeWidth={1.8} />
                 </Pressable>
                 <Pressable hitSlop={8} className="active:opacity-60">
-                  <AtSign size={20} color="#555555" strokeWidth={1.8} />
+                  <AtSign size={20} color="brand-muted" strokeWidth={1.8} />
                 </Pressable>
               </HStack>
             </VStack>
           </HStack>
         </ScrollView>
 
-        <Divider className="bg-[#1e1e1e]" />
+        <Divider className="bg-brand-border" />
 
         {/* Bottom bar */}
         <HStack className="items-center justify-between px-4 py-3 pb-4">
           <VStack>
-            <Text className="text-[13px] text-[#555555]">
+            <Text className="text-[13px] text-brand-muted">
               Anyone can reply & quote
             </Text>
             {media.length > 0 && (
-              <Text className="mt-0.5 text-[11px] text-[#555555]">
+              <Text className="mt-0.5 text-[11px] text-brand-muted">
                 {media.length}/{maxMedia} media
               </Text>
             )}
@@ -331,7 +331,7 @@ export function Composer({
             {content.length > 0 && (
               <Text
                 className={`text-[13px] ${
-                  remaining < 20 ? 'text-[#ff3040]' : 'text-[#555555]'
+                  remaining < 20 ? 'text-brand-red' : 'text-brand-muted'
                 }`}
               >
                 {remaining}

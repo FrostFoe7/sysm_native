@@ -112,19 +112,19 @@ export default function NewChatScreen() {
 
   if (step === 'group-setup') {
     return (
-      <SafeAreaView className="flex-1 bg-[#101010]" edges={['top']}>
+      <SafeAreaView className="flex-1 bg-brand-dark" edges={['top']}>
         {/* Header */}
-        <HStack className="items-center border-b border-[#1e1e1e] px-3 py-2" space="sm">
+        <HStack className="items-center border-b border-brand-border px-3 py-2" space="sm">
           <Pressable onPress={handleBack} className="rounded-full p-1.5 active:bg-white/10">
-            <ArrowLeft size={24} color="#f3f5f7" />
+            <ArrowLeft size={24} color="brand-light" />
           </Pressable>
-          <Heading size="lg" className="flex-1 text-[#f3f5f7]">
+          <Heading size="lg" className="flex-1 text-brand-light">
             New Group
           </Heading>
           <Button
             size="sm"
             variant="solid"
-            className={`rounded-lg ${groupName.trim() ? 'bg-[#0095f6]' : 'bg-[#333]'}`}
+            className={`rounded-lg ${groupName.trim() ? 'bg-brand-blue' : 'bg-[#333]'}`}
             onPress={handleCreateGroup}
             isDisabled={!groupName.trim()}
           >
@@ -136,9 +136,9 @@ export default function NewChatScreen() {
           {/* Group avatar placeholder */}
           <View className="mb-4 items-center">
             <View className="mb-2 size-[80px] items-center justify-center rounded-full bg-[#262626]">
-              <Users size={32} color="#555555" />
+              <Users size={32} color="brand-muted" />
             </View>
-            <Text className="text-[12px] text-[#555555]">Tap to add group photo</Text>
+            <Text className="text-[12px] text-brand-muted">Tap to add group photo</Text>
           </View>
 
           {/* Group name input */}
@@ -146,9 +146,9 @@ export default function NewChatScreen() {
             value={groupName}
             onChangeText={setGroupName}
             placeholder="Group name"
-            placeholderTextColor="#555555"
+            placeholderTextColor="brand-muted"
             maxLength={MAX_GROUP_NAME_LENGTH}
-            className="mb-4 border-b border-[#333] pb-3 text-center text-[18px] font-semibold text-[#f3f5f7]"
+            className="mb-4 border-b border-[#333] pb-3 text-center text-[18px] font-semibold text-brand-light"
           />
 
           {/* Members preview */}
@@ -168,7 +168,7 @@ export default function NewChatScreen() {
                     <AvatarImage source={{ uri: user.avatar_url }} />
                   </Avatar>
                   <View className="absolute -right-0.5 -top-0.5 size-[16px] items-center justify-center rounded-full bg-[#333]">
-                    <X size={10} color="#f3f5f7" />
+                    <X size={10} color="brand-light" />
                   </View>
                 </View>
                 <Text className="mt-1 text-center text-[11px] text-[#999]" numberOfLines={1}>
@@ -185,20 +185,20 @@ export default function NewChatScreen() {
   // ─── Select User Step ─────────────────────────────────────────────────────────
 
   return (
-    <SafeAreaView className="flex-1 bg-[#101010]" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-brand-dark" edges={['top']}>
       {/* Header */}
-      <HStack className="items-center border-b border-[#1e1e1e] px-3 py-2" space="sm">
+      <HStack className="items-center border-b border-brand-border px-3 py-2" space="sm">
         <Pressable onPress={handleBack} className="rounded-full p-1.5 active:bg-white/10">
-          <ArrowLeft size={24} color="#f3f5f7" />
+          <ArrowLeft size={24} color="brand-light" />
         </Pressable>
-        <Heading size="lg" className="flex-1 text-[#f3f5f7]">
+        <Heading size="lg" className="flex-1 text-brand-light">
           New Message
         </Heading>
         {isGroupMode && selectedUsers.length >= 2 && (
           <Button
             size="sm"
             variant="solid"
-            className="rounded-lg bg-[#0095f6]"
+            className="rounded-lg bg-brand-blue"
             onPress={handleNextToGroupSetup}
           >
             <ButtonText className="text-[13px] font-semibold text-white">Next</ButtonText>
@@ -208,14 +208,14 @@ export default function NewChatScreen() {
 
       {/* Search */}
       <View className="px-4 py-2">
-        <View className="flex-row items-center rounded-xl bg-[#1e1e1e] px-3 py-2">
-          <Search size={18} color="#555555" />
+        <View className="flex-row items-center rounded-xl bg-brand-border px-3 py-2">
+          <Search size={18} color="brand-muted" />
           <TextInput
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholder="Search people"
-            placeholderTextColor="#555555"
-            className="ml-2 flex-1 text-[14px] text-[#f3f5f7]"
+            placeholderTextColor="brand-muted"
+            className="ml-2 flex-1 text-[14px] text-brand-light"
             autoFocus
           />
         </View>
@@ -226,14 +226,14 @@ export default function NewChatScreen() {
         onPress={handleGroupModeToggle}
         className="flex-row items-center px-4 py-3 active:bg-white/5"
       >
-        <View className={`mr-3 size-[40px] items-center justify-center rounded-full ${isGroupMode ? 'bg-[#0095f6]' : 'bg-[#262626]'}`}>
+        <View className={`mr-3 size-[40px] items-center justify-center rounded-full ${isGroupMode ? 'bg-brand-blue' : 'bg-[#262626]'}`}>
           <Users size={20} color={isGroupMode ? 'white' : '#999'} />
         </View>
-        <Text className="text-[15px] font-semibold text-[#f3f5f7]">
+        <Text className="text-[15px] font-semibold text-brand-light">
           Create a group
         </Text>
       </Pressable>
-      <Divider className="bg-[#1e1e1e]" />
+      <Divider className="bg-brand-border" />
 
       {/* Selected users chips (group mode) */}
       {isGroupMode && selectedUsers.length > 0 && (
@@ -243,15 +243,15 @@ export default function NewChatScreen() {
               <Pressable
                 key={user.id}
                 onPress={() => handleRemoveSelected(user.id)}
-                className="mb-1 flex-row items-center rounded-full bg-[#0095f6]/20 pl-1 pr-2 py-1"
+                className="mb-1 flex-row items-center rounded-full bg-brand-blue/20 pl-1 pr-2 py-1"
               >
                 <Avatar size="xs" className="mr-1 h-[20px] w-[20px]">
                   <AvatarImage source={{ uri: user.avatar_url }} />
                 </Avatar>
-                <Text className="text-[12px] font-medium text-[#0095f6]">
+                <Text className="text-[12px] font-medium text-brand-blue">
                   {user.display_name.split(' ')[0]}
                 </Text>
-                <X size={12} color="#0095f6" className="ml-1" />
+                <X size={12} color="brand-blue" className="ml-1" />
               </Pressable>
             ))}
           </HStack>
@@ -260,7 +260,7 @@ export default function NewChatScreen() {
 
       {/* Suggested / search results */}
       <Box className="px-4 py-2">
-        <Text className="text-[13px] font-semibold text-[#555555]">
+        <Text className="text-[13px] font-semibold text-brand-muted">
           {searchQuery ? 'Results' : 'Suggested'}
         </Text>
       </Box>
@@ -283,20 +283,20 @@ export default function NewChatScreen() {
                 </Avatar>
                 <VStack className="flex-1">
                   <HStack className="items-center" space="xs">
-                    <Text className="text-[15px] font-semibold text-[#f3f5f7]" numberOfLines={1}>
+                    <Text className="text-[15px] font-semibold text-brand-light" numberOfLines={1}>
                       {item.display_name}
                     </Text>
                     {item.verified && (
-                      <BadgeCheck size={14} color="#0095f6" fill="#0095f6" />
+                      <BadgeCheck size={14} color="brand-blue" fill="brand-blue" />
                     )}
                   </HStack>
-                  <Text className="text-[13px] text-[#555555]">@{item.username}</Text>
+                  <Text className="text-[13px] text-brand-muted">@{item.username}</Text>
                 </VStack>
                 {isGroupMode && (
                   <View
                     className={`size-[24px] items-center justify-center rounded-full border-2 ${
                       selected
-                        ? 'border-[#0095f6] bg-[#0095f6]'
+                        ? 'border-brand-blue bg-brand-blue'
                         : 'border-[#333]'
                     }`}
                   >
@@ -304,13 +304,13 @@ export default function NewChatScreen() {
                   </View>
                 )}
               </HStack>
-              <Divider className="ml-[72px] bg-[#1e1e1e]" />
+              <Divider className="ml-[72px] bg-brand-border" />
             </Pressable>
           );
         }}
         ListEmptyComponent={
           <View className="items-center py-8">
-            <Text className="text-[14px] text-[#555555]">No users found</Text>
+            <Text className="text-[14px] text-brand-muted">No users found</Text>
           </View>
         }
       />

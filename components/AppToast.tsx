@@ -94,7 +94,7 @@ function ToastView({ item, onDone }: { item: ToastItem; onDone: (id: number) => 
       ]}
     >
       <HStack
-        className="items-center rounded-full bg-[#2a2a2a] px-5 py-3 shadow-lg"
+        className="items-center rounded-full bg-brand-border-secondary px-5 py-3 shadow-lg"
         space="sm"
         style={{
           shadowColor: '#000',
@@ -104,8 +104,8 @@ function ToastView({ item, onDone }: { item: ToastItem; onDone: (id: number) => 
           elevation: 8,
         }}
       >
-        <Icon size={16} color={item.iconColor || '#f3f5f7'} strokeWidth={2} />
-        <Text className="text-[14px] font-medium text-[#f3f5f7]">{item.message}</Text>
+        <Icon size={16} color={item.iconColor || 'brand-light'} strokeWidth={2} />
+        <Text className="text-[14px] font-medium text-brand-light">{item.message}</Text>
       </HStack>
     </SafeAnimatedView>
   );

@@ -46,10 +46,10 @@ function CommentItem({ comment }: { comment: ReelCommentWithAuthor }) {
       </Avatar>
       <VStack className="flex-1" space="xs">
         <HStack space="sm" style={{ alignItems: 'center' }}>
-          <Text className="text-[13px] font-semibold text-[#f3f5f7]">
+          <Text className="text-[13px] font-semibold text-brand-light">
             {comment.author.username}
           </Text>
-          <Text className="text-[11px] text-[#555555]">
+          <Text className="text-[11px] text-brand-muted">
             {formatRelativeTime(comment.createdAt)}
           </Text>
         </HStack>
@@ -61,19 +61,19 @@ function CommentItem({ comment }: { comment: ReelCommentWithAuthor }) {
             <HStack space="xs" style={{ alignItems: 'center' }}>
               <Heart
                 size={14}
-                color={liked ? '#ff3040' : '#777777'}
-                fill={liked ? '#ff3040' : 'transparent'}
+                color={liked ? 'brand-red' : 'brand-muted-alt'}
+                fill={liked ? 'brand-red' : 'transparent'}
                 strokeWidth={liked ? 0 : 1.8}
               />
               {likeCount > 0 && (
-                <Text className="text-[12px] text-[#777777]">
+                <Text className="text-[12px] text-brand-muted-alt">
                   {formatCount(likeCount)}
                 </Text>
               )}
             </HStack>
           </Pressable>
           <Pressable hitSlop={8}>
-            <Text className="text-[12px] text-[#777777] font-medium">Reply</Text>
+            <Text className="text-[12px] text-brand-muted-alt font-medium">Reply</Text>
           </Pressable>
         </HStack>
       </VStack>
@@ -169,15 +169,15 @@ export function ReelCommentSheet({
               className="px-4 py-3"
               style={{ alignItems: 'center', justifyContent: 'space-between' }}
             >
-              <Text className="text-[16px] font-bold text-[#f3f5f7]">
+              <Text className="text-[16px] font-bold text-brand-light">
                 Comments ({formatCount(count)})
               </Text>
               <Pressable onPress={onClose} hitSlop={8}>
-                <X size={22} color="#777777" strokeWidth={2} />
+                <X size={22} color="brand-muted-alt" strokeWidth={2} />
               </Pressable>
             </HStack>
 
-            <Divider className="bg-[#2a2a2a]" />
+            <Divider className="bg-brand-border-secondary" />
 
             {/* Comments list */}
             <FlatList
@@ -188,7 +188,7 @@ export function ReelCommentSheet({
               contentContainerStyle={{ paddingBottom: 8 }}
               ListEmptyComponent={
                 <View style={{ padding: 40, alignItems: 'center' }}>
-                  <Text className="text-[15px] text-[#555555]">No comments yet</Text>
+                  <Text className="text-[15px] text-brand-muted">No comments yet</Text>
                   <Text className="text-[13px] text-[#444444] mt-1">
                     Start the conversation.
                   </Text>
@@ -196,7 +196,7 @@ export function ReelCommentSheet({
               }
             />
 
-            <Divider className="bg-[#2a2a2a]" />
+            <Divider className="bg-brand-border-secondary" />
 
             {/* Emoji row */}
             <HStack className="px-4 py-2" space="sm">
@@ -225,7 +225,7 @@ export function ReelCommentSheet({
                   flex: 1,
                   flexDirection: 'row',
                   alignItems: 'center',
-                  backgroundColor: '#2a2a2a',
+                  backgroundColor: 'brand-border-secondary',
                   borderRadius: 20,
                   paddingHorizontal: 14,
                   paddingVertical: Platform.OS === 'web' ? 8 : 6,
@@ -236,10 +236,10 @@ export function ReelCommentSheet({
                   value={text}
                   onChangeText={setText}
                   placeholder="Add a comment..."
-                  placeholderTextColor="#555555"
+                  placeholderTextColor="brand-muted"
                   style={{
                     flex: 1,
-                    color: '#f3f5f7',
+                    color: 'brand-light',
                     fontSize: 14,
                     maxHeight: 80,
                     ...(Platform.OS === 'web' ? { outlineStyle: 'none' } as any : {}),
@@ -251,7 +251,7 @@ export function ReelCommentSheet({
                 />
                 {text.trim().length > 0 && (
                   <Pressable onPress={handleSend} hitSlop={8} style={{ marginLeft: 8 }}>
-                    <Send size={18} color="#0095f6" strokeWidth={2} />
+                    <Send size={18} color="brand-blue" strokeWidth={2} />
                   </Pressable>
                 )}
               </View>

@@ -88,8 +88,8 @@ export function ThreadCard({
       {/* Reposted by header */}
       {thread.reposted_by && (
         <HStack className="items-center px-4 pl-[60px] pt-2" space="xs">
-          <Repeat2 size={13} color="#555555" strokeWidth={2} />
-          <Text className="text-[13px] text-[#555555]" numberOfLines={1}>
+          <Repeat2 size={13} color="brand-muted" strokeWidth={2} />
+          <Text className="text-[13px] text-brand-muted" numberOfLines={1}>
             {thread.reposted_by.display_name} reposted
           </Text>
         </HStack>
@@ -104,7 +104,7 @@ export function ThreadCard({
             </Avatar>
           </Pressable>
           {thread.reply_count > 0 && !isDetailView && (
-            <View className="mt-2 min-h-[20px] w-[2px] flex-1 rounded-full bg-[#2a2a2a]" />
+            <View className="mt-2 min-h-[20px] w-[2px] flex-1 rounded-full bg-brand-border-secondary" />
           )}
         </VStack>
 
@@ -114,16 +114,16 @@ export function ThreadCard({
           <HStack className="items-center justify-between">
             <HStack className="mr-2 flex-1 items-center overflow-hidden" space="xs">
               <Pressable onPress={handleUsernamePress} style={{ flexShrink: 1 }}>
-                <Text className="text-[15px] font-semibold text-[#f3f5f7]" numberOfLines={1}>
+                <Text className="text-[15px] font-semibold text-brand-light" numberOfLines={1}>
                   {thread.author.username}
                 </Text>
               </Pressable>
               {thread.author.verified && (
-                <BadgeCheck size={14} color="#0095f6" fill="#0095f6" strokeWidth={0} />
+                <BadgeCheck size={14} color="brand-blue" fill="brand-blue" strokeWidth={0} />
               )}
             </HStack>
             <HStack className="shrink-0 items-center" space="sm">
-              <Text className="text-[13px] text-[#555555]">
+              <Text className="text-[13px] text-brand-muted">
                 {formatRelativeTime(thread.created_at)}
               </Text>
               <Pressable
@@ -131,14 +131,14 @@ export function ThreadCard({
                 className="-mr-1 rounded-full p-1 active:bg-white/5"
                 onPress={handleMore}
               >
-                <MoreHorizontal size={16} color="#555555" />
+                <MoreHorizontal size={16} color="brand-muted" />
               </Pressable>
             </HStack>
           </HStack>
 
           {/* Content */}
           <Text
-            className="text-[15px] leading-[21px] text-[#f3f5f7]"
+            className="text-[15px] leading-[21px] text-brand-light"
             numberOfLines={isDetailView ? undefined : 12}
             style={{ overflow: 'hidden' }}
           >
@@ -175,16 +175,16 @@ export function ThreadCard({
           {/* Engagement summary for detail view */}
           {isDetailView && (
             <HStack className="mt-1" space="md">
-              <Text className="text-[13px] text-[#555555]">
+              <Text className="text-[13px] text-brand-muted">
                 {formatCount(thread.reply_count)}{' '}
-                <Text className="text-[13px] text-[#555555]">
+                <Text className="text-[13px] text-brand-muted">
                   {thread.reply_count === 1 ? 'reply' : 'replies'}
                 </Text>
               </Text>
-              <Text className="text-[13px] text-[#555555]">·</Text>
-              <Text className="text-[13px] text-[#555555]">
+              <Text className="text-[13px] text-brand-muted">·</Text>
+              <Text className="text-[13px] text-brand-muted">
                 {formatCount(thread.like_count)}{' '}
-                <Text className="text-[13px] text-[#555555]">
+                <Text className="text-[13px] text-brand-muted">
                   {thread.like_count === 1 ? 'like' : 'likes'}
                 </Text>
               </Text>
@@ -205,7 +205,7 @@ export function ThreadCard({
         </AnimatedPressable>
       )}
 
-      {showDivider && <Divider className="ml-[60px] bg-[#1e1e1e]" />}
+      {showDivider && <Divider className="ml-[60px] bg-brand-border" />}
 
       {/* Fullscreen media viewer */}
       {thread.media && thread.media.length > 0 && (

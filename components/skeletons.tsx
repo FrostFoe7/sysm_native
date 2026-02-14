@@ -41,7 +41,7 @@ export function ThreadCardSkeleton({ showDivider = true, showMedia = false }: { 
           </HStack>
         </VStack>
       </HStack>
-      {showDivider && <Divider className="ml-[60px] bg-[#1e1e1e]" />}
+      {showDivider && <Divider className="ml-[60px] bg-brand-border" />}
     </View>
   );
 }
@@ -93,7 +93,7 @@ export function ProfileHeaderSkeleton({ isCurrentUser = true }: { isCurrentUser?
         <Skeleton variant="rounded" className={`h-9 flex-1 rounded-lg ${BONE_COLOR}`} />
       </HStack>
 
-      <Divider className="bg-[#1e1e1e]" />
+      <Divider className="bg-brand-border" />
     </VStack>
   );
 }
@@ -114,7 +114,7 @@ export function ActivityItemSkeleton() {
           <Skeleton variant="rounded" className={`h-[12px] w-[200px] ${BONE_COLOR}`} />
         </VStack>
       </HStack>
-      <Divider className="ml-[64px] bg-[#1e1e1e]" />
+      <Divider className="ml-[64px] bg-brand-border" />
     </View>
   );
 }
@@ -144,7 +144,7 @@ export function ExploreUserSkeleton() {
         </VStack>
         <Skeleton variant="rounded" className={`h-[32px] w-[90px] rounded-lg ${BONE_COLOR}`} />
       </HStack>
-      <Divider className="ml-[72px] bg-[#1e1e1e]" />
+      <Divider className="ml-[72px] bg-brand-border" />
     </View>
   );
 }
@@ -208,7 +208,7 @@ export function ThreadDetailSkeleton() {
       <View className="px-4 pb-2">
         <Skeleton variant="rounded" className={`h-[12px] w-[150px] ${BONE_COLOR}`} />
       </View>
-      <Divider className="bg-[#1e1e1e]" />
+      <Divider className="bg-brand-border" />
       {/* Reply skeletons */}
       {Array.from({ length: 3 }).map((_, i) => (
         <ThreadCardSkeleton key={`td-sk-${i}`} showDivider={i < 2} />
@@ -221,7 +221,7 @@ export function ThreadDetailSkeleton() {
 
 export function TabBarSkeleton() {
   return (
-    <HStack className="border-b border-[#1e1e1e]">
+    <HStack className="border-b border-brand-border">
       <View className="flex-1 items-center py-3">
         <Skeleton variant="rounded" className={`h-[14px] w-[60px] ${BONE_COLOR}`} />
       </View>
@@ -247,7 +247,7 @@ export function ConversationRowSkeleton() {
           <Skeleton variant="rounded" className={`h-[13px] w-[200px] ${BONE_COLOR}`} />
         </VStack>
       </HStack>
-      <Divider className="ml-[76px] bg-[#1e1e1e]" />
+      <Divider className="ml-[76px] bg-brand-border" />
     </View>
   );
 }

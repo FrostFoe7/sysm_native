@@ -66,30 +66,30 @@ export function ShareSheet({ isOpen, onClose, threadId }: ShareSheetProps) {
 
   const handleReport = useCallback(() => {
     onClose();
-    showToast('Thread reported', TOAST_ICONS.reported, '#ff3040');
+    showToast('Thread reported', TOAST_ICONS.reported, 'brand-red');
   }, [onClose, showToast]);
 
   return (
     <Actionsheet isOpen={isOpen} onClose={onClose}>
       <ActionsheetBackdrop className="bg-black/60" />
-      <ActionsheetContent className="rounded-t-3xl border-t border-[#2a2a2a] bg-[#181818] pb-8">
+      <ActionsheetContent className="rounded-t-3xl border-t border-brand-border-secondary bg-brand-elevated pb-8">
         <ActionsheetDragIndicatorWrapper>
-          <ActionsheetDragIndicator className="bg-[#555555]" />
+          <ActionsheetDragIndicator className="bg-brand-muted" />
         </ActionsheetDragIndicatorWrapper>
 
         <VStack className="mt-2 w-full">
-          <Text className="mb-3 text-center text-[16px] font-semibold text-[#f3f5f7]">
+          <Text className="mb-3 text-center text-[16px] font-semibold text-brand-light">
             Share
           </Text>
-          <Divider className="mb-1 bg-[#2a2a2a]" />
+          <Divider className="mb-1 bg-brand-border-secondary" />
 
           <ActionsheetItem
             className="rounded-xl px-5 py-4 active:bg-white/5"
             onPress={handleCopyLink}
           >
             <HStack className="flex-1 items-center" space="lg">
-              <Link2 size={22} color="#f3f5f7" strokeWidth={1.8} />
-              <ActionsheetItemText className="text-[16px] text-[#f3f5f7]">
+              <Link2 size={22} color="brand-light" strokeWidth={1.8} />
+              <ActionsheetItemText className="text-[16px] text-brand-light">
                 Copy link
               </ActionsheetItemText>
             </HStack>
@@ -100,8 +100,8 @@ export function ShareSheet({ isOpen, onClose, threadId }: ShareSheetProps) {
             onPress={handleShareExternal}
           >
             <HStack className="flex-1 items-center" space="lg">
-              <Share2 size={22} color="#f3f5f7" strokeWidth={1.8} />
-              <ActionsheetItemText className="text-[16px] text-[#f3f5f7]">
+              <Share2 size={22} color="brand-light" strokeWidth={1.8} />
+              <ActionsheetItemText className="text-[16px] text-brand-light">
                 Share via...
               </ActionsheetItemText>
             </HStack>
@@ -112,8 +112,8 @@ export function ShareSheet({ isOpen, onClose, threadId }: ShareSheetProps) {
             onPress={handleSendVia}
           >
             <HStack className="flex-1 items-center" space="lg">
-              <MessageSquare size={22} color="#f3f5f7" strokeWidth={1.8} />
-              <ActionsheetItemText className="text-[16px] text-[#f3f5f7]">
+              <MessageSquare size={22} color="brand-light" strokeWidth={1.8} />
+              <ActionsheetItemText className="text-[16px] text-brand-light">
                 Send via Direct Message
               </ActionsheetItemText>
             </HStack>
@@ -126,25 +126,25 @@ export function ShareSheet({ isOpen, onClose, threadId }: ShareSheetProps) {
             <HStack className="flex-1 items-center" space="lg">
               <Bookmark
                 size={22}
-                color="#f3f5f7"
+                color="brand-light"
                 strokeWidth={1.8}
-                fill={isBookmarked ? '#f3f5f7' : 'none'}
+                fill={isBookmarked ? 'brand-light' : 'none'}
               />
-              <ActionsheetItemText className="text-[16px] text-[#f3f5f7]">
+              <ActionsheetItemText className="text-[16px] text-brand-light">
                 {isBookmarked ? 'Unsave' : 'Save'}
               </ActionsheetItemText>
             </HStack>
           </ActionsheetItem>
 
-          <Divider className="my-1 bg-[#2a2a2a]" />
+          <Divider className="my-1 bg-brand-border-secondary" />
 
           <ActionsheetItem
             className="rounded-xl px-5 py-4 active:bg-white/5"
             onPress={handleReport}
           >
             <HStack className="flex-1 items-center" space="lg">
-              <Flag size={22} color="#ff3040" strokeWidth={1.8} />
-              <ActionsheetItemText className="text-[16px] text-[#ff3040]">
+              <Flag size={22} color="brand-red" strokeWidth={1.8} />
+              <ActionsheetItemText className="text-[16px] text-brand-red">
                 Report
               </ActionsheetItemText>
             </HStack>

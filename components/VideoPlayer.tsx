@@ -167,7 +167,7 @@ export function VideoPlayer({
               transition={200}
             />
           ) : (
-            <Skeleton variant="rounded" className="size-full bg-[#1e1e1e]" />
+            <Skeleton variant="rounded" className="size-full bg-brand-border" />
           )}
           <View
             style={{

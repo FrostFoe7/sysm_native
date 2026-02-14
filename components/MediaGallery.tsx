@@ -20,7 +20,7 @@ function MediaSkeleton({ style }: { style?: any }) {
   return (
     <Skeleton
       variant="rounded"
-      className="bg-[#1e1e1e]"
+      className="bg-brand-border"
       style={[{ borderRadius: BORDER_RADIUS }, style]}
     />
   );

@@ -31,7 +31,8 @@ import {
 } from '@/db/selectors';
 import { Search, X, BadgeCheck } from 'lucide-react-native';
 import { ExploreSkeleton } from '@/components/skeletons';
-import type { User, ThreadWithAuthor } from '@/db/db';
+import type { User, ThreadWithAuthor } from '@/types/types';
+import { useInteractionStore } from '@/store/useInteractionStore';
 
 type ExploreItem =
   | { type: 'section-header'; title: string }
@@ -42,9 +43,16 @@ export default function ExploreScreen() {
   const router = useRouter();
   const [query, setQuery] = useState('');
   const [refreshKey, setRefreshKey] = useState(0);
-  const [likedMap, setLikedMap] = useState<Record<string, boolean>>({});
-  const [repostMap, setRepostMap] = useState<Record<string, boolean>>({});
-  const [followMap, setFollowMap] = useState<Record<string, boolean>>({});
+  
+  const { 
+    likedThreads: likedMap, 
+    repostedThreads: repostMap, 
+    followingUsers: followMap,
+    setLiked,
+    setReposted,
+    setFollowing
+  } = useInteractionStore();
+
   const [shareThreadId, setShareThreadId] = useState<string | null>(null);
   const [overflowThread, setOverflowThread] = useState<ThreadWithAuthor | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -124,20 +132,36 @@ export default function ExploreScreen() {
     return items;
   }, [query, refreshKey, likedMap, repostMap, followMap]);
 
-  const handleLike = useCallback((threadId: string) => {
-    const result = toggleThreadLike(threadId);
-    setLikedMap((prev) => ({ ...prev, [threadId]: result.liked }));
-  }, []);
+  const handleLike = useCallback(async (threadId: string) => {
+    const wasLiked = !!likedMap[threadId];
+    setLiked(threadId, !wasLiked);
+    try {
+      await toggleThreadLike(threadId);
+    } catch (error) {
+      setLiked(threadId, wasLiked);
+    }
+  }, [likedMap, setLiked]);
 
-  const handleRepost = useCallback((threadId: string) => {
-    const result = toggleRepost(threadId);
-    setRepostMap((prev) => ({ ...prev, [threadId]: result.reposted }));
-  }, []);
+  const handleRepost = useCallback(async (threadId: string) => {
+    const wasReposted = !!repostMap[threadId];
+    setReposted(threadId, !wasReposted);
+    try {
+      await toggleRepost(threadId);
+    } catch (error) {
+      setReposted(threadId, wasReposted);
+    }
+  }, [repostMap, setReposted]);
 
-  const handleFollow = useCallback((userId: string) => {
-    const result = toggleUserFollow(userId);
-    setFollowMap((prev) => ({ ...prev, [userId]: result.following }));
-  }, []);
+  const handleFollow = useCallback(async (userId: string) => {
+    const wasFollowing = !!followMap[userId];
+    setFollowing(userId, !wasFollowing);
+    try {
+      const result = await toggleUserFollow(userId);
+      setFollowing(userId, result.following);
+    } catch (error) {
+      setFollowing(userId, wasFollowing);
+    }
+  }, [followMap, setFollowing]);
 
   const handleReply = useCallback(
     (threadId: string) => {
@@ -178,7 +202,7 @@ export default function ExploreScreen() {
         return (
           <AnimatedListItem index={index}>
             <Box className="px-4 pb-2 pt-5">
-              <Heading size="sm" className="text-[#f3f5f7]">
+              <Heading size="sm" className="text-brand-light">
                 {item.title}
               </Heading>
             </Box>
@@ -199,14 +223,14 @@ export default function ExploreScreen() {
                 </Avatar>
                 <VStack className="flex-1 overflow-hidden">
                   <HStack className="items-center" space="xs">
-                    <Text className="text-[15px] font-bold text-[#f3f5f7]" numberOfLines={1} style={{ flexShrink: 1 }}>
+                    <Text className="text-[15px] font-bold text-brand-light" numberOfLines={1} style={{ flexShrink: 1 }}>
                       {item.user.display_name}
                     </Text>
                     {item.user.verified && (
-                      <BadgeCheck size={14} color="#0095f6" fill="#0095f6" />
+                      <BadgeCheck size={14} color="brand-blue" fill="brand-blue" />
                     )}
                   </HStack>
-                  <Text className="text-[14px] text-[#555555]" numberOfLines={1}>
+                  <Text className="text-[14px] text-brand-muted" numberOfLines={1}>
                     @{item.user.username}
                   </Text>
                   {item.user.bio ? (
@@ -221,20 +245,20 @@ export default function ExploreScreen() {
                   className={
                     item.isFollowed
                       ? 'min-w-[90px] rounded-lg border-[#333] bg-transparent'
-                      : 'min-w-[90px] rounded-lg bg-[#f3f5f7]'
+                      : 'min-w-[90px] rounded-lg bg-brand-light'
                   }
                   onPress={() => handleFollow(item.user.id)}
                 >
                   <ButtonText
                     className={`text-[13px] font-semibold ${
-                      item.isFollowed ? 'text-[#555555]' : 'text-[#101010]'
+                      item.isFollowed ? 'text-brand-muted' : 'text-brand-dark'
                     }`}
                   >
                     {item.isFollowed ? 'Following' : 'Follow'}
                   </ButtonText>
                 </Button>
               </HStack>
-              <Divider className="ml-[72px] bg-[#1e1e1e]" />
+              <Divider className="ml-[72px] bg-brand-border" />
             </AnimatedPressable>
           </AnimatedListItem>
         );
@@ -267,16 +291,16 @@ export default function ExploreScreen() {
     <ScreenLayout>
       <View className="flex-1">
         {/* Sticky Search bar */}
-        <View className="sticky top-0 z-10 bg-[#101010] p-4">
-          <HStack className="h-[48px] items-center rounded-xl bg-[#1e1e1e] px-4" space="sm">
-            <Search size={18} color="#555555" />
+        <View className="sticky top-0 z-10 bg-brand-dark p-4">
+          <HStack className="h-[48px] items-center rounded-xl bg-brand-border px-4" space="sm">
+            <Search size={18} color="brand-muted" />
             <TextInput
               value={query}
               onChangeText={handleQueryChange}
               placeholder="Search"
-              placeholderTextColor="#555555"
+              placeholderTextColor="brand-muted"
               numberOfLines={1}
-              className="h-full flex-1 text-[15px] text-[#f3f5f7]"
+              className="h-full flex-1 text-[15px] text-brand-light"
               style={Platform.OS === 'web' ? { outlineStyle: 'none' as any } : undefined}
               autoCapitalize="none"
               autoCorrect={false}
@@ -286,7 +310,7 @@ export default function ExploreScreen() {
                 setQuery('');
                 setIsLoading(false);
               }} hitSlop={8}>
-                <X size={16} color="#555555" />
+                <X size={16} color="brand-muted" />
               </Pressable>
             )}
           </HStack>
@@ -308,7 +332,7 @@ export default function ExploreScreen() {
               <ExploreSkeleton />
             ) : query.trim() ? (
               <View className="items-center justify-center py-16">
-                <Text className="text-[15px] text-[#555555]">No results for &quot;{query}&quot;</Text>
+                <Text className="text-[15px] text-brand-muted">No results for &quot;{query}&quot;</Text>
               </View>
             ) : null
           }

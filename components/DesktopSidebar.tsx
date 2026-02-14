@@ -87,7 +87,7 @@ function SidebarNavItem({
   onPress: () => void;
 }) {
   const Icon = item.icon;
-  const color = isActive ? '#f3f5f7' : '#777777';
+  const color = isActive ? 'brand-light' : 'brand-muted-alt';
 
   return (
     <Pressable
@@ -105,7 +105,7 @@ function SidebarNavItem({
       </View>
       <Text
         className={`text-[16px] ${
-          isActive ? 'font-semibold text-[#f3f5f7]' : 'text-[#777777]'
+          isActive ? 'font-semibold text-brand-light' : 'text-brand-muted-alt'
         }`}
       >
         {item.label}
@@ -140,14 +140,14 @@ export function DesktopSidebar() {
   );
 
   return (
-    <View className="h-full w-[240px] flex-col justify-between border-r border-[#1e1e1e] bg-[#101010] pb-6 pt-4">
+    <View className="h-full w-[240px] flex-col justify-between border-r border-brand-border bg-brand-dark pb-6 pt-4">
       <VStack className="flex-1">
         {/* Logo / Brand */}
         <Pressable
           className="mb-2 px-5 py-4"
           onPress={() => router.replace('/(tabs)' as any)}
         >
-          <Text className="text-[22px] font-bold tracking-tight text-[#f3f5f7]">
+          <Text className="text-[22px] font-bold tracking-tight text-brand-light">
             Threads
           </Text>
         </Pressable>
@@ -167,7 +167,7 @@ export function DesktopSidebar() {
 
       {/* Bottom: user row + menu */}
       <VStack className="px-2">
-        <Divider className="mb-3 bg-[#1e1e1e]" />
+        <Divider className="mb-3 bg-brand-border" />
         <Pressable
           className="flex-row items-center rounded-xl px-4 py-3 active:bg-white/5"
           style={{ gap: 12 }}
@@ -177,14 +177,14 @@ export function DesktopSidebar() {
             <AvatarImage source={{ uri: currentUser.avatar_url }} />
           </Avatar>
           <VStack className="flex-1">
-            <Text className="text-[14px] font-semibold text-[#f3f5f7]" numberOfLines={1}>
+            <Text className="text-[14px] font-semibold text-brand-light" numberOfLines={1}>
               {currentUser.display_name}
             </Text>
-            <Text className="text-[12px] text-[#555555]" numberOfLines={1}>
+            <Text className="text-[12px] text-brand-muted" numberOfLines={1}>
               @{currentUser.username}
             </Text>
           </VStack>
-          <AlignJustify size={18} color="#555555" strokeWidth={1.8} />
+          <AlignJustify size={18} color="brand-muted" strokeWidth={1.8} />
         </Pressable>
       </VStack>
     </View>

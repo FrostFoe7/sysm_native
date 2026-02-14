@@ -12,95 +12,36 @@ import { ShareSheet } from '@/components/ShareSheet';
 import { ThreadOverflowMenu } from '@/components/ThreadOverflowMenu';
 import { Text } from '@/components/ui/text';
 import { Fab, FabIcon } from '@/components/ui/fab';
-import {
-  getFeed,
-  isThreadLikedByCurrentUser,
-  isRepostedByCurrentUser,
-  toggleThreadLike,
-  toggleRepost,
-} from '@/db/selectors';
 import { SquarePen } from 'lucide-react-native';
 import { FeedSkeleton } from '@/components/skeletons';
-import type { ThreadWithAuthor } from '@/db/db';
 import { FEED_TABS } from '@/constants/app';
+import { useThreadsFeed } from '@/hooks/use-threads';
+import { useInteractionStore } from '@/store/useInteractionStore';
 
 export default function HomeScreen() {
   const router = useRouter();
   const { width } = useWindowDimensions();
   const isDesktop = Platform.OS === 'web' && width >= 1024;
   
-  const [feed, setFeed] = useState<ThreadWithAuthor[]>(() => getFeed());
-  const [likedMap, setLikedMap] = useState<Record<string, boolean>>(() => {
-    const map: Record<string, boolean> = {};
-    for (const t of getFeed()) {
-      map[t.id] = isThreadLikedByCurrentUser(t.id);
-    }
-    return map;
-  });
-  const [repostMap, setRepostMap] = useState<Record<string, boolean>>(() => {
-    const map: Record<string, boolean> = {};
-    for (const t of getFeed()) {
-      map[t.id] = isRepostedByCurrentUser(t.id);
-    }
-    return map;
-  });
-  const [isLoading, setIsLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
+  const { 
+    data: feed, 
+    isLoading, 
+    isRefreshing, 
+    refresh, 
+    handleLike, 
+    handleRepost 
+  } = useThreadsFeed();
+
+  const { likedThreads: likedMap, repostedThreads: repostMap } = useInteractionStore();
+
   const [activeTab, setActiveTab] = useState('foryou');
   const [shareThreadId, setShareThreadId] = useState<string | null>(null);
   const [overflowThread, setOverflowThread] = useState<ThreadWithAuthor | null>(null);
   const flatListRef = useRef<FlatList>(null);
 
-  const refreshFeed = useCallback(() => {
-    const freshFeed = getFeed();
-    setFeed(freshFeed);
-    const likeMap: Record<string, boolean> = {};
-    const rpMap: Record<string, boolean> = {};
-    for (const t of freshFeed) {
-      likeMap[t.id] = isThreadLikedByCurrentUser(t.id);
-      rpMap[t.id] = isRepostedByCurrentUser(t.id);
-    }
-    setLikedMap(likeMap);
-    setRepostMap(rpMap);
-  }, []);
-
-  useFocusEffect(
-    useCallback(() => {
-      refreshFeed();
-      if (isLoading) {
-        const t = setTimeout(() => setIsLoading(false), 600);
-        return () => clearTimeout(t);
-      }
-    }, [refreshFeed, isLoading]),
-  );
-
   const handleRefresh = useCallback(() => {
-    setRefreshing(true);
-    setTimeout(() => {
-      refreshFeed();
-      setRefreshing(false);
-    }, 600);
-  }, [refreshFeed]);
-
-  const handleLike = useCallback((threadId: string) => {
-    const result = toggleThreadLike(threadId);
-    setLikedMap((prev) => ({ ...prev, [threadId]: result.liked }));
-    setFeed((prev) =>
-      prev.map((t) =>
-        t.id === threadId ? { ...t, like_count: result.likeCount } : t,
-      ),
-    );
-  }, []);
-
-  const handleRepost = useCallback((threadId: string) => {
-    const result = toggleRepost(threadId);
-    setRepostMap((prev) => ({ ...prev, [threadId]: result.reposted }));
-    setFeed((prev) =>
-      prev.map((t) =>
-        t.id === threadId ? { ...t, repost_count: result.repostCount } : t,
-      ),
-    );
-  }, []);
+    refresh();
+  }, [refresh]);
 
   const handleReply = useCallback(
     (threadId: string) => {
@@ -158,7 +99,7 @@ export default function HomeScreen() {
     () => (
       <View>
         <View className="items-center pb-2 pt-3">
-          <Text className="mb-2 text-[28px] font-bold tracking-tight text-[#f3f5f7]">
+          <Text className="mb-2 text-[28px] font-bold tracking-tight text-brand-light">
             𝕋
           </Text>
         </View>
@@ -177,7 +118,7 @@ export default function HomeScreen() {
     () => (
       isLoading ? <FeedSkeleton /> : (
         <View className="flex-1 items-center justify-center py-20">
-          <Text className="text-[15px] text-[#555555]">No threads yet</Text>
+          <Text className="text-[15px] text-brand-muted">No threads yet</Text>
         </View>
       )
     ),
@@ -195,7 +136,7 @@ export default function HomeScreen() {
         ListEmptyComponent={renderEmpty}
         refreshControl={
           <RefreshControl
-            refreshing={refreshing}
+            refreshing={isRefreshing}
             onRefresh={handleRefresh}
             tintColor="#555555"
             colors={['#555555']}
