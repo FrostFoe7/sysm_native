@@ -1,4 +1,4 @@
-import { Platform, View as RNView, Pressable as RNPressable } from 'react-native';
+import { Platform, View as RNView, Pressable as RNPressable, Text as RNText } from 'react-native';
 
 /**
  * Reliable web detection
@@ -9,6 +9,7 @@ export const isNative = !isWeb;
 // Fallback types and objects for Reanimated
 let Animated: any = {
   View: RNView,
+  Text: RNText,
   createAnimatedComponent: (c: any) => c,
 };
 let useAnimatedStyleBase: any = (worklet: any) => worklet();
@@ -88,6 +89,7 @@ export const FadeOut = FadeOutBase;
  */
 export const SafeAnimatedView = isWeb ? RNView : Animated.View || RNView;
 export const SafeAnimatedPressable = isWeb ? RNPressable : Animated.createAnimatedComponent(RNPressable);
+export const SafeAnimatedText = isWeb ? RNText : Animated.Text || Animated.createAnimatedComponent(RNText);
 
 /**
  * Helper to wrap components for animations

@@ -232,14 +232,14 @@ export const MediaGallery = memo(function MediaGallery({
   isVisible = true,
   maxHeight = 300,
 }: MediaGalleryProps) {
-  if (!media || media.length === 0) return null;
-
   const handlePress = useCallback(
     (index: number) => {
       onMediaPress?.(index);
     },
     [onMediaPress],
   );
+
+  if (!media || media.length === 0) return null;
 
   if (media.length === 1) {
     return (

@@ -1,13 +1,5 @@
-import { Text, Platform } from 'react-native';
-import { isWeb } from '@/utils/animatedWebSafe';
-
-// Only import Animated on native
-let Animated: any = null;
-if (!isWeb) {
-  try {
-    Animated = require('react-native-reanimated').default;
-  } catch (e) {}
-}
+import { Text } from 'react-native';
+import { isWeb, SafeAnimatedText } from '@/utils/animatedWebSafe';
 
 export function HelloWave() {
   if (isWeb) {
@@ -23,17 +15,15 @@ export function HelloWave() {
     );
   }
 
-  // Native with Reanimated
-  if (!Animated) return <Text style={{ fontSize: 28 }}>👋</Text>;
-
+  // Native with Reanimated fallback
   return (
-    <Animated.Text
+    <SafeAnimatedText
       style={{
         fontSize: 28,
         lineHeight: 32,
         marginTop: -6,
       }}>
       👋
-    </Animated.Text>
+    </SafeAnimatedText>
   );
 }

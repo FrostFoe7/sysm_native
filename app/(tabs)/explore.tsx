@@ -310,7 +310,7 @@ export default function ExploreScreen() {
               <ExploreSkeleton />
             ) : query.trim() ? (
               <View className="items-center justify-center py-16">
-                <Text className="text-[#555555] text-[15px]">No results for "{query}"</Text>
+                <Text className="text-[#555555] text-[15px]">No results for &quot;{query}&quot;</Text>
               </View>
             ) : null
           }

@@ -132,7 +132,7 @@ export function ThreadOverflowMenu({
             numberOfLines={1}
             style={{ overflow: 'hidden' }}
           >
-            @{thread.author.username}'s thread
+            @{thread.author.username}&apos;s thread
           </Text>
           <Divider className="bg-[#2a2a2a] mb-1" />
 
