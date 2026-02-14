@@ -15,7 +15,8 @@ import { HStack } from '@/components/ui/hstack';
 import { VStack } from '@/components/ui/vstack';
 import { Text } from '@/components/ui/text';
 import { Divider } from '@/components/ui/divider';
-import { useAppToast, TOAST_ICONS } from '@/components/AppToast';
+import { useAppToast } from '@/components/AppToast';
+import { TOAST_ICONS } from '@/constants/icons';
 import {
   muteUser,
   unmuteUser,

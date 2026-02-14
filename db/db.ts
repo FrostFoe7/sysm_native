@@ -25,10 +25,14 @@ import type {
   Repost, 
   Bookmark, 
   ThreadWithAuthor, 
-  ThreadWithReplies 
+  ThreadWithReplies,
+  Reel,
+  ReelComment,
+  ReelWithAuthor,
+  ReelCommentWithAuthor,
 } from '@/types/types';
 
-export { User, MediaItem, Thread, Like, Follow, Repost, Bookmark, ThreadWithAuthor, ThreadWithReplies };
+export { User, MediaItem, Thread, Like, Follow, Repost, Bookmark, ThreadWithAuthor, ThreadWithReplies, Reel, ReelComment, ReelWithAuthor, ReelCommentWithAuthor };
 
 // ─── Seeded Users ───────────────────────────────────────────────────────────────
 
@@ -607,6 +611,176 @@ const FOLLOWS: Follow[] = [
 
 // ─── Seeded Reposts ─────────────────────────────────────────────────────────────
 
+const BASE_VIDEO_URL = 'https://avtshare01.rz.tu-ilmenau.de/avt-vqdb-uhd-1/test_2/segments';
+
+// ─── Seeded Reels (separate from Threads) ───────────────────────────────────────
+
+const REELS: Reel[] = [
+  {
+    id: 'reel-001',
+    author_id: 'u-001',
+    videoUrl: `${BASE_VIDEO_URL}/cutting_orange_tuil_8s_2470kbps_720p_59.94fps_h264.mp4`,
+    thumbnailUrl: 'https://images.unsplash.com/photo-1557800636-894a64c1696f?w=400&h=700&fit=crop',
+    caption: 'Satisfying orange cutting tutorial 🍊 Perfect slices every time! #cooking #satisfying #foodtok',
+    likeCount: 24500,
+    commentCount: 1832,
+    shareCount: 4210,
+    isLiked: false,
+    createdAt: '2026-02-14T08:00:00Z',
+    aspectRatio: 9 / 16,
+    duration: 8,
+  },
+  {
+    id: 'reel-002',
+    author_id: 'u-002',
+    videoUrl: `${BASE_VIDEO_URL}/Dancers_8s_4553kbps_720p_60.0fps_h264.mp4`,
+    thumbnailUrl: 'https://images.unsplash.com/photo-1547153760-18fc86324498?w=400&h=700&fit=crop',
+    caption: 'When the whole crew hits the beat perfectly 🔥💃 #dance #choreography #vibes',
+    likeCount: 89200,
+    commentCount: 5621,
+    shareCount: 12400,
+    isLiked: true,
+    createdAt: '2026-02-14T06:30:00Z',
+    aspectRatio: 9 / 16,
+    duration: 8,
+  },
+  {
+    id: 'reel-003',
+    author_id: 'u-003',
+    videoUrl: `${BASE_VIDEO_URL}/cutting_orange_tuil_8s_4553kbps_720p_59.94fps_h264.mp4`,
+    thumbnailUrl: 'https://images.unsplash.com/photo-1490818387583-1baba5e638af?w=400&h=700&fit=crop',
+    caption: 'Orange prep for the week! Meal prep vibes 🧡 #mealprep #healthy #oranges',
+    likeCount: 15300,
+    commentCount: 892,
+    shareCount: 2100,
+    isLiked: false,
+    createdAt: '2026-02-13T22:15:00Z',
+    aspectRatio: 9 / 16,
+    duration: 8,
+  },
+  {
+    id: 'reel-004',
+    author_id: 'u-004',
+    videoUrl: `${BASE_VIDEO_URL}/Dancers_8s_2470kbps_720p_60.0fps_h264.mp4`,
+    thumbnailUrl: 'https://images.unsplash.com/photo-1508700929628-666bc8bd84ea?w=400&h=700&fit=crop',
+    caption: 'Street performers absolutely killing it downtown 🎶 This needs to go viral! #streetdance #talent',
+    likeCount: 142000,
+    commentCount: 8930,
+    shareCount: 31200,
+    isLiked: false,
+    createdAt: '2026-02-13T18:00:00Z',
+    aspectRatio: 9 / 16,
+    duration: 8,
+  },
+  {
+    id: 'reel-005',
+    author_id: 'u-005',
+    videoUrl: `${BASE_VIDEO_URL}/cutting_orange_tuil_8s_6635kbps_720p_59.94fps_h264.mp4`,
+    thumbnailUrl: 'https://images.unsplash.com/photo-1611080626919-7cf5a9dbab5b?w=400&h=700&fit=crop',
+    caption: 'The perfect citrus segment technique 🔪✨ Watch till the end for the reveal! #asmr #cooking',
+    likeCount: 67400,
+    commentCount: 3200,
+    shareCount: 8900,
+    isLiked: true,
+    createdAt: '2026-02-13T14:00:00Z',
+    aspectRatio: 9 / 16,
+    duration: 8,
+  },
+  {
+    id: 'reel-006',
+    author_id: 'u-006',
+    videoUrl: `${BASE_VIDEO_URL}/Dancers_8s_6635kbps_720p_60.0fps_h264.mp4`,
+    thumbnailUrl: 'https://images.unsplash.com/photo-1518834107812-67b0b7c58434?w=400&h=700&fit=crop',
+    caption: 'New choreo dropped 🚀 This one took us 3 weeks to perfect. Worth it? #dance #newmoves',
+    likeCount: 203000,
+    commentCount: 14200,
+    shareCount: 45100,
+    isLiked: false,
+    createdAt: '2026-02-13T10:30:00Z',
+    aspectRatio: 9 / 16,
+    duration: 8,
+  },
+  {
+    id: 'reel-007',
+    author_id: 'u-007',
+    videoUrl: `${BASE_VIDEO_URL}/cutting_orange_tuil_8s_1659kbps_360p_59.94fps_h264.mp4`,
+    thumbnailUrl: 'https://images.unsplash.com/photo-1587735243615-c067550da4b2?w=400&h=700&fit=crop',
+    caption: 'Quick kitchen tip: How to peel an orange in 5 seconds flat 🍊⚡ #lifehack #kitchen',
+    likeCount: 31200,
+    commentCount: 1540,
+    shareCount: 5300,
+    isLiked: false,
+    createdAt: '2026-02-12T20:00:00Z',
+    aspectRatio: 9 / 16,
+    duration: 8,
+  },
+  {
+    id: 'reel-008',
+    author_id: 'u-001',
+    videoUrl: `${BASE_VIDEO_URL}/Dancers_8s_1659kbps_360p_60.0fps_h264.mp4`,
+    thumbnailUrl: 'https://images.unsplash.com/photo-1535525153412-30a0e7e365fa?w=400&h=700&fit=crop',
+    caption: 'Friday night vibes only 🌙✨ Turn your sound UP for this one #fridaynight #dance #mood',
+    likeCount: 56800,
+    commentCount: 2890,
+    shareCount: 7600,
+    isLiked: true,
+    createdAt: '2026-02-12T16:00:00Z',
+    aspectRatio: 9 / 16,
+    duration: 8,
+  },
+  {
+    id: 'reel-009',
+    author_id: 'u-003',
+    videoUrl: `${BASE_VIDEO_URL}/cutting_orange_tuil_8s_1138kbps_360p_59.94fps_h264.mp4`,
+    thumbnailUrl: 'https://images.unsplash.com/photo-1582979512210-99b6a53386f9?w=400&h=700&fit=crop',
+    caption: 'Satisfying fruit art compilation 🎨🍊 Which style is your favorite? Comment below! #fruitart',
+    likeCount: 43100,
+    commentCount: 2100,
+    shareCount: 6400,
+    isLiked: false,
+    createdAt: '2026-02-12T12:00:00Z',
+    aspectRatio: 9 / 16,
+    duration: 8,
+  },
+  {
+    id: 'reel-010',
+    author_id: 'u-006',
+    videoUrl: `${BASE_VIDEO_URL}/Dancers_8s_1138kbps_360p_60.0fps_h264.mp4`,
+    thumbnailUrl: 'https://images.unsplash.com/photo-1504609813442-a8924e83f76e?w=400&h=700&fit=crop',
+    caption: 'Tutorial: How to do the viral wave move 🌊 Save this for later! #tutorial #dancetutorial',
+    likeCount: 178000,
+    commentCount: 9800,
+    shareCount: 52000,
+    isLiked: false,
+    createdAt: '2026-02-12T08:00:00Z',
+    aspectRatio: 9 / 16,
+    duration: 8,
+  },
+];
+
+// ─── Seeded Reel Comments ───────────────────────────────────────────────────────
+
+const REEL_COMMENTS: ReelComment[] = [
+  { id: 'rc-001', reel_id: 'reel-001', user_id: 'u-002', content: 'So satisfying to watch! 🍊', likeCount: 42, createdAt: '2026-02-14T08:05:00Z' },
+  { id: 'rc-002', reel_id: 'reel-001', user_id: 'u-003', content: 'I need that knife! What brand is it?', likeCount: 18, createdAt: '2026-02-14T08:12:00Z' },
+  { id: 'rc-003', reel_id: 'reel-001', user_id: 'u-004', content: 'My oranges never look this good 😭', likeCount: 89, createdAt: '2026-02-14T08:20:00Z' },
+  { id: 'rc-004', reel_id: 'reel-002', user_id: 'u-001', content: 'The sync is insane! How long did you practice? 🔥', likeCount: 234, createdAt: '2026-02-14T06:35:00Z' },
+  { id: 'rc-005', reel_id: 'reel-002', user_id: 'u-005', content: 'This is the best dance reel I\'ve seen this month!', likeCount: 156, createdAt: '2026-02-14T06:42:00Z' },
+  { id: 'rc-006', reel_id: 'reel-002', user_id: 'u-006', content: 'Tutorial please!! 🙏🙏', likeCount: 312, createdAt: '2026-02-14T06:50:00Z' },
+  { id: 'rc-007', reel_id: 'reel-002', user_id: 'u-007', content: 'Y\'all make it look so easy', likeCount: 67, createdAt: '2026-02-14T07:00:00Z' },
+  { id: 'rc-008', reel_id: 'reel-003', user_id: 'u-001', content: 'Adding this to my meal prep routine!', likeCount: 23, createdAt: '2026-02-13T22:30:00Z' },
+  { id: 'rc-009', reel_id: 'reel-004', user_id: 'u-002', content: 'Street performers are the most underrated artists', likeCount: 445, createdAt: '2026-02-13T18:10:00Z' },
+  { id: 'rc-010', reel_id: 'reel-004', user_id: 'u-003', content: 'Where is this? I need to go watch them live!', likeCount: 128, createdAt: '2026-02-13T18:15:00Z' },
+  { id: 'rc-011', reel_id: 'reel-005', user_id: 'u-004', content: 'The reveal at the end 😍😍', likeCount: 78, createdAt: '2026-02-13T14:10:00Z' },
+  { id: 'rc-012', reel_id: 'reel-006', user_id: 'u-001', content: '3 weeks well spent! This is art 🎨', likeCount: 523, createdAt: '2026-02-13T10:40:00Z' },
+  { id: 'rc-013', reel_id: 'reel-006', user_id: 'u-003', content: 'I\'ve been trying to learn this for days 😅', likeCount: 89, createdAt: '2026-02-13T10:50:00Z' },
+  { id: 'rc-014', reel_id: 'reel-007', user_id: 'u-005', content: 'Just tried this and it actually works!', likeCount: 34, createdAt: '2026-02-12T20:15:00Z' },
+  { id: 'rc-015', reel_id: 'reel-008', user_id: 'u-002', content: 'Friday vibes ACTIVATED 🎉', likeCount: 67, createdAt: '2026-02-12T16:10:00Z' },
+  { id: 'rc-016', reel_id: 'reel-010', user_id: 'u-001', content: 'Saved! Going to practice this all weekend', likeCount: 234, createdAt: '2026-02-12T08:15:00Z' },
+  { id: 'rc-017', reel_id: 'reel-010', user_id: 'u-004', content: 'Step 3 is the hardest part ngl 😤', likeCount: 178, createdAt: '2026-02-12T08:30:00Z' },
+  { id: 'rc-018', reel_id: 'reel-010', user_id: 'u-005', content: 'You make everything look effortless!', likeCount: 92, createdAt: '2026-02-12T08:45:00Z' },
+];
+
 const REPOSTS: Repost[] = [
   { id: 'rp-001', user_id: 'u-000', thread_id: 't-003', created_at: '2026-02-13T07:10:00Z' },
   { id: 'rp-002', user_id: 'u-001', thread_id: 't-001', created_at: '2026-02-13T08:20:00Z' },
@@ -627,6 +801,9 @@ class Database {
   follows: Follow[];
   reposts: Repost[];
   bookmarks: Bookmark[];
+  reels: Reel[];
+  reelComments: ReelComment[];
+  reelLikes: { reel_id: string; user_id: string }[];
   muted_users: string[];
   hidden_threads: string[];
 
@@ -646,6 +823,9 @@ class Database {
     this.follows = [...FOLLOWS];
     this.reposts = [...REPOSTS];
     this.bookmarks = [];
+    this.reels = [...REELS];
+    this.reelComments = [...REEL_COMMENTS];
+    this.reelLikes = REELS.filter((r) => r.isLiked).map((r) => ({ reel_id: r.id, user_id: 'u-000' }));
     this.muted_users = [];
     this.hidden_threads = [];
   }
@@ -950,6 +1130,94 @@ class Database {
         u.username.toLowerCase().includes(lower) ||
         u.display_name.toLowerCase().includes(lower),
     );
+  }
+
+  // ── Reel CRUD ───────────────────────────────────────────────────────────────
+
+  getAllReels(): Reel[] {
+    return this.reels.sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
+  }
+
+  getReelById(id: string): Reel | undefined {
+    return this.reels.find((r) => r.id === id);
+  }
+
+  getReelsByAuthor(authorId: string): Reel[] {
+    return this.reels
+      .filter((r) => r.author_id === authorId)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }
+
+  isReelLikedByUser(userId: string, reelId: string): boolean {
+    return this.reelLikes.some((rl) => rl.user_id === userId && rl.reel_id === reelId);
+  }
+
+  toggleReelLike(userId: string, reelId: string): boolean {
+    const existing = this.reelLikes.find(
+      (rl) => rl.user_id === userId && rl.reel_id === reelId,
+    );
+    const reel = this.getReelById(reelId);
+
+    if (existing) {
+      this.reelLikes = this.reelLikes.filter(
+        (rl) => !(rl.user_id === userId && rl.reel_id === reelId),
+      );
+      if (reel) reel.likeCount = Math.max(0, reel.likeCount - 1);
+      return false;
+    }
+
+    this.reelLikes.push({ reel_id: reelId, user_id: userId });
+    if (reel) reel.likeCount += 1;
+    return true;
+  }
+
+  getCommentsForReel(reelId: string): ReelComment[] {
+    return this.reelComments
+      .filter((rc) => rc.reel_id === reelId)
+      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+  }
+
+  addReelComment(reelId: string, userId: string, content: string): ReelComment {
+    const comment: ReelComment = {
+      id: uuid(),
+      reel_id: reelId,
+      user_id: userId,
+      content,
+      likeCount: 0,
+      createdAt: new Date().toISOString(),
+    };
+    this.reelComments.push(comment);
+    const reel = this.getReelById(reelId);
+    if (reel) reel.commentCount += 1;
+    return comment;
+  }
+
+  createReel(params: {
+    author_id: string;
+    videoUrl: string;
+    thumbnailUrl: string;
+    caption: string;
+    aspectRatio?: number;
+    duration?: number;
+  }): Reel {
+    const reel: Reel = {
+      id: uuid(),
+      author_id: params.author_id,
+      videoUrl: params.videoUrl,
+      thumbnailUrl: params.thumbnailUrl,
+      caption: params.caption,
+      likeCount: 0,
+      commentCount: 0,
+      shareCount: 0,
+      isLiked: false,
+      createdAt: new Date().toISOString(),
+      aspectRatio: params.aspectRatio ?? 9 / 16,
+      duration: params.duration ?? 15,
+    };
+    this.reels.unshift(reel);
+    return reel;
   }
 }
 

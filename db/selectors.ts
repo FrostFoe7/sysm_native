@@ -2,7 +2,8 @@
 
 import { db } from './db';
 import { CURRENT_USER_ID } from '@/constants/app';
-import type { User, Thread, ThreadWithAuthor, ThreadWithReplies, MediaItem, ActivityItem } from '@/types/types';
+import type { User, Thread, ThreadWithAuthor, ThreadWithReplies, MediaItem, ActivityItem, ReelWithAuthor, ReelCommentWithAuthor } from '@/types/types';
+export type { ActivityItem };
 
 // ─── Hydration helpers ──────────────────────────────────────────────────────────
 
@@ -463,4 +464,63 @@ export function getMixedMediaThreads(): ThreadWithAuthor[] {
       t.media.some((m) => m.type === 'image') &&
       t.media.some((m) => m.type === 'video'),
   );
+}
+
+// ─── Reel selectors ─────────────────────────────────────────────────────────────
+
+function hydrateReel(reel: ReturnType<typeof db.getReelById> & {}): ReelWithAuthor {
+  const author = db.getUserById(reel.author_id);
+  if (!author) throw new Error(`User not found for reel ${reel.id}`);
+  return { ...reel, author };
+}
+
+export function getReelsFeed(): ReelWithAuthor[] {
+  const reels = db.getAllReels();
+  return reels.map(hydrateReel);
+}
+
+export function getReelById(id: string): ReelWithAuthor | undefined {
+  const reel = db.getReelById(id);
+  if (!reel) return undefined;
+  return hydrateReel(reel);
+}
+
+export function isReelLiked(reelId: string): boolean {
+  return db.isReelLikedByUser(CURRENT_USER_ID, reelId);
+}
+
+export function toggleReelLike(reelId: string): { liked: boolean; count: number } {
+  const liked = db.toggleReelLike(CURRENT_USER_ID, reelId);
+  const reel = db.getReelById(reelId);
+  return { liked, count: reel?.likeCount ?? 0 };
+}
+
+export function getReelComments(reelId: string): ReelCommentWithAuthor[] {
+  const comments = db.getCommentsForReel(reelId);
+  return comments.map((c) => {
+    const author = db.getUserById(c.user_id);
+    if (!author) throw new Error(`User not found for comment ${c.id}`);
+    return { ...c, author };
+  });
+}
+
+export function addReelComment(reelId: string, content: string): ReelCommentWithAuthor {
+  const comment = db.addReelComment(reelId, CURRENT_USER_ID, content);
+  const author = db.getUserById(CURRENT_USER_ID)!;
+  return { ...comment, author };
+}
+
+export function getReelsByUser(userId: string): ReelWithAuthor[] {
+  return db.getReelsByAuthor(userId).map(hydrateReel);
+}
+
+export function createReel(params: {
+  videoUrl: string;
+  thumbnailUrl: string;
+  caption: string;
+  aspectRatio?: number;
+  duration?: number;
+}): ReelWithAuthor {
+  const reel = db.createReel({ ...params, author_id: CURRENT_USER_ID });
+  return hydrateReel(reel);
 }

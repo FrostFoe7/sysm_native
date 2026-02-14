@@ -14,6 +14,7 @@ import {
   SquarePen,
   Heart,
   User,
+  Film,
   AlignJustify,
 } from 'lucide-react-native';
 
@@ -44,6 +45,13 @@ const NAV_ITEMS: NavItem[] = [
     label: 'New Thread',
     path: '/modal',
     matchPaths: ['/modal', '/(tabs)/new'],
+  },
+  {
+    icon: Film,
+    label: 'Reels',
+    path: '/(tabs)/reels',
+    matchPaths: ['/(tabs)/reels', '/reels'],
+    fillWhenActive: true,
   },
   {
     icon: Heart,

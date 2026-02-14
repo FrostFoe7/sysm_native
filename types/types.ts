@@ -92,6 +92,37 @@ export interface ActivityItem {
 export type ModeType = 'light' | 'dark' | 'system';
 
 /**
+ * Reel types (Instagram-style short video)
+ */
+export interface Reel {
+  id: string;
+  author_id: string;
+  videoUrl: string;
+  thumbnailUrl: string;
+  caption: string;
+  likeCount: number;
+  commentCount: number;
+  shareCount: number;
+  isLiked: boolean;
+  createdAt: string;
+  aspectRatio: number; // width / height (e.g. 9/16 = 0.5625)
+  duration: number; // seconds
+}
+
+export type ReelWithAuthor = Reel & { author: User };
+
+export interface ReelComment {
+  id: string;
+  reel_id: string;
+  user_id: string;
+  content: string;
+  likeCount: number;
+  createdAt: string;
+}
+
+export type ReelCommentWithAuthor = ReelComment & { author: User };
+
+/**
  * Component Props
  */
 export type ThemedViewProps = ViewProps & {
