@@ -15,12 +15,8 @@ import { Box } from '@/components/ui/box';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Divider } from '@/components/ui/divider';
 import { Button, ButtonText } from '@/components/ui/button';
-import {
-  getActivity,
-  toggleUserFollow,
-  isUserFollowedByCurrentUser,
-  formatRelativeTime,
-} from '@/db/selectors';
+import { UserService } from '@/services/user.service';
+import { formatRelativeTime } from '@/services/format';
 import {
   Heart,
   MessageCircle,
@@ -53,7 +49,7 @@ export default function ActivityScreen() {
     const wasFollowing = !!followMap[userId];
     setFollowing(userId, !wasFollowing);
     try {
-      const result = await toggleUserFollow(userId);
+      const result = await UserService.toggleFollow(userId);
       setFollowing(userId, result.following);
     } catch (error) {
       setFollowing(userId, wasFollowing);
@@ -84,7 +80,7 @@ export default function ActivityScreen() {
     ({ item, index }: { item: ActivityItem; index: number }) => {
       const meta = getTypeMeta(item.type);
       const IconComponent = meta.icon;
-      const isFollowed = followMap[item.actor.id] ?? isUserFollowedByCurrentUser(item.actor.id);
+      const isFollowed = followMap[item.actor.id] ?? false;
 
       return (
         <AnimatedListItem index={index}>

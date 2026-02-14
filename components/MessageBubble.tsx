@@ -7,9 +7,9 @@ import { VStack } from '@/components/ui/vstack';
 import { Text } from '@/components/ui/text';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { BadgeCheck, Reply, CornerUpLeft } from 'lucide-react-native';
-import { formatRelativeTime } from '@/db/selectors';
+import { formatRelativeTime } from '@/services/format';
 import { REACTION_EMOJIS } from '@/constants/app';
-import { CURRENT_USER_ID } from '@/constants/app';
+import { useAuthStore } from '@/store/useAuthStore';
 import type { MessageWithSender } from '@/types/types';
 
 interface MessageBubbleProps {
@@ -38,7 +38,8 @@ export function MessageBubble({
   onProfilePress,
 }: MessageBubbleProps) {
   const [showReactions, setShowReactions] = useState(false);
-  const isMe = message.sender_id === CURRENT_USER_ID;
+  const currentUserId = useAuthStore((s) => s.userId);
+  const isMe = message.sender_id === currentUserId;
   const isSystem = message.type === 'system';
 
   if (isSystem) {

@@ -1,6 +1,6 @@
 // app/new-chat.tsx
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { FlatList, Pressable, View, TextInput, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from '@/components/ui/safe-area-view';
@@ -20,12 +20,10 @@ import {
   BadgeCheck,
   X,
 } from 'lucide-react-native';
-import { db } from '@/db/db';
-import {
-  createDirectConversation,
-  createGroupConversation,
-} from '@/db/selectors';
-import { CURRENT_USER_ID, MAX_GROUP_NAME_LENGTH, MAX_GROUP_MEMBERS } from '@/constants/app';
+import { UserService } from '@/services/user.service';
+import { ChatService } from '@/services/chat.service';
+import { useAuthStore } from '@/store/useAuthStore';
+import { MAX_GROUP_NAME_LENGTH, MAX_GROUP_MEMBERS } from '@/constants/app';
 import type { User } from '@/types/types';
 
 type FlowStep = 'select-user' | 'group-setup';
@@ -38,19 +36,20 @@ export default function NewChatScreen() {
   const [groupName, setGroupName] = useState('');
   const [isGroupMode, setIsGroupMode] = useState(false);
 
-  const allUsers = useMemo(() => {
-    return db.getAllUsers().filter((u) => u.id !== CURRENT_USER_ID);
-  }, []);
+  const currentUserId = useAuthStore((s) => s.userId);
+  const [allUsers, setAllUsers] = useState<User[]>([]);
 
-  const filteredUsers = useMemo(() => {
-    if (!searchQuery.trim()) return allUsers;
+  useEffect(() => {
+    UserService.getAllUsers().then((users) => {
+      setAllUsers(users.filter((u) => u.id !== currentUserId));
+    }).catch(console.error);
+  }, [currentUserId]);
+
+  const filteredUsers = allUsers.filter((u) => {
+    if (!searchQuery.trim()) return true;
     const q = searchQuery.toLowerCase();
-    return allUsers.filter(
-      (u) =>
-        u.username.toLowerCase().includes(q) ||
-        u.display_name.toLowerCase().includes(q),
-    );
-  }, [allUsers, searchQuery]);
+    return u.username.toLowerCase().includes(q) || u.display_name.toLowerCase().includes(q);
+  });
 
   const handleBack = useCallback(() => {
     if (step === 'group-setup') {
@@ -71,8 +70,9 @@ export default function NewChatScreen() {
         });
       } else {
         // Direct 1:1 — create conversation and navigate
-        const conv = createDirectConversation(user.id);
-        router.replace(`/conversation/${conv.conversation.id}` as any);
+        ChatService.createDirectConversation(user.id).then((conv) => {
+          router.replace(`/conversation/${conv.conversation.id}` as any);
+        }).catch(console.error);
       }
     },
     [isGroupMode, router],
@@ -94,9 +94,9 @@ export default function NewChatScreen() {
     setStep('group-setup');
   }, [selectedUsers]);
 
-  const handleCreateGroup = useCallback(() => {
+  const handleCreateGroup = useCallback(async () => {
     if (!groupName.trim() || selectedUsers.length < 2) return;
-    const conv = createGroupConversation({
+    const conv = await ChatService.createGroupConversation({
       name: groupName.trim(),
       memberIds: selectedUsers.map((u) => u.id),
     });

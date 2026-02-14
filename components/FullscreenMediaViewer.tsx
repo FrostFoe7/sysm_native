@@ -19,7 +19,7 @@ import {
   FadeIn,
   FadeOut
 } from '@/utils/animatedWebSafe';
-import type { MediaItem } from '@/db/db';
+import type { MediaItem } from '@/types/types';
 
 interface FullscreenMediaViewerProps {
   isOpen: boolean;

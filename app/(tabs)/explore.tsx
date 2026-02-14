@@ -1,6 +1,6 @@
 // app/(tabs)/explore.tsx
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { FlatList, TextInput, Pressable, Platform, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
@@ -18,17 +18,8 @@ import { Box } from '@/components/ui/box';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Divider } from '@/components/ui/divider';
 import { Button, ButtonText } from '@/components/ui/button';
-import {
-  getExploreUsers,
-  getTrendingThreads,
-  searchAll,
-  toggleThreadLike,
-  toggleUserFollow,
-  isThreadLikedByCurrentUser,
-  isUserFollowedByCurrentUser,
-  isRepostedByCurrentUser,
-  toggleRepost,
-} from '@/db/selectors';
+import { UserService } from '@/services/user.service';
+import { ThreadService } from '@/services/thread.service';
 import { Search, X, BadgeCheck } from 'lucide-react-native';
 import { ExploreSkeleton } from '@/components/skeletons';
 import type { User, ThreadWithAuthor } from '@/types/types';
@@ -57,14 +48,12 @@ export default function ExploreScreen() {
   const [overflowThread, setOverflowThread] = useState<ThreadWithAuthor | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const [exploreData, setExploreData] = useState<ExploreItem[]>([]);
+
   useFocusEffect(
     useCallback(() => {
-      setRefreshKey((k) => k + 1);
-      if (isLoading) {
-        const t = setTimeout(() => setIsLoading(false), 500);
-        return () => clearTimeout(t);
-      }
-    }, [isLoading]),
+      loadExploreData();
+    }, []),
   );
 
   // Reset loading when query changes
@@ -73,70 +62,81 @@ export default function ExploreScreen() {
     setIsLoading(false);
   }, []);
 
-  const exploreData = useMemo(() => {
-    void refreshKey;
-    if (query.trim()) {
-      const results = searchAll(query.trim());
+  // Reload data when query or refreshKey changes
+  useEffect(() => {
+    loadExploreData();
+  }, [query, refreshKey]);
+
+  const loadExploreData = useCallback(async () => {
+    try {
       const items: ExploreItem[] = [];
-      if (results.users.length > 0) {
-        items.push({ type: 'section-header', title: 'People' });
-        for (const u of results.users) {
-          items.push({
-            type: 'user',
-            user: u,
-            isFollowed: followMap[u.id] ?? isUserFollowedByCurrentUser(u.id),
-          });
+
+      if (query.trim()) {
+        const results = await UserService.searchAll(query.trim());
+        if (results.users.length > 0) {
+          items.push({ type: 'section-header', title: 'People' });
+          for (const u of results.users) {
+            items.push({
+              type: 'user',
+              user: u,
+              isFollowed: followMap[u.id] ?? false,
+            });
+          }
+        }
+        if (results.threads.length > 0) {
+          items.push({ type: 'section-header', title: 'Threads' });
+          for (const t of results.threads) {
+            items.push({
+              type: 'thread',
+              thread: t,
+              isLiked: likedMap[t.id] ?? false,
+              isReposted: repostMap[t.id] ?? false,
+            });
+          }
+        }
+      } else {
+        const [suggestedUsers, trendingThreads] = await Promise.all([
+          UserService.getExploreUsers(),
+          UserService.getTrendingThreads(),
+        ]);
+
+        if (suggestedUsers.length > 0) {
+          items.push({ type: 'section-header', title: 'Suggested' });
+          for (const u of suggestedUsers) {
+            items.push({
+              type: 'user',
+              user: u,
+              isFollowed: followMap[u.id] ?? false,
+            });
+          }
+        }
+
+        if (trendingThreads.length > 0) {
+          items.push({ type: 'section-header', title: 'Trending' });
+          for (const t of trendingThreads) {
+            items.push({
+              type: 'thread',
+              thread: t,
+              isLiked: likedMap[t.id] ?? false,
+              isReposted: repostMap[t.id] ?? false,
+            });
+          }
         }
       }
-      if (results.threads.length > 0) {
-        items.push({ type: 'section-header', title: 'Threads' });
-        for (const t of results.threads) {
-          items.push({
-            type: 'thread',
-            thread: t,
-            isLiked: likedMap[t.id] ?? isThreadLikedByCurrentUser(t.id),
-            isReposted: repostMap[t.id] ?? isRepostedByCurrentUser(t.id),
-          });
-        }
-      }
-      return items;
+
+      setExploreData(items);
+    } catch (error) {
+      console.error('Failed to load explore data:', error);
+    } finally {
+      setIsLoading(false);
     }
-
-    const suggestedUsers = getExploreUsers();
-    const trendingThreads = getTrendingThreads();
-    const items: ExploreItem[] = [];
-
-    if (suggestedUsers.length > 0) {
-      items.push({ type: 'section-header', title: 'Suggested' });
-      for (const u of suggestedUsers) {
-        items.push({
-          type: 'user',
-          user: u,
-          isFollowed: followMap[u.id] ?? isUserFollowedByCurrentUser(u.id),
-        });
-      }
-    }
-
-    if (trendingThreads.length > 0) {
-      items.push({ type: 'section-header', title: 'Trending' });
-      for (const t of trendingThreads) {
-        items.push({
-          type: 'thread',
-          thread: t,
-          isLiked: likedMap[t.id] ?? isThreadLikedByCurrentUser(t.id),
-          isReposted: repostMap[t.id] ?? isRepostedByCurrentUser(t.id),
-        });
-      }
-    }
-
-    return items;
   }, [query, refreshKey, likedMap, repostMap, followMap]);
 
   const handleLike = useCallback(async (threadId: string) => {
     const wasLiked = !!likedMap[threadId];
     setLiked(threadId, !wasLiked);
     try {
-      await toggleThreadLike(threadId);
+      await ThreadService.toggleLike(threadId);
     } catch (error) {
       setLiked(threadId, wasLiked);
     }
@@ -146,7 +146,7 @@ export default function ExploreScreen() {
     const wasReposted = !!repostMap[threadId];
     setReposted(threadId, !wasReposted);
     try {
-      await toggleRepost(threadId);
+      await ThreadService.toggleRepost(threadId);
     } catch (error) {
       setReposted(threadId, wasReposted);
     }
@@ -156,7 +156,7 @@ export default function ExploreScreen() {
     const wasFollowing = !!followMap[userId];
     setFollowing(userId, !wasFollowing);
     try {
-      const result = await toggleUserFollow(userId);
+      const result = await UserService.toggleFollow(userId);
       setFollowing(userId, result.following);
     } catch (error) {
       setFollowing(userId, wasFollowing);

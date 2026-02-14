@@ -17,15 +17,11 @@ import { Text } from '@/components/ui/text';
 import { Divider } from '@/components/ui/divider';
 import { useAppToast } from '@/components/AppToast';
 import { TOAST_ICONS } from '@/constants/icons';
-import {
-  muteUser,
-  unmuteUser,
-  isUserMuted,
-  hideThread,
-  deleteThread as deleteThreadAction,
-} from '@/db/selectors';
-import { CURRENT_USER_ID } from '@/constants/app';
-import type { ThreadWithAuthor } from '@/db/db';
+import { UserService } from '@/services/user.service';
+import { ThreadService } from '@/services/thread.service';
+import { useAuthStore } from '@/store/useAuthStore';
+import { analytics } from '@/services/analytics.service';
+import type { ThreadWithAuthor } from '@/types/types';
 import {
   VolumeX,
   Volume2,
@@ -52,17 +48,25 @@ export function ThreadOverflowMenu({
   onThreadHidden,
   onUserMuted,
 }: ThreadOverflowMenuProps) {
-  const isOwnThread = thread?.user_id === CURRENT_USER_ID;
-  const muted = thread ? isUserMuted(thread.user_id) : false;
+  const currentUserId = useAuthStore((s) => s.userId);
+  const isOwnThread = thread?.user_id === currentUserId;
+  const [muted, setMuted] = React.useState(false);
   const { showToast } = useAppToast();
+
+  React.useEffect(() => {
+    if (thread) {
+      UserService.isUserMuted(thread.user_id).then(setMuted).catch(() => {});
+    }
+  }, [thread]);
 
   const handleMuteToggle = useCallback(() => {
     if (!thread) return;
     if (muted) {
-      unmuteUser(thread.user_id);
+      UserService.unmuteUser(thread.user_id);
       showToast(`Unmuted @${thread.author.username}`, TOAST_ICONS.unmuted);
     } else {
-      muteUser(thread.user_id);
+      UserService.muteUser(thread.user_id);
+      analytics.recordSignal('thread', thread.id, 'mute');
       onUserMuted?.(thread.user_id);
       showToast(`Muted @${thread.author.username}`, TOAST_ICONS.muted);
     }
@@ -71,7 +75,8 @@ export function ThreadOverflowMenu({
 
   const handleHide = useCallback(() => {
     if (!thread) return;
-    hideThread(thread.id);
+    ThreadService.hideThread(thread.id);
+    analytics.recordSignal('thread', thread.id, 'hide');
     onThreadHidden?.(thread.id);
     onClose();
     showToast('Thread hidden', TOAST_ICONS.hidden);
@@ -81,7 +86,7 @@ export function ThreadOverflowMenu({
     if (!thread) return;
     onClose();
     const doDelete = () => {
-      deleteThreadAction(thread.id);
+      ThreadService.deleteThread(thread.id);
       onThreadDeleted?.(thread.id);
       showToast('Thread deleted', TOAST_ICONS.deleted, 'brand-red');
     };
@@ -101,9 +106,12 @@ export function ThreadOverflowMenu({
   }, [thread, onClose, onThreadDeleted, showToast]);
 
   const handleReport = useCallback(() => {
+    if (thread) {
+      analytics.recordSignal('thread', thread.id, 'report');
+    }
     onClose();
-    showToast('Thread reported', TOAST_ICONS.reported, 'brand-red');
-  }, [onClose, showToast]);
+    showToast('Thread reported — we\'ll review this content', TOAST_ICONS.reported, 'brand-red');
+  }, [thread, onClose, showToast]);
 
   const handleCopyLink = useCallback(() => {
     if (!thread) return;

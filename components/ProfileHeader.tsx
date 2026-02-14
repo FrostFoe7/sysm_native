@@ -1,6 +1,7 @@
 // components/ProfileHeader.tsx
 
 import React from 'react';
+import { Pressable } from 'react-native';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Text } from '@/components/ui/text';
 import { Heading } from '@/components/ui/heading';
@@ -9,9 +10,9 @@ import { VStack } from '@/components/ui/vstack';
 import { Button, ButtonText } from '@/components/ui/button';
 import { Divider } from '@/components/ui/divider';
 import { Box } from '@/components/ui/box';
-import { formatCount } from '@/db/selectors';
+import { formatCount } from '@/services/format';
 import { BadgeCheck } from 'lucide-react-native';
-import type { User } from '@/db/db';
+import type { User } from '@/types/types';
 
 interface ProfileHeaderProps {
   user: User;
@@ -22,6 +23,8 @@ interface ProfileHeaderProps {
   isFollowing?: boolean;
   onFollowToggle?: () => void;
   onEditProfile?: () => void;
+  onFollowersPress?: () => void;
+  onFollowingPress?: () => void;
 }
 
 export function ProfileHeader({
@@ -33,6 +36,8 @@ export function ProfileHeader({
   isFollowing = false,
   onFollowToggle,
   onEditProfile,
+  onFollowersPress,
+  onFollowingPress,
 }: ProfileHeaderProps) {
   return (
     <VStack className="w-full flex-shrink-0 px-4 pt-4 pb-4" space="md">
@@ -73,13 +78,17 @@ export function ProfileHeader({
 
       {/* Stats row */}
       <HStack className="items-center gap-2">
-        <Text className="text-[13px] text-brand-muted-alt">
-          <Text className="font-semibold text-brand-light">{formatCount(followerCount)}</Text> followers
-        </Text>
+        <Pressable onPress={onFollowersPress} hitSlop={8}>
+          <Text className="text-[13px] text-brand-muted-alt">
+            <Text className="font-semibold text-brand-light">{formatCount(followerCount)}</Text> followers
+          </Text>
+        </Pressable>
         <Text className="text-[13px] text-brand-muted-alt">·</Text>
-        <Text className="text-[13px] text-brand-muted-alt">
-          <Text className="font-semibold text-brand-light">{formatCount(followingCount)}</Text> following
-        </Text>
+        <Pressable onPress={onFollowingPress} hitSlop={8}>
+          <Text className="text-[13px] text-brand-muted-alt">
+            <Text className="font-semibold text-brand-light">{formatCount(followingCount)}</Text> following
+          </Text>
+        </Pressable>
       </HStack>
 
       {/* Action buttons */}

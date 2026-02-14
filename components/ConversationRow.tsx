@@ -6,10 +6,9 @@ import { HStack } from '@/components/ui/hstack';
 import { VStack } from '@/components/ui/vstack';
 import { Text } from '@/components/ui/text';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
-import { Badge, BadgeText } from '@/components/ui/badge';
 import { Divider } from '@/components/ui/divider';
 import { BadgeCheck, BellOff, Pin, Volume2 } from 'lucide-react-native';
-import { formatRelativeTime, formatMessagePreview } from '@/db/selectors';
+import { formatRelativeTime, formatMessagePreview } from '@/services/format';
 import type { ConversationWithDetails } from '@/types/types';
 
 interface ConversationRowProps {

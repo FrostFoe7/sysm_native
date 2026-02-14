@@ -10,15 +10,15 @@ import {
 } from '@/utils/animatedWebSafe';
 import { Composer } from '@/components/Composer';
 import { Box } from '@/components/ui/box';
-import { createNewThread } from '@/db/selectors';
-import type { MediaItem } from '@/db/db';
+import { ThreadService } from '@/services/thread.service';
+import type { MediaItem } from '@/types/types';
 
 export default function ComposerModal() {
   const router = useRouter();
 
   const handleSubmit = useCallback(
-    (content: string, media?: MediaItem[]) => {
-      createNewThread(content, undefined, media);
+    async (content: string, media?: MediaItem[]) => {
+      await ThreadService.createThread(content, undefined, media);
       if (router.canGoBack()) {
         router.back();
       } else {

@@ -1,6 +1,6 @@
 // app/group-info/[id].tsx
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { FlatList, Pressable, View, TextInput, Alert, Platform, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from '@/components/ui/safe-area-view';
@@ -25,82 +25,86 @@ import {
   Users,
   MoreHorizontal,
 } from 'lucide-react-native';
-import {
-  getConversation,
-  toggleConversationMute,
-  toggleConversationPin,
-  removeGroupMember,
-  leaveGroup,
-  promoteToAdmin,
-  updateGroupInfo,
-} from '@/db/selectors';
-import { CURRENT_USER_ID } from '@/constants/app';
+import { ChatService } from '@/services/chat.service';
+import { useAuthStore } from '@/store/useAuthStore';
 import type { ConversationWithDetails, User, ConversationParticipant } from '@/types/types';
 
 export default function GroupInfoScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [details, setDetails] = useState<ConversationWithDetails | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(true);
   const [isEditingName, setIsEditingName] = useState(false);
   const [newName, setNewName] = useState('');
+  const { userId: currentUserId } = useAuthStore();
 
-  const details = useMemo(() => {
-    void refreshKey;
-    if (!id) return undefined;
-    return getConversation(id);
-  }, [id, refreshKey]);
+  const loadDetails = useCallback(async () => {
+    if (!id) return;
+    try {
+      const data = await ChatService.getConversation(id);
+      setDetails(data);
+    } catch (error) {
+      console.error('Failed to load group info:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    loadDetails();
+  }, [loadDetails]);
 
   if (!details || details.conversation.type !== 'group') {
     return (
       <SafeAreaView className="flex-1 bg-brand-dark">
         <View className="flex-1 items-center justify-center">
-          <Text className="text-[#555]">Group not found</Text>
+          <Text className="text-[#555]">{isLoading ? 'Loading...' : 'Group not found'}</Text>
         </View>
       </SafeAreaView>
     );
   }
 
   const { conversation: conv, participants } = details;
-  const currentParticipant = participants.find((p) => p.user_id === CURRENT_USER_ID);
+  const currentParticipant = participants.find((p) => p.user_id === currentUserId);
   const isAdmin = currentParticipant?.role === 'admin';
 
   const handleBack = () => router.back();
 
-  const handleToggleMute = () => {
+  const handleToggleMute = async () => {
     if (!id) return;
-    toggleConversationMute(id);
-    setRefreshKey((k) => k + 1);
+    await ChatService.toggleConversationMute(id);
+    loadDetails();
   };
 
-  const handleTogglePin = () => {
+  const handleTogglePin = async () => {
     if (!id) return;
-    toggleConversationPin(id);
-    setRefreshKey((k) => k + 1);
+    await ChatService.toggleConversationPin(id);
+    loadDetails();
   };
 
-  const handleLeave = () => {
+  const handleLeave = async () => {
     if (!id) return;
-    leaveGroup(id);
+    await ChatService.leaveGroup(id);
     router.replace('/(tabs)/inbox' as any);
   };
 
-  const handleRemoveMember = (userId: string) => {
+  const handleRemoveMember = async (userId: string) => {
     if (!id) return;
-    removeGroupMember(id, userId);
-    setRefreshKey((k) => k + 1);
+    await ChatService.removeGroupMember(id, userId);
+    loadDetails();
   };
 
-  const handlePromote = (userId: string) => {
+  const handlePromote = async (userId: string) => {
     if (!id) return;
-    promoteToAdmin(id, userId);
-    setRefreshKey((k) => k + 1);
+    await ChatService.promoteToAdmin(id, userId);
+    loadDetails();
   };
 
-  const handleSaveName = () => {
+  const handleSaveName = async () => {
     if (!id || !newName.trim()) return;
-    updateGroupInfo(id, { name: newName.trim() });
+    await ChatService.updateGroupInfo(id, { name: newName.trim() });
     setIsEditingName(false);
-    setRefreshKey((k) => k + 1);
+    loadDetails();
   };
 
   const handleAddMembers = () => {
@@ -217,7 +221,7 @@ export default function GroupInfoScreen() {
             <Pressable
               key={p.user_id}
               onPress={() => {
-                if (p.user_id !== CURRENT_USER_ID) router.push(`/profile/${p.user_id}` as any);
+                if (p.user_id !== currentUserId) router.push(`/profile/${p.user_id}` as any);
               }}
               className="active:bg-white/5"
             >
@@ -229,7 +233,7 @@ export default function GroupInfoScreen() {
                   <HStack className="items-center" space="xs">
                     <Text className="text-[14px] font-semibold text-brand-light" numberOfLines={1}>
                       {p.user.display_name}
-                      {p.user_id === CURRENT_USER_ID ? ' (You)' : ''}
+                      {p.user_id === currentUserId ? ' (You)' : ''}
                     </Text>
                     {p.user.verified && (
                       <BadgeCheck size={13} color="brand-blue" fill="brand-blue" />
@@ -244,7 +248,7 @@ export default function GroupInfoScreen() {
                     <Text className="text-[10px] font-semibold text-brand-blue">Admin</Text>
                   </View>
                 )}
-                {isAdmin && p.user_id !== CURRENT_USER_ID && (
+                {isAdmin && p.user_id !== currentUserId && (
                   <Pressable
                     onPress={() => {
                       // Show options menu (simplified: toggle admin/remove)

@@ -2,15 +2,15 @@ import { useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import * as Haptics from 'expo-haptics';
 import { ThreadService } from '@/services/thread.service';
-import { isThreadLikedByCurrentUser, isRepostedByCurrentUser } from '@/db/selectors';
+import { analytics } from '@/services/analytics.service';
 import type { ThreadWithAuthor } from '@/types/types';
 import { useInteractionStore } from '@/store/useInteractionStore';
 
 /**
  * Hook for managing the threads feed data and interactions using React Query.
- * Centralizes fetching, caching, and optimistic mutations.
+ * Supports both "For You" (algorithmic) and "Following" (recency) feeds.
  */
-export function useThreadsFeed() {
+export function useThreadsFeed(feedType: 'foryou' | 'following' = 'foryou') {
   const queryClient = useQueryClient();
   const { 
     likedThreads: likedMap, 
@@ -27,17 +27,24 @@ export function useThreadsFeed() {
     isFetching, 
     refetch 
   } = useQuery({
-    queryKey: ['threads-feed'],
+    queryKey: ['threads-feed', feedType],
     queryFn: async () => {
-      const feed = await ThreadService.getFeed();
+      const feed = feedType === 'following'
+        ? await ThreadService.getFollowingFeed()
+        : await ThreadService.getForYouFeed();
       
-      // Sync interaction maps globally for UI consistency across screens
+      // Sync interaction maps from server data
       const newLiked: Record<string, boolean> = {};
       const newReposted: Record<string, boolean> = {};
-      feed.forEach(t => {
-        newLiked[t.id] = isThreadLikedByCurrentUser(t.id);
-        newReposted[t.id] = isRepostedByCurrentUser(t.id);
+      const checks = feed.map(async (t) => {
+        const [liked, reposted] = await Promise.all([
+          ThreadService.isLikedByCurrentUser(t.id),
+          ThreadService.isRepostedByCurrentUser(t.id),
+        ]);
+        newLiked[t.id] = liked;
+        newReposted[t.id] = reposted;
       });
+      await Promise.all(checks);
       syncInteractions({ liked: newLiked, reposted: newReposted });
       
       return feed;
@@ -57,36 +64,45 @@ export function useThreadsFeed() {
       await queryClient.cancelQueries({ queryKey: ['threads-feed'] });
 
       // Snapshot previous value
-      const previousThreads = queryClient.getQueryData<ThreadWithAuthor[]>(['threads-feed']);
+      const previousForYou = queryClient.getQueryData<ThreadWithAuthor[]>(['threads-feed', 'foryou']);
+      const previousFollowing = queryClient.getQueryData<ThreadWithAuthor[]>(['threads-feed', 'following']);
 
       // Optimistic update in global store
       const wasLiked = !!likedMap[threadId];
       setLiked(threadId, !wasLiked);
 
-      // Optimistic update in React Query cache
-      if (previousThreads) {
-        queryClient.setQueryData<ThreadWithAuthor[]>(['threads-feed'], 
-          previousThreads.map(t => t.id === threadId 
-            ? { ...t, like_count: t.like_count + (wasLiked ? -1 : 1) } 
-            : t
-          )
+      // Optimistic update in React Query cache (both feeds)
+      const updater = (old: ThreadWithAuthor[] | undefined) =>
+        old?.map(t => t.id === threadId 
+          ? { ...t, like_count: t.like_count + (wasLiked ? -1 : 1) } 
+          : t
         );
+      queryClient.setQueryData<ThreadWithAuthor[]>(['threads-feed', 'foryou'], updater);
+      queryClient.setQueryData<ThreadWithAuthor[]>(['threads-feed', 'following'], updater);
+
+      // Track analytics
+      if (!wasLiked) {
+        analytics.track('thread_like', { contentId: threadId });
       }
 
-      return { previousThreads, wasLiked };
+      return { previousForYou, previousFollowing, wasLiked };
     },
     onError: (err, threadId, context) => {
       // Rollback on error
-      if (context?.previousThreads) {
-        queryClient.setQueryData(['threads-feed'], context.previousThreads);
+      if (context?.previousForYou) {
+        queryClient.setQueryData(['threads-feed', 'foryou'], context.previousForYou);
+      }
+      if (context?.previousFollowing) {
+        queryClient.setQueryData(['threads-feed', 'following'], context.previousFollowing);
       }
       setLiked(threadId, context?.wasLiked ?? false);
     },
     onSuccess: (result, threadId) => {
       // Update with exact server count
-      queryClient.setQueryData<ThreadWithAuthor[]>(['threads-feed'], (old) => 
-        old?.map(t => t.id === threadId ? { ...t, like_count: result.likeCount } : t)
-      );
+      const updater = (old: ThreadWithAuthor[] | undefined) =>
+        old?.map(t => t.id === threadId ? { ...t, like_count: result.likeCount } : t);
+      queryClient.setQueryData<ThreadWithAuthor[]>(['threads-feed', 'foryou'], updater);
+      queryClient.setQueryData<ThreadWithAuthor[]>(['threads-feed', 'following'], updater);
     }
   });
 
@@ -97,32 +113,36 @@ export function useThreadsFeed() {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
       await queryClient.cancelQueries({ queryKey: ['threads-feed'] });
-      const previousThreads = queryClient.getQueryData<ThreadWithAuthor[]>(['threads-feed']);
+      const previousForYou = queryClient.getQueryData<ThreadWithAuthor[]>(['threads-feed', 'foryou']);
+      const previousFollowing = queryClient.getQueryData<ThreadWithAuthor[]>(['threads-feed', 'following']);
 
       const wasReposted = !!repostMap[threadId];
       setReposted(threadId, !wasReposted);
 
-      if (previousThreads) {
-        queryClient.setQueryData<ThreadWithAuthor[]>(['threads-feed'], 
-          previousThreads.map(t => t.id === threadId 
-            ? { ...t, repost_count: t.repost_count + (wasReposted ? -1 : 1) } 
-            : t
-          )
+      const updater = (old: ThreadWithAuthor[] | undefined) =>
+        old?.map(t => t.id === threadId 
+          ? { ...t, repost_count: t.repost_count + (wasReposted ? -1 : 1) } 
+          : t
         );
-      }
+      queryClient.setQueryData<ThreadWithAuthor[]>(['threads-feed', 'foryou'], updater);
+      queryClient.setQueryData<ThreadWithAuthor[]>(['threads-feed', 'following'], updater);
 
-      return { previousThreads, wasReposted };
+      return { previousForYou, previousFollowing, wasReposted };
     },
     onError: (err, threadId, context) => {
-      if (context?.previousThreads) {
-        queryClient.setQueryData(['threads-feed'], context.previousThreads);
+      if (context?.previousForYou) {
+        queryClient.setQueryData(['threads-feed', 'foryou'], context.previousForYou);
+      }
+      if (context?.previousFollowing) {
+        queryClient.setQueryData(['threads-feed', 'following'], context.previousFollowing);
       }
       setReposted(threadId, context?.wasReposted ?? false);
     },
     onSuccess: (result, threadId) => {
-      queryClient.setQueryData<ThreadWithAuthor[]>(['threads-feed'], (old) => 
-        old?.map(t => t.id === threadId ? { ...t, repost_count: result.repostCount } : t)
-      );
+      const updater = (old: ThreadWithAuthor[] | undefined) =>
+        old?.map(t => t.id === threadId ? { ...t, repost_count: result.repostCount } : t);
+      queryClient.setQueryData<ThreadWithAuthor[]>(['threads-feed', 'foryou'], updater);
+      queryClient.setQueryData<ThreadWithAuthor[]>(['threads-feed', 'following'], updater);
     }
   });
 

@@ -16,12 +16,7 @@ import { ThreadOverflowMenu } from '@/components/ThreadOverflowMenu';
 import { AnimatedListItem } from '@/components/AnimatedListItem';
 import { AnimatedTabBar } from '@/components/AnimatedTabBar';
 import { Text } from '@/components/ui/text';
-import { 
-  toggleThreadLike,
-  toggleRepost,
-  isThreadLikedByCurrentUser,
-  isRepostedByCurrentUser,
-} from '@/db/selectors';
+import { ThreadService } from '@/services/thread.service';
 import type { ThreadWithAuthor } from '@/types/types';
 import { ProfileHeaderSkeleton, FeedSkeleton, TabBarSkeleton } from '@/components/skeletons';
 import { PROFILE_TABS } from '@/constants/app';
@@ -55,27 +50,28 @@ export default function UserProfileScreen() {
 
   // Sync maps when profile loads
   useEffect(() => {
-    if (profile) {
+    if (!profile) return;
+    (async () => {
       const newLiked: Record<string, boolean> = {};
       const newReposted: Record<string, boolean> = {};
       for (const t of [...profile.threads, ...profile.replies]) {
-        newLiked[t.id] = isThreadLikedByCurrentUser(t.id);
-        newReposted[t.id] = isRepostedByCurrentUser(t.id);
+        newLiked[t.id] = await ThreadService.isLikedByCurrentUser(t.id);
+        newReposted[t.id] = await ThreadService.isRepostedByCurrentUser(t.id);
       }
       syncInteractions({ liked: newLiked, reposted: newReposted });
-    }
+    })();
   }, [profile, syncInteractions]);
 
   const handleLike = useCallback((threadId: string) => {
     const wasLiked = !!likedMap[threadId];
     setLiked(threadId, !wasLiked);
-    toggleThreadLike(threadId).catch(() => setLiked(threadId, wasLiked));
+    ThreadService.toggleLike(threadId).catch(() => setLiked(threadId, wasLiked));
   }, [likedMap, setLiked]);
 
   const handleRepost = useCallback((threadId: string) => {
     const wasReposted = !!repostMap[threadId];
     setReposted(threadId, !wasReposted);
-    toggleRepost(threadId).catch(() => setReposted(threadId, wasReposted));
+    ThreadService.toggleRepost(threadId).catch(() => setReposted(threadId, wasReposted));
   }, [repostMap, setReposted]);
 
   const handleReply = useCallback((threadId: string) => {
@@ -133,8 +129,8 @@ export default function UserProfileScreen() {
           <AnimatedListItem index={index}>
             <ThreadCard
               thread={item}
-              isLiked={likedMap[item.id] ?? isThreadLikedByCurrentUser(item.id)}
-              isReposted={repostMap[item.id] ?? isRepostedByCurrentUser(item.id)}
+              isLiked={likedMap[item.id] ?? false}
+              isReposted={repostMap[item.id] ?? false}
               onLike={handleLike}
               onReply={handleReply}
               onRepost={handleRepost}

@@ -12,8 +12,8 @@ import { ActionRow } from '@/components/ActionRow';
 import { AnimatedPressable } from '@/components/AnimatedPressable';
 import { MediaGallery } from '@/components/MediaGallery';
 import { FullscreenMediaViewer } from '@/components/FullscreenMediaViewer';
-import { formatRelativeTime, formatCount } from '@/db/selectors';
-import type { ThreadWithAuthor } from '@/db/db';
+import { formatRelativeTime, formatCount } from '@/services/format';
+import type { ThreadWithAuthor } from '@/types/types';
 import { BadgeCheck, MoreHorizontal, Repeat2 } from 'lucide-react-native';
 
 interface ThreadCardProps {

@@ -200,6 +200,161 @@ export type ChatItem =
   | { type: 'message'; message: MessageWithSender; showAvatar: boolean; showTimestamp: boolean; key: string };
 
 /**
+ * Ranking & Personalization types
+ */
+
+/** Engagement signals recorded per user-content interaction */
+export interface EngagementSignal {
+  id: string;
+  user_id: string;
+  content_type: 'thread' | 'reel';
+  content_id: string;
+  signal_type: SignalType;
+  value: number; // e.g. dwell time in ms, completion %, 1 for binary signals
+  created_at: string;
+}
+
+export type SignalType =
+  | 'like'
+  | 'comment'
+  | 'repost'
+  | 'save'
+  | 'share'
+  | 'dwell'           // time spent viewing thread (ms)
+  | 'profile_visit'   // visited author's profile after seeing content
+  | 'follow_after'    // followed author after seeing content
+  | 'click_expand'    // expanded "see more" on content
+  | 'reel_watch'      // watch time in ms
+  | 'reel_complete'   // 1 if watched >90%
+  | 'reel_replay'     // number of replays
+  | 'reel_skip'       // 1 if skipped within 2s
+  | 'report'
+  | 'hide'
+  | 'mute';
+
+/** Per-user interest vector: topic → affinity score (0–1) */
+export interface InterestVector {
+  user_id: string;
+  topics: Record<string, number>; // e.g. { "tech": 0.9, "design": 0.7 }
+  updated_at: string;
+}
+
+/** Per-user creator affinity: how much a user engages with a specific creator */
+export interface CreatorAffinity {
+  user_id: string;
+  creator_id: string;
+  score: number;        // 0–1 normalized
+  interactions: number;  // total interaction count
+  last_interaction: string;
+}
+
+/** Topic embedding for content items */
+export interface TopicEmbedding {
+  content_type: 'thread' | 'reel';
+  content_id: string;
+  topics: Record<string, number>; // e.g. { "react": 0.95, "mobile": 0.6 }
+}
+
+/** Ranking weights configuration */
+export interface RankingWeights {
+  likeWeight: number;
+  commentWeight: number;
+  repostWeight: number;
+  saveWeight: number;
+  dwellWeight: number;
+  shareWeight: number;
+  relationshipBoost: number;   // multiplier for followed users
+  freshnessDecay: number;      // hours until score halves
+  verifiedBoost: number;       // multiplier for verified creators
+  diversityPenalty: number;    // penalty for same-author consecutive items
+}
+
+/** Reel-specific ranking weights */
+export interface ReelRankingWeights {
+  watchTimeWeight: number;
+  completionWeight: number;
+  replayWeight: number;
+  shareWeight: number;
+  followAfterWeight: number;
+  skipPenalty: number;
+  freshnessDecay: number;
+  discoveryBoost: number;      // boost for new creators user hasn't seen
+  coldStartBoost: number;      // boost for new content with few signals
+}
+
+/** Scored item ready for feed ordering */
+export interface ScoredThread {
+  thread: ThreadWithAuthor;
+  score: number;
+  signals: {
+    engagement: number;
+    relationship: number;
+    freshness: number;
+    personalization: number;
+    quality: number;
+  };
+}
+
+export interface ScoredReel {
+  reel: ReelWithAuthor;
+  score: number;
+  signals: {
+    engagement: number;
+    completion: number;
+    discovery: number;
+    freshness: number;
+    personalization: number;
+  };
+}
+
+/** Trending item with velocity tracking */
+export interface TrendingItem {
+  content_type: 'thread' | 'reel';
+  content_id: string;
+  velocity: number;       // engagement growth rate
+  total_engagement: number;
+  time_window: 'hourly' | 'daily' | 'weekly';
+  category: string;
+  rank: number;
+}
+
+/** Analytics event for tracking */
+export interface AnalyticsEvent {
+  id: string;
+  event_type: AnalyticsEventType;
+  user_id: string;
+  properties: Record<string, string | number | boolean>;
+  timestamp: string;
+  session_id: string;
+}
+
+export type AnalyticsEventType =
+  | 'thread_view'
+  | 'thread_dwell'
+  | 'thread_like'
+  | 'thread_comment'
+  | 'thread_repost'
+  | 'thread_share'
+  | 'thread_save'
+  | 'reel_view'
+  | 'reel_watch'
+  | 'reel_complete'
+  | 'reel_skip'
+  | 'reel_like'
+  | 'reel_comment'
+  | 'reel_share'
+  | 'message_open'
+  | 'message_send'
+  | 'profile_visit'
+  | 'follow'
+  | 'unfollow'
+  | 'search'
+  | 'app_open'
+  | 'app_background'
+  | 'feed_refresh'
+  | 'tab_switch';
+
+/**
  * Component Props
  */
 export type ThemedViewProps = ViewProps & {

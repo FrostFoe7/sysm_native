@@ -18,6 +18,7 @@ import { ReelOverlay } from '@/components/ReelOverlay';
 import { ReelCommentSheet } from '@/components/ReelCommentSheet';
 import { ReelSkeleton } from '@/components/ReelSkeleton';
 import { isReelLiked, toggleReelLike } from '@/db/selectors';
+import { ReelService } from '@/services/reel.service';
 import type { ReelWithAuthor } from '@/types/types';
 
 interface ReelPlayerProps {
@@ -37,6 +38,8 @@ export function ReelPlayer({ reel, isActive, isMuted, onMuteToggle }: ReelPlayer
   // Double-tap detection
   const lastTapRef = useRef<number>(0);
   const pauseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const watchStartRef = useRef<number>(0);
+  const loopCountRef = useRef<number>(0);
 
   // Heart animation value
   const heartScale = useSharedValue(0);
@@ -53,17 +56,31 @@ export function ReelPlayer({ reel, isActive, isMuted, onMuteToggle }: ReelPlayer
     player.muted = isWeb ? true : isMuted;
   }, [isMuted, player]);
 
-  // Auto-play/pause based on visibility
+  // Auto-play/pause based on visibility + tracking
   useEffect(() => {
     if (!player) return;
     try {
       if (isActive && !commentSheetOpen && !isPaused) {
         player.play();
+        // Track view start
+        watchStartRef.current = Date.now();
+        loopCountRef.current = 0;
+        ReelService.trackReelView(reel.id);
       } else {
         player.pause();
+        // Track watch time when leaving
+        if (watchStartRef.current > 0) {
+          const watchTimeMs = Date.now() - watchStartRef.current;
+          const durationMs = reel.duration * 1000;
+          ReelService.recordWatchTime(reel.id, watchTimeMs, durationMs);
+          if (loopCountRef.current > 0) {
+            ReelService.recordReplay(reel.id);
+          }
+          watchStartRef.current = 0;
+        }
       }
     } catch {}
-  }, [isActive, player, commentSheetOpen, isPaused]);
+  }, [isActive, player, commentSheetOpen, isPaused, reel.id, reel.duration]);
 
   // Loading listener
   useEffect(() => {

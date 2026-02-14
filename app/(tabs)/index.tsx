@@ -10,19 +10,24 @@ import { AnimatedListItem } from '@/components/AnimatedListItem';
 import { AnimatedTabBar } from '@/components/AnimatedTabBar';
 import { ShareSheet } from '@/components/ShareSheet';
 import { ThreadOverflowMenu } from '@/components/ThreadOverflowMenu';
+import { DesktopRightColumn } from '@/components/DesktopRightColumn';
 import { Text } from '@/components/ui/text';
 import { Fab, FabIcon } from '@/components/ui/fab';
 import { SquarePen } from 'lucide-react-native';
 import { FeedSkeleton } from '@/components/skeletons';
 import { FEED_TABS } from '@/constants/app';
+import { DESKTOP_BREAKPOINT } from '@/constants/ui';
 import { useThreadsFeed } from '@/hooks/use-threads';
 import { useInteractionStore } from '@/store/useInteractionStore';
+import type { ThreadWithAuthor } from '@/types/types';
 
 export default function HomeScreen() {
   const router = useRouter();
   const { width } = useWindowDimensions();
   const isDesktop = Platform.OS === 'web' && width >= 1024;
   
+  const [activeTab, setActiveTab] = useState<'foryou' | 'following'>('foryou');
+
   const { 
     data: feed, 
     isLoading, 
@@ -30,11 +35,10 @@ export default function HomeScreen() {
     refresh, 
     handleLike, 
     handleRepost 
-  } = useThreadsFeed();
+  } = useThreadsFeed(activeTab);
 
   const { likedThreads: likedMap, repostedThreads: repostMap } = useInteractionStore();
 
-  const [activeTab, setActiveTab] = useState('foryou');
   const [shareThreadId, setShareThreadId] = useState<string | null>(null);
   const [overflowThread, setOverflowThread] = useState<ThreadWithAuthor | null>(null);
   const flatListRef = useRef<FlatList>(null);
@@ -42,6 +46,11 @@ export default function HomeScreen() {
   const handleRefresh = useCallback(() => {
     refresh();
   }, [refresh]);
+
+  const handleTabSwitch = useCallback((key: string) => {
+    setActiveTab(key as 'foryou' | 'following');
+    flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+  }, []);
 
   const handleReply = useCallback(
     (threadId: string) => {
@@ -62,17 +71,17 @@ export default function HomeScreen() {
     [feed],
   );
 
-  const handleThreadDeleted = useCallback((threadId: string) => {
-    setFeed((prev) => prev.filter((t) => t.id !== threadId));
-  }, []);
+  const handleThreadDeleted = useCallback((_threadId: string) => {
+    refresh();
+  }, [refresh]);
 
-  const handleThreadHidden = useCallback((threadId: string) => {
-    setFeed((prev) => prev.filter((t) => t.id !== threadId));
-  }, []);
+  const handleThreadHidden = useCallback((_threadId: string) => {
+    refresh();
+  }, [refresh]);
 
-  const handleUserMuted = useCallback((userId: string) => {
-    setFeed((prev) => prev.filter((t) => t.user_id !== userId));
-  }, []);
+  const handleUserMuted = useCallback((_userId: string) => {
+    refresh();
+  }, [refresh]);
 
   const renderItem = useCallback(
     ({ item, index }: { item: ThreadWithAuthor; index: number }) => (
@@ -107,7 +116,7 @@ export default function HomeScreen() {
                 tabs={FEED_TABS}
                 activeKey={activeTab}
         
-          onTabPress={setActiveTab}
+          onTabPress={handleTabSwitch}
         />
       </View>
     ),
@@ -127,27 +136,32 @@ export default function HomeScreen() {
 
   return (
     <ScreenLayout>
-      <FlatList
-        ref={flatListRef}
-        data={feed}
-        renderItem={renderItem}
-        keyExtractor={keyExtractor}
-        ListHeaderComponent={renderHeader}
-        ListEmptyComponent={renderEmpty}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={handleRefresh}
-            tintColor="#555555"
-            colors={['#555555']}
+      <View className={`flex-1 ${isDesktop ? 'flex-row justify-center' : ''}`}>
+        <View className={`flex-1 ${isDesktop ? 'max-w-[600px]' : ''}`}>
+          <FlatList
+            ref={flatListRef}
+            data={feed}
+            renderItem={renderItem}
+            keyExtractor={keyExtractor}
+            ListHeaderComponent={renderHeader}
+            ListEmptyComponent={renderEmpty}
+            refreshControl={
+              <RefreshControl
+                refreshing={isRefreshing}
+                onRefresh={handleRefresh}
+                tintColor="#555555"
+                colors={['#555555']}
+              />
+            }
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{
+              paddingBottom: 24,
+              ...(Platform.OS === 'web' ? { minHeight: '100%' } : {}),
+            }}
           />
-        }
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          paddingBottom: 24,
-          ...(Platform.OS === 'web' ? { minHeight: '100%' } : {}),
-        }}
-      />
+        </View>
+        {isDesktop && <DesktopRightColumn />}
+      </View>
       <ShareSheet
         isOpen={shareThreadId !== null}
         onClose={() => setShareThreadId(null)}

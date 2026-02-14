@@ -9,28 +9,26 @@ import { ProfileHeader } from '@/components/ProfileHeader';
 import { ThreadCard } from '@/components/ThreadCard';
 import { ShareSheet } from '@/components/ShareSheet';
 import { ThreadOverflowMenu } from '@/components/ThreadOverflowMenu';
+import { FollowersModal } from '@/components/FollowersModal';
 import { AnimatedListItem } from '@/components/AnimatedListItem';
 import { AnimatedTabBar } from '@/components/AnimatedTabBar';
 import { Text } from '@/components/ui/text';
 import { HStack } from '@/components/ui/hstack';
-import {
-  toggleThreadLike,
-  isThreadLikedByCurrentUser,
-  isRepostedByCurrentUser,
-  toggleRepost,
-} from '@/db/selectors';
+import { ThreadService } from '@/services/thread.service';
 import { Menu, Settings } from 'lucide-react-native';
 import { ProfileHeaderSkeleton, FeedSkeleton, TabBarSkeleton } from '@/components/skeletons';
 import type { ThreadWithAuthor } from '@/types/types';
 import { PROFILE_TABS } from '@/constants/app';
 import { useCurrentUserProfile } from '@/hooks/use-user-profile';
 import { useInteractionStore } from '@/store/useInteractionStore';
+import { useAuthStore } from '@/store/useAuthStore';
 
 export default function ProfileScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('threads');
+  const { userId } = useAuthStore();
   
-  const { profile, isLoading } = useCurrentUserProfile();
+  const { profile, isLoading, refresh: refetch } = useCurrentUserProfile();
 
   const { 
     likedThreads: likedMap, 
@@ -42,30 +40,41 @@ export default function ProfileScreen() {
 
   const [shareThreadId, setShareThreadId] = useState<string | null>(null);
   const [overflowThread, setOverflowThread] = useState<ThreadWithAuthor | null>(null);
+  const [followersModalOpen, setFollowersModalOpen] = useState(false);
+  const [followersTab, setFollowersTab] = useState<'followers' | 'following'>('followers');
 
   // Sync maps when profile loads
   useEffect(() => {
     if (profile) {
-      const newLiked: Record<string, boolean> = {};
-      const newReposted: Record<string, boolean> = {};
-      for (const t of [...profile.threads, ...profile.replies]) {
-        newLiked[t.id] = isThreadLikedByCurrentUser(t.id);
-        newReposted[t.id] = isRepostedByCurrentUser(t.id);
-      }
-      syncInteractions({ liked: newLiked, reposted: newReposted });
+      const syncLikes = async () => {
+        const newLiked: Record<string, boolean> = {};
+        const newReposted: Record<string, boolean> = {};
+        const allThreads = [...profile.threads, ...profile.replies];
+        const checks = allThreads.map(async (t) => {
+          const [liked, reposted] = await Promise.all([
+            ThreadService.isLikedByCurrentUser(t.id),
+            ThreadService.isRepostedByCurrentUser(t.id),
+          ]);
+          newLiked[t.id] = liked;
+          newReposted[t.id] = reposted;
+        });
+        await Promise.all(checks);
+        syncInteractions({ liked: newLiked, reposted: newReposted });
+      };
+      syncLikes();
     }
   }, [profile, syncInteractions]);
 
   const handleLike = useCallback((threadId: string) => {
     const wasLiked = !!likedMap[threadId];
     setLiked(threadId, !wasLiked);
-    toggleThreadLike(threadId).catch(() => setLiked(threadId, wasLiked));
+    ThreadService.toggleLike(threadId).catch(() => setLiked(threadId, wasLiked));
   }, [likedMap, setLiked]);
 
   const handleRepost = useCallback((threadId: string) => {
     const wasReposted = !!repostMap[threadId];
     setReposted(threadId, !wasReposted);
-    toggleRepost(threadId).catch(() => setReposted(threadId, wasReposted));
+    ThreadService.toggleRepost(threadId).catch(() => setReposted(threadId, wasReposted));
   }, [repostMap, setReposted]);
 
   const handleReply = useCallback(
@@ -89,18 +98,25 @@ export default function ProfileScreen() {
   );
 
   const handleThreadDeleted = useCallback((_threadId: string) => {
-    const p = getProfile(CURRENT_USER_ID);
-    if (p) setProfile(p);
-  }, []);
+    refetch();
+  }, [refetch]);
 
   const handleThreadHidden = useCallback((_threadId: string) => {
-    const p = getProfile(CURRENT_USER_ID);
-    if (p) setProfile(p);
-  }, []);
+    refetch();
+  }, [refetch]);
 
   const handleUserMuted = useCallback((_userId: string) => {
-    const p = getProfile(CURRENT_USER_ID);
-    if (p) setProfile(p);
+    refetch();
+  }, [refetch]);
+
+  const handleFollowersPress = useCallback(() => {
+    setFollowersTab('followers');
+    setFollowersModalOpen(true);
+  }, []);
+
+  const handleFollowingPress = useCallback(() => {
+    setFollowersTab('following');
+    setFollowersModalOpen(true);
   }, []);
 
   if (!profile) return null;
@@ -144,6 +160,8 @@ export default function ProfileScreen() {
         followingCount={profile.followingCount}
         isCurrentUser
         onEditProfile={() => router.push('/profile/edit')}
+        onFollowersPress={handleFollowersPress}
+        onFollowingPress={handleFollowingPress}
       />
 
       <AnimatedTabBar tabs={PROFILE_TABS} activeKey={activeTab} onTabPress={setActiveTab} />
@@ -154,8 +172,8 @@ export default function ProfileScreen() {
           <AnimatedListItem index={index}>
             <ThreadCard
               thread={item}
-              isLiked={likedMap[item.id] ?? isThreadLikedByCurrentUser(item.id)}
-              isReposted={repostMap[item.id] ?? isRepostedByCurrentUser(item.id)}
+              isLiked={likedMap[item.id] ?? false}
+              isReposted={repostMap[item.id] ?? false}
               onLike={handleLike}
               onReply={handleReply}
               onRepost={handleRepost}
@@ -190,6 +208,12 @@ export default function ProfileScreen() {
         onThreadDeleted={handleThreadDeleted}
         onThreadHidden={handleThreadHidden}
         onUserMuted={handleUserMuted}
+      />
+      <FollowersModal
+        isOpen={followersModalOpen}
+        onClose={() => setFollowersModalOpen(false)}
+        userId={userId ?? ''}
+        initialTab={followersTab}
       />
     </ScreenLayout>  );
 }

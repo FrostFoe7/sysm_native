@@ -19,17 +19,9 @@ import { Text } from '@/components/ui/text';
 import { HStack } from '@/components/ui/hstack';
 import { Divider } from '@/components/ui/divider';
 import { Box } from '@/components/ui/box';
-import {
-  getThreadDetail,
-  getThreadAncestors,
-  isThreadLikedByCurrentUser,
-  isRepostedByCurrentUser,
-  toggleThreadLike,
-  toggleRepost,
-  createReply,
-  getCurrentUser,
-  formatFullDate,
-} from '@/db/selectors';
+import { ThreadService } from '@/services/thread.service';
+import { UserService } from '@/services/user.service';
+import { formatFullDate } from '@/services/format';
 import { Send } from 'lucide-react-native';
 import { ThreadDetailSkeleton } from '@/components/skeletons';
 import type { ThreadWithAuthor, ThreadWithReplies } from '@/types/types';
@@ -60,24 +52,39 @@ export default function ThreadDetailScreen() {
 
   const [shareThreadId, setShareThreadId] = useState<string | null>(null);
   const [overflowThread, setOverflowThread] = useState<ThreadWithAuthor | null>(null);
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
-  const currentUser = useMemo(() => getCurrentUser(), []);
+  useEffect(() => {
+    UserService.getCurrentUser().then(setCurrentUser).catch(console.error);
+  }, []);
 
-  const loadData = useCallback(() => {
+  const loadData = useCallback(async () => {
     if (!id) return;
-    const d = getThreadDetail(id);
-    setDetail(d);
-    setAncestors(getThreadAncestors(id));
-    // Pre-populate like states
-    if (d) {
-      const allThreads = [d, ...d.replies];
-      const newLiked: Record<string, boolean> = {};
-      const newReposted: Record<string, boolean> = {};
-      for (const t of allThreads) {
-        newLiked[t.id] = isThreadLikedByCurrentUser(t.id);
-        newReposted[t.id] = isRepostedByCurrentUser(t.id);
+    try {
+      const [d, anc] = await Promise.all([
+        ThreadService.getThreadDetail(id),
+        ThreadService.getThreadAncestors(id),
+      ]);
+      setDetail(d);
+      setAncestors(anc);
+      // Pre-populate like states
+      if (d) {
+        const allThreads = [d, ...d.replies];
+        const newLiked: Record<string, boolean> = {};
+        const newReposted: Record<string, boolean> = {};
+        const checks = allThreads.map(async (t) => {
+          const [liked, reposted] = await Promise.all([
+            ThreadService.isLikedByCurrentUser(t.id),
+            ThreadService.isRepostedByCurrentUser(t.id),
+          ]);
+          newLiked[t.id] = liked;
+          newReposted[t.id] = reposted;
+        });
+        await Promise.all(checks);
+        syncInteractions({ liked: newLiked, reposted: newReposted });
       }
-      syncInteractions({ liked: newLiked, reposted: newReposted });
+    } catch (error) {
+      console.error('Failed to load thread detail:', error);
     }
   }, [id, syncInteractions]);
 
@@ -96,7 +103,7 @@ export default function ThreadDetailScreen() {
   const handleLike = useCallback((threadId: string) => {
     const wasLiked = !!likedMap[threadId];
     setLiked(threadId, !wasLiked);
-    toggleThreadLike(threadId).catch(() => setLiked(threadId, wasLiked));
+    ThreadService.toggleLike(threadId).catch(() => setLiked(threadId, wasLiked));
     
     setDetail((prev) => {
       if (!prev) return prev;
@@ -126,7 +133,7 @@ export default function ThreadDetailScreen() {
   const handleRepost = useCallback((threadId: string) => {
     const wasReposted = !!repostMap[threadId];
     setReposted(threadId, !wasReposted);
-    toggleRepost(threadId).catch(() => setReposted(threadId, wasReposted));
+    ThreadService.toggleRepost(threadId).catch(() => setReposted(threadId, wasReposted));
 
     setDetail((prev) => {
       if (!prev) return prev;
@@ -190,23 +197,27 @@ export default function ThreadDetailScreen() {
     [id, router],
   );
 
-  const handleSubmitReply = useCallback(() => {
+  const handleSubmitReply = useCallback(async () => {
     if (!id || !replyText.trim()) return;
-    const newReply = createReply(id, replyText.trim());
-    setReplyText('');
-    // Optimistically update the detail
-    setDetail((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        reply_count: prev.reply_count + 1,
-        replies: [...prev.replies, newReply],
-      };
-    });
-    // Scroll to newly added reply
-    setTimeout(() => {
-      flatListRef.current?.scrollToEnd({ animated: true });
-    }, 100);
+    try {
+      const newReply = await ThreadService.createReply(id, replyText.trim());
+      setReplyText('');
+      // Optimistically update the detail
+      setDetail((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          reply_count: prev.reply_count + 1,
+          replies: [...prev.replies, newReply],
+        };
+      });
+      // Scroll to newly added reply
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 100);
+    } catch (error) {
+      console.error('Failed to submit reply:', error);
+    }
   }, [id, replyText]);
 
   if (!detail) {
@@ -234,8 +245,8 @@ export default function ThreadDetailScreen() {
             ...item.thread,
             like_count: threadLikeCounts[item.thread.id] ?? item.thread.like_count,
           }}
-          isLiked={likedMap[item.thread.id] ?? isThreadLikedByCurrentUser(item.thread.id)}
-          isReposted={repostMap[item.thread.id] ?? isRepostedByCurrentUser(item.thread.id)}
+          isLiked={likedMap[item.thread.id] ?? false}
+          isReposted={repostMap[item.thread.id] ?? false}
           onLike={handleLike}
           onReply={handleReply}
           onRepost={handleRepost}
@@ -254,8 +265,8 @@ export default function ThreadDetailScreen() {
               ...item.thread,
               like_count: threadLikeCounts[item.thread.id] ?? item.thread.like_count,
             }}
-            isLiked={likedMap[item.thread.id] ?? isThreadLikedByCurrentUser(item.thread.id)}
-            isReposted={repostMap[item.thread.id] ?? isRepostedByCurrentUser(item.thread.id)}
+            isLiked={likedMap[item.thread.id] ?? false}
+            isReposted={repostMap[item.thread.id] ?? false}
             onLike={handleLike}
             onReply={() => inputRef.current?.focus()}
             onRepost={handleRepost}
@@ -293,8 +304,8 @@ export default function ThreadDetailScreen() {
             ...item.thread,
             like_count: threadLikeCounts[item.thread.id] ?? item.thread.like_count,
           }}
-          isLiked={likedMap[item.thread.id] ?? isThreadLikedByCurrentUser(item.thread.id)}
-          isReposted={repostMap[item.thread.id] ?? isRepostedByCurrentUser(item.thread.id)}
+          isLiked={likedMap[item.thread.id] ?? false}
+          isReposted={repostMap[item.thread.id] ?? false}
           onLike={handleLike}
           onReply={handleReply}
           onRepost={handleRepost}
@@ -331,7 +342,7 @@ export default function ThreadDetailScreen() {
         <Divider className="bg-brand-border" />
         <HStack className="items-center bg-brand-dark px-4 py-2 pb-3" space="md">
           <Avatar size="xs">
-            <AvatarImage source={{ uri: currentUser.avatar_url }} />
+            <AvatarImage source={{ uri: currentUser?.avatar_url ?? '' }} />
           </Avatar>
           <TextInput
             ref={inputRef}

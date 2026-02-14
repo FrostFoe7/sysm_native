@@ -8,23 +8,21 @@ interface InteractionState {
   followingUsers: Record<string, boolean>;
   bookmarkedThreads: Record<string, boolean>;
 
-  // Actions
   setLiked: (threadId: string, isLiked: boolean) => void;
   setReposted: (threadId: string, isReposted: boolean) => void;
   setFollowing: (userId: string, isFollowing: boolean) => void;
   setBookmarked: (threadId: string, isBookmarked: boolean) => void;
-  
-  // Bulk update (useful for feed loading)
   syncInteractions: (params: {
     liked?: Record<string, boolean>;
     reposted?: Record<string, boolean>;
     following?: Record<string, boolean>;
+    bookmarked?: Record<string, boolean>;
   }) => void;
 }
 
 /**
- * Global store for client-side interactions.
- * Persisted to AsyncStorage so your likes/follows remain consistent even after app restart.
+ * Client-side interaction cache for optimistic UI.
+ * Source of truth is Supabase; this is a local mirror for instant toggling.
  */
 export const useInteractionStore = create<InteractionState>()(
   persist(
@@ -34,31 +32,29 @@ export const useInteractionStore = create<InteractionState>()(
       followingUsers: {},
       bookmarkedThreads: {},
 
-      setLiked: (threadId, isLiked) => set((state) => ({
-        likedThreads: { ...state.likedThreads, [threadId]: isLiked }
-      })),
+      setLiked: (threadId, isLiked) =>
+        set((s) => ({ likedThreads: { ...s.likedThreads, [threadId]: isLiked } })),
 
-      setReposted: (threadId, isReposted) => set((state) => ({
-        repostedThreads: { ...state.repostedThreads, [threadId]: isReposted }
-      })),
+      setReposted: (threadId, isReposted) =>
+        set((s) => ({ repostedThreads: { ...s.repostedThreads, [threadId]: isReposted } })),
 
-      setFollowing: (userId, isFollowing) => set((state) => ({
-        followingUsers: { ...state.followingUsers, [userId]: isFollowing }
-      })),
+      setFollowing: (userId, isFollowing) =>
+        set((s) => ({ followingUsers: { ...s.followingUsers, [userId]: isFollowing } })),
 
-      setBookmarked: (threadId, isBookmarked) => set((state) => ({
-        bookmarkedThreads: { ...state.bookmarkedThreads, [threadId]: isBookmarked }
-      })),
+      setBookmarked: (threadId, isBookmarked) =>
+        set((s) => ({ bookmarkedThreads: { ...s.bookmarkedThreads, [threadId]: isBookmarked } })),
 
-      syncInteractions: ({ liked, reposted, following }) => set((state) => ({
-        likedThreads: liked ? { ...state.likedThreads, ...liked } : state.likedThreads,
-        repostedThreads: reposted ? { ...state.repostedThreads, ...reposted } : state.repostedThreads,
-        followingUsers: following ? { ...state.followingUsers, ...following } : state.followingUsers,
-      })),
+      syncInteractions: ({ liked, reposted, following, bookmarked }) =>
+        set((s) => ({
+          likedThreads: liked ? { ...s.likedThreads, ...liked } : s.likedThreads,
+          repostedThreads: reposted ? { ...s.repostedThreads, ...reposted } : s.repostedThreads,
+          followingUsers: following ? { ...s.followingUsers, ...following } : s.followingUsers,
+          bookmarkedThreads: bookmarked ? { ...s.bookmarkedThreads, ...bookmarked } : s.bookmarkedThreads,
+        })),
     }),
     {
       name: 'interaction-storage',
       storage: createJSONStorage(() => AsyncStorage),
-    }
-  )
+    },
+  ),
 );

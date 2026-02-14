@@ -12,7 +12,7 @@ import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { MessageBubble, DateSeparator } from '@/components/MessageBubble';
 import { ChatComposer } from '@/components/ChatComposer';
 import { ChatSkeleton } from '@/components/skeletons';
-import { formatRelativeTime } from '@/db/selectors';
+import { formatRelativeTime } from '@/services/format';
 import {
   ArrowLeft,
   Phone,
@@ -20,7 +20,7 @@ import {
   Info,
   BadgeCheck,
 } from 'lucide-react-native';
-import type { MessageWithSender } from '@/types/types';
+import type { MessageWithSender, ChatItem } from '@/types/types';
 import { useChat } from '@/hooks/use-chat';
 
 export default function ChatScreen() {

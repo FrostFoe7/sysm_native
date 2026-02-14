@@ -1,6 +1,6 @@
 // app/profile/edit.tsx
 
-import React, { useState, useCallback, useLayoutEffect } from 'react';
+import React, { useState, useCallback, useLayoutEffect, useEffect } from 'react';
 import {
   ScrollView,
   TextInput,
@@ -17,7 +17,7 @@ import { VStack } from '@/components/ui/vstack';
 import { HStack } from '@/components/ui/hstack';
 import { Divider } from '@/components/ui/divider';
 import { Box } from '@/components/ui/box';
-import { getCurrentUser, updateCurrentUser } from '@/db/selectors';
+import { UserService } from '@/services/user.service';
 import { Camera, X } from 'lucide-react-native';
 import { 
   MAX_BIO_LENGTH, 
@@ -75,32 +75,44 @@ function EditField({
 export default function EditProfileScreen() {
   const router = useRouter();
   const navigation = useNavigation();
-  const currentUser = getCurrentUser();
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
-  const [displayName, setDisplayName] = useState(currentUser.display_name);
-  const [username, setUsername] = useState(currentUser.username);
-  const [bio, setBio] = useState(currentUser.bio);
-  const [avatarUrl, setAvatarUrl] = useState(currentUser.avatar_url);
+  const [displayName, setDisplayName] = useState('');
+  const [username, setUsername] = useState('');
+  const [bio, setBio] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState('');
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
+  useEffect(() => {
+    UserService.getCurrentUser().then((user) => {
+      setCurrentUser(user);
+      setDisplayName(user.display_name);
+      setUsername(user.username);
+      setBio(user.bio);
+      setAvatarUrl(user.avatar_url);
+    }).catch(console.error);
+  }, []);
+
   const hasChanges =
-    displayName !== currentUser.display_name ||
-    username !== currentUser.username ||
-    bio !== currentUser.bio ||
-    avatarUrl !== currentUser.avatar_url;
+    currentUser && (
+      displayName !== currentUser.display_name ||
+      username !== currentUser.username ||
+      bio !== currentUser.bio ||
+      avatarUrl !== currentUser.avatar_url
+    );
 
   const isValid =
     displayName.trim().length > 0 &&
     username.trim().length > 0 &&
     /^[a-zA-Z0-9._]+$/.test(username.trim());
 
-  const handleSave = useCallback(() => {
+  const handleSave = useCallback(async () => {
     if (!isValid || !hasChanges) return;
 
     setIsSaving(true);
 
-    updateCurrentUser({
+    await UserService.updateProfile({
       display_name: displayName.trim(),
       username: username.trim(),
       bio: bio.trim(),
@@ -152,6 +164,16 @@ export default function EditProfileScreen() {
       ),
     });
   }, [navigation, handleCancel, handleSave, hasChanges, isValid, isSaving]);
+
+  if (!currentUser) {
+    return (
+      <ScreenLayout edges={[]}>
+        <View className="flex-1 items-center justify-center">
+          <Text className="text-brand-muted">Loading...</Text>
+        </View>
+      </ScreenLayout>
+    );
+  }
 
   return (
     <ScreenLayout edges={[]}>

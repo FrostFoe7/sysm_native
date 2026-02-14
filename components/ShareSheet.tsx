@@ -18,6 +18,7 @@ import { Divider } from '@/components/ui/divider';
 import { useAppToast } from '@/components/AppToast';
 import { TOAST_ICONS } from '@/constants/icons';
 import { isBookmarkedByCurrentUser, toggleBookmark } from '@/db/selectors';
+import { analytics } from '@/services/analytics.service';
 import { Link2, Share2, MessageSquare, Bookmark, Flag } from 'lucide-react-native';
 
 interface ShareSheetProps {
@@ -41,6 +42,7 @@ export function ShareSheet({ isOpen, onClose, threadId }: ShareSheetProps) {
 
   const handleShareExternal = useCallback(() => {
     const url = `https://threads.net/t/${threadId}`;
+    analytics.track('thread_share', { contentId: threadId, method: 'external' });
     if (Platform.OS === 'web' && typeof navigator !== 'undefined' && navigator.share) {
       navigator
         .share({ title: 'Thread', url })
@@ -58,6 +60,9 @@ export function ShareSheet({ isOpen, onClose, threadId }: ShareSheetProps) {
     if (!threadId) return;
     const result = toggleBookmark(threadId);
     onClose();
+    if (result.bookmarked) {
+      analytics.track('thread_save', { contentId: threadId });
+    }
     showToast(
       result.bookmarked ? 'Saved to bookmarks' : 'Removed from bookmarks',
       TOAST_ICONS.saved,
@@ -66,8 +71,10 @@ export function ShareSheet({ isOpen, onClose, threadId }: ShareSheetProps) {
 
   const handleReport = useCallback(() => {
     onClose();
+    analytics.track('thread_share', { contentId: threadId, action: 'report' });
+    analytics.recordSignal('thread', threadId, 'report');
     showToast('Thread reported', TOAST_ICONS.reported, 'brand-red');
-  }, [onClose, showToast]);
+  }, [threadId, onClose, showToast]);
 
   return (
     <Actionsheet isOpen={isOpen} onClose={onClose}>

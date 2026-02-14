@@ -14,7 +14,6 @@ import { Box } from '@/components/ui/box';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Divider } from '@/components/ui/divider';
 import { SafeAreaView } from '@/components/ui/safe-area-view';
-import { getInbox, searchInbox, formatRelativeTime } from '@/db/selectors';
 import { SquarePen, Search, ArrowLeft, Phone, Video, Info, BadgeCheck } from 'lucide-react-native';
 import { InboxSkeleton, ChatSkeleton } from '@/components/skeletons';
 import { DESKTOP_BREAKPOINT } from '@/constants/ui';
@@ -22,6 +21,7 @@ import { MessageBubble, DateSeparator } from '@/components/MessageBubble';
 import { ChatComposer } from '@/components/ChatComposer';
 import { useChat } from '@/hooks/use-chat';
 import { useInbox } from '@/hooks/use-inbox';
+import type { MessageWithSender, ChatItem, ConversationWithDetails } from '@/types/types';
 
 // ─── Inline Chat Panel (desktop only) ────────────────────────────────────────
 
@@ -268,8 +268,6 @@ export default function InboxScreen() {
           {activeConvId ? (
             <InlineChatPanel
               conversationId={activeConvId}
-              refreshKey={refreshKey}
-              onRefresh={handleRefresh}
             />
           ) : (
             <View className="flex-1 items-center justify-center border-l border-brand-border">

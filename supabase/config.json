@@ -1,0 +1,40 @@
+{
+  "project_id": "",
+  "api": {
+    "enabled": true,
+    "port": 54321,
+    "schemas": ["public", "storage"],
+    "extra_search_path": ["public"],
+    "max_rows": 1000
+  },
+  "db": {
+    "port": 54322,
+    "major_version": 15
+  },
+  "studio": {
+    "enabled": true,
+    "port": 54323
+  },
+  "auth": {
+    "enabled": true,
+    "site_url": "http://localhost:8081",
+    "additional_redirect_urls": [
+      "exp://localhost:8081",
+      "sysm://auth/callback"
+    ],
+    "jwt_expiry": 3600,
+    "enable_signup": true,
+    "external": {
+      "apple": { "enabled": false },
+      "google": { "enabled": false },
+      "github": { "enabled": false }
+    }
+  },
+  "storage": {
+    "enabled": true,
+    "file_size_limit": "100MB"
+  },
+  "realtime": {
+    "enabled": true
+  }
+}

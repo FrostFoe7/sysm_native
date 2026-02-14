@@ -1,13 +1,14 @@
 // components/DesktopSidebar.tsx
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { useRouter, usePathname } from 'expo-router';
 import { VStack } from '@/components/ui/vstack';
 import { Text } from '@/components/ui/text';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Divider } from '@/components/ui/divider';
-import { getCurrentUser } from '@/db/selectors';
+import { UserService } from '@/services/user.service';
+import type { User } from '@/types/types';
 import {
   Home,
   Search,
@@ -117,7 +118,11 @@ function SidebarNavItem({
 export function DesktopSidebar() {
   const router = useRouter();
   const pathname = usePathname();
-  const currentUser = getCurrentUser();
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    UserService.getCurrentUser().then(setCurrentUser).catch(console.error);
+  }, []);
 
   const isActive = useCallback(
     (item: NavItem) => {
@@ -168,6 +173,7 @@ export function DesktopSidebar() {
       {/* Bottom: user row + menu */}
       <VStack className="px-2">
         <Divider className="mb-3 bg-brand-border" />
+        {currentUser && (
         <Pressable
           className="flex-row items-center rounded-xl px-4 py-3 active:bg-white/5"
           style={{ gap: 12 }}
@@ -186,6 +192,7 @@ export function DesktopSidebar() {
           </VStack>
           <AlignJustify size={18} color="brand-muted" strokeWidth={1.8} />
         </Pressable>
+        )}
       </VStack>
     </View>
   );

@@ -6,7 +6,7 @@ import { HStack } from '@/components/ui/hstack';
 import { Text } from '@/components/ui/text';
 import { AnimatedHeart } from '@/components/AnimatedHeart';
 import { MessageCircle, Repeat2, Send } from 'lucide-react-native';
-import { formatCount } from '@/db/selectors';
+import { formatCount } from '@/services/format';
 
 interface ActionRowProps {
   likeCount: number;

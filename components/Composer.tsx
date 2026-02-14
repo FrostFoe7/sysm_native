@@ -13,9 +13,9 @@ import { Box } from '@/components/ui/box';
 import { Divider } from '@/components/ui/divider';
 import { Button, ButtonText } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getCurrentUser } from '@/db/selectors';
+import { UserService } from '@/services/user.service';
 import { ImagePlus, Video, X, Hash, AtSign } from 'lucide-react-native';
-import type { MediaItem } from '@/db/db';
+import type { MediaItem, User } from '@/types/types';
 
 interface ComposerMedia {
   uri: string;
@@ -42,8 +42,13 @@ export function Composer({
   const [media, setMedia] = useState<ComposerMedia[]>([]);
   const inputRef = useRef<TextInput>(null);
   const router = useRouter();
-  const currentUser = getCurrentUser();
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const maxLength = 500;
+
+  useEffect(() => {
+    UserService.getCurrentUser().then(setCurrentUser).catch(console.error);
+  }, []);
+
   const remaining = maxLength - content.length;
   const maxMedia = 4;
 
