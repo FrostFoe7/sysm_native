@@ -17,7 +17,7 @@ import { Text } from '@/components/ui/text';
 import { Divider } from '@/components/ui/divider';
 import { useAppToast } from '@/components/AppToast';
 import { TOAST_ICONS } from '@/constants/icons';
-import { isBookmarkedByCurrentUser, toggleBookmark } from '@/db/selectors';
+import { ThreadService } from '@/services/thread.service';
 import { analytics } from '@/services/analytics.service';
 import { Link2, Share2, MessageSquare, Bookmark, Flag } from 'lucide-react-native';
 
@@ -29,7 +29,13 @@ interface ShareSheetProps {
 
 export function ShareSheet({ isOpen, onClose, threadId }: ShareSheetProps) {
   const { showToast } = useAppToast();
-  const isBookmarked = threadId ? isBookmarkedByCurrentUser(threadId) : false;
+  const [isBookmarked, setIsBookmarked] = React.useState(false);
+
+  React.useEffect(() => {
+    if (threadId) {
+      ThreadService.isBookmarkedByCurrentUser(threadId).then(setIsBookmarked).catch(() => {});
+    }
+  }, [threadId]);
 
   const handleCopyLink = useCallback(() => {
     const url = `https://threads.net/t/${threadId}`;
@@ -56,9 +62,9 @@ export function ShareSheet({ isOpen, onClose, threadId }: ShareSheetProps) {
     showToast('Coming soon', TOAST_ICONS.success);
   }, [onClose, showToast]);
 
-  const handleBookmark = useCallback(() => {
+  const handleBookmark = useCallback(async () => {
     if (!threadId) return;
-    const result = toggleBookmark(threadId);
+    const result = await ThreadService.toggleBookmark(threadId);
     onClose();
     if (result.bookmarked) {
       analytics.track('thread_save', { contentId: threadId });

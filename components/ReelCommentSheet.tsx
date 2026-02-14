@@ -17,7 +17,9 @@ import { HStack } from '@/components/ui/hstack';
 import { VStack } from '@/components/ui/vstack';
 import { Divider } from '@/components/ui/divider';
 import { X, Heart, Send } from 'lucide-react-native';
-import { getReelComments, addReelComment, getCurrentUser, formatRelativeTime, formatCount } from '@/db/selectors';
+import { ReelService } from '@/services/reel.service';
+import { UserService } from '@/services/user.service';
+import { formatRelativeTime, formatCount } from '@/services/format';
 import type { ReelCommentWithAuthor } from '@/types/types';
 
 interface ReelCommentSheetProps {
@@ -88,18 +90,20 @@ export function ReelCommentSheet({
   onClose,
   onCommentAdded,
 }: ReelCommentSheetProps) {
-  const [comments, setComments] = useState<ReelCommentWithAuthor[]>(() =>
-    getReelComments(reelId),
-  );
+  const [comments, setComments] = useState<ReelCommentWithAuthor[]>([]);
   const [text, setText] = useState('');
   const [count, setCount] = useState(initialCount);
   const inputRef = useRef<TextInput>(null);
-  const currentUser = getCurrentUser();
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
-  const handleSend = useCallback(() => {
+  React.useEffect(() => {
+    UserService.getCurrentUser().then(setCurrentUser).catch(console.error);
+  }, []);
+
+  const handleSend = useCallback(async () => {
     const trimmed = text.trim();
     if (!trimmed) return;
-    const newComment = addReelComment(reelId, trimmed);
+    const newComment = await ReelService.addComment(reelId, trimmed);
     setComments((prev) => [...prev, newComment]);
     setCount((p) => p + 1);
     setText('');
@@ -114,8 +118,9 @@ export function ReelCommentSheet({
     [],
   );
 
-  const refreshComments = useCallback(() => {
-    setComments(getReelComments(reelId));
+  const refreshComments = useCallback(async () => {
+    const c = await ReelService.getComments(reelId);
+    setComments(c);
   }, [reelId]);
 
   // Refresh comments when sheet opens

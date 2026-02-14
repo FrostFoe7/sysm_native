@@ -20,7 +20,9 @@ import {
   Link2,
   EyeOff,
 } from 'lucide-react-native';
-import { formatCount, isReelLiked, toggleReelLike, toggleUserFollow, isUserFollowedByCurrentUser } from '@/db/selectors';
+import { formatCount } from '@/services/format';
+import { ReelService } from '@/services/reel.service';
+import { UserService } from '@/services/user.service';
 import { useAppToast } from '@/components/AppToast';
 import { TOAST_ICONS } from '@/constants/icons';
 import type { ReelWithAuthor } from '@/types/types';
@@ -34,17 +36,22 @@ interface ReelOverlayProps {
 export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayProps) {
   const router = useRouter();
   const { showToast } = useAppToast();
-  const [liked, setLiked] = useState(() => isReelLiked(reel.id));
+  const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(reel.likeCount);
   const [commentCount] = useState(reel.commentCount);
   const [shareCount] = useState(reel.shareCount);
-  const [following, setFollowing] = useState(() => isUserFollowedByCurrentUser(reel.author.id));
+  const [following, setFollowing] = useState(false);
+
+  React.useEffect(() => {
+    ReelService.isReelLiked(reel.id).then(setLiked).catch(() => {});
+    UserService.isFollowing(reel.author.id).then(setFollowing).catch(() => {});
+  }, [reel.id, reel.author.id]);
   const [showMenu, setShowMenu] = useState(false);
   const [captionExpanded, setCaptionExpanded] = useState(false);
   const [showLikeHeart, setShowLikeHeart] = useState(false);
 
-  const handleLike = useCallback(() => {
-    const result = toggleReelLike(reel.id);
+  const handleLike = useCallback(async () => {
+    const result = await ReelService.toggleLike(reel.id);
     setLiked(result.liked);
     setLikeCount(result.count);
     if (result.liked) {
@@ -53,8 +60,8 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
     }
   }, [reel.id]);
 
-  const handleFollow = useCallback(() => {
-    const result = toggleUserFollow(reel.author.id);
+  const handleFollow = useCallback(async () => {
+    const result = await UserService.toggleFollow(reel.author.id);
     setFollowing(result.following);
     showToast(
       result.following ? `Following ${reel.author.username}` : `Unfollowed ${reel.author.username}`,

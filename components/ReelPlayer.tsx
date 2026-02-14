@@ -17,7 +17,6 @@ import { Heart, Volume2, VolumeX } from 'lucide-react-native';
 import { ReelOverlay } from '@/components/ReelOverlay';
 import { ReelCommentSheet } from '@/components/ReelCommentSheet';
 import { ReelSkeleton } from '@/components/ReelSkeleton';
-import { isReelLiked, toggleReelLike } from '@/db/selectors';
 import { ReelService } from '@/services/reel.service';
 import type { ReelWithAuthor } from '@/types/types';
 
@@ -100,11 +99,12 @@ export function ReelPlayer({ reel, isActive, isMuted, onMuteToggle }: ReelPlayer
     lastTapRef.current = now;
 
     if (diff < 300) {
-      // Double-tap -> like
-      const alreadyLiked = isReelLiked(reel.id);
-      if (!alreadyLiked) {
-        toggleReelLike(reel.id);
-      }
+      // Double-tap -> like (fire and forget)
+      ReelService.isReelLiked(reel.id).then((alreadyLiked) => {
+        if (!alreadyLiked) {
+          ReelService.toggleLike(reel.id);
+        }
+      });
       // Show heart animation
       setShowDoubleTapHeart(true);
       if (isWeb) {

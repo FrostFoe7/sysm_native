@@ -177,7 +177,7 @@ export function Composer({
             {/* Avatar column */}
             <VStack className="items-center">
               <Avatar size="sm">
-                <AvatarImage source={{ uri: currentUser.avatar_url }} />
+                <AvatarImage source={{ uri: currentUser?.avatar_url ?? '' }} />
               </Avatar>
               <Box className="mt-2 min-h-[24px] w-[2px] flex-1 rounded-full bg-brand-border-secondary" />
             </VStack>
@@ -185,7 +185,7 @@ export function Composer({
             {/* Input column */}
             <VStack className="flex-1 shrink" space="xs">
               <Text className="text-[15px] font-semibold text-brand-light">
-                {currentUser.username}
+                {currentUser?.username}
               </Text>
               {replyToUsername && (
                 <Text className="text-[13px] text-brand-muted">
