@@ -1,4 +1,5 @@
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import type { VariantProps } from '@gluestack-ui/utils/nativewind-utils';
 import { hstackStyle } from './styles';
 
@@ -15,6 +16,7 @@ const HStack = React.forwardRef<React.ComponentRef<'div'>, IHStackProps>(
           class: className,
         })}
         {...props}
+        style={props.style ? StyleSheet.flatten(props.style) : undefined}
         ref={ref}
       />
     );

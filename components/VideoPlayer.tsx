@@ -13,7 +13,8 @@ import {
   FadeIn, 
   FadeOut,
   useAnimatedStyle,
-  SafeAnimatedPressable
+  SafeAnimatedPressable,
+  SafeView
 } from '@/utils/animatedWebSafe';
 import { Image } from 'expo-image';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -146,7 +147,7 @@ export function VideoPlayer({
   }, [isDesktop, player, autoPlay]);
 
   return (
-    <View
+    <SafeView
       style={[{ overflow: 'hidden', borderRadius: 12, backgroundColor: '#1a1a1a' }, style]}
       {...(isDesktop
         ? {
@@ -207,6 +208,7 @@ export function VideoPlayer({
 
       {/* Controls overlay */}
       <SafeAnimatedView
+        pointerEvents={showControls ? 'auto' : 'none'}
         style={[
           {
             position: 'absolute',
@@ -216,7 +218,6 @@ export function VideoPlayer({
             bottom: 0,
             justifyContent: 'center',
             alignItems: 'center',
-            pointerEvents: showControls ? 'auto' : 'none',
           },
           animatedControlsStyle,
           isWeb && ({ transition: 'opacity 200ms ease-in-out' } as any)
@@ -279,6 +280,6 @@ export function VideoPlayer({
       >
         <Text className="text-white text-[11px] font-semibold">VIDEO</Text>
       </View>
-    </View>
+    </SafeView>
   );
 }

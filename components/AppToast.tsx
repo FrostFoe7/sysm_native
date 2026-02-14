@@ -106,11 +106,11 @@ function ToastView({ item, onDone }: { item: ToastItem; onDone: (id: number) => 
     right: 0,
     alignItems: 'center' as const,
     zIndex: 9999,
-    pointerEvents: 'none' as const,
   };
 
   return (
     <SafeAnimatedView 
+      pointerEvents="none"
       style={[
         baseStyle, 
         animatedStyle,

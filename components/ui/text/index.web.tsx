@@ -1,8 +1,11 @@
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import type { VariantProps } from '@gluestack-ui/utils/nativewind-utils';
 import { textStyle } from './styles';
 
-type ITextProps = React.ComponentProps<'span'> & VariantProps<typeof textStyle>;
+type ITextProps = React.ComponentProps<'span'> & VariantProps<typeof textStyle> & {
+  numberOfLines?: number;
+};
 
 const Text = React.forwardRef<React.ComponentRef<'span'>, ITextProps>(
   function Text(
@@ -16,6 +19,7 @@ const Text = React.forwardRef<React.ComponentRef<'span'>, ITextProps>(
       sub,
       italic,
       highlight,
+      numberOfLines,
       ...props
     }: { className?: string } & ITextProps,
     ref
@@ -34,6 +38,7 @@ const Text = React.forwardRef<React.ComponentRef<'span'>, ITextProps>(
           class: className,
         })}
         {...props}
+        style={props.style ? StyleSheet.flatten(props.style) : undefined}
         ref={ref}
       />
     );

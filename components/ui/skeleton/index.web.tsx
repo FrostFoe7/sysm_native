@@ -1,4 +1,5 @@
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import { skeletonStyle, skeletonTextStyle } from './styles';
 
 import type { VariantProps } from '@gluestack-ui/utils/nativewind-utils';
@@ -32,6 +33,7 @@ const Skeleton = React.forwardRef<HTMLDivElement, ISkeletonProps>(
             class: className,
           })}`}
           {...props}
+          style={props.style ? StyleSheet.flatten(props.style) : undefined}
         />
       );
     } else {
@@ -76,6 +78,7 @@ const SkeletonText = React.forwardRef<HTMLDivElement, ISkeletonTextProps>(
                   class: className,
                 })}`}
                 {...props}
+                style={props.style ? StyleSheet.flatten(props.style) : undefined}
               />
             ))}
           </div>
@@ -88,6 +91,7 @@ const SkeletonText = React.forwardRef<HTMLDivElement, ISkeletonTextProps>(
               class: className,
             })}`}
             {...props}
+            style={props.style ? StyleSheet.flatten(props.style) : undefined}
           />
         );
       }

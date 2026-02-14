@@ -1,4 +1,5 @@
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import { boxStyle } from './styles';
 
 import type { VariantProps } from '@gluestack-ui/utils/nativewind-utils';
@@ -11,7 +12,12 @@ const Box = React.forwardRef<HTMLDivElement, IBoxProps>(function Box(
   ref
 ) {
   return (
-    <div ref={ref} className={boxStyle({ class: className })} {...props} />
+    <div 
+      ref={ref} 
+      className={boxStyle({ class: className })} 
+      {...props} 
+      style={props.style ? StyleSheet.flatten(props.style) : undefined}
+    />
   );
 });
 

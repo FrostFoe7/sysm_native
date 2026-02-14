@@ -2,6 +2,7 @@
 
 import React, { useCallback, useState, memo } from 'react';
 import { View, Pressable, ScrollView, Platform, useWindowDimensions } from 'react-native';
+import { SafeView } from '@/utils/animatedWebSafe';
 import { Image } from 'expo-image';
 import { Skeleton } from '@/components/ui/skeleton';
 import { VideoPlayer } from '@/components/VideoPlayer';
@@ -86,7 +87,7 @@ function DuoMedia({
   const [loaded, setLoaded] = useState<Record<number, boolean>>({});
 
   return (
-    <View style={{ flexDirection: 'row', height: maxHeight, gap: GAP, borderRadius: BORDER_RADIUS, overflow: 'hidden' }}>
+    <SafeView style={{ flexDirection: 'row', height: maxHeight, gap: GAP, borderRadius: BORDER_RADIUS, overflow: 'hidden' }}>
       {media.slice(0, 2).map((item, i) => (
         <View key={i} style={{ flex: 1, overflow: 'hidden' }}>
           {item.type === 'video' ? (
@@ -113,7 +114,7 @@ function DuoMedia({
           )}
         </View>
       ))}
-    </View>
+    </SafeView>
   );
 }
 
@@ -160,13 +161,13 @@ function TriMedia({
   };
 
   return (
-    <View style={{ height: maxHeight, gap: GAP, borderRadius: BORDER_RADIUS, overflow: 'hidden' }}>
+    <SafeView style={{ height: maxHeight, gap: GAP, borderRadius: BORDER_RADIUS, overflow: 'hidden' }}>
       <View style={{ flex: 1, flexDirection: 'row', gap: GAP }}>
         {renderItem(media[0], 0, { flex: 2 })}
         {renderItem(media[1], 1, { flex: 1 })}
       </View>
       {renderItem(media[2], 2, { height: maxHeight * 0.4 })}
-    </View>
+    </SafeView>
   );
 }
 
@@ -213,7 +214,7 @@ function QuadMedia({
   };
 
   return (
-    <View style={{ height: maxHeight, gap: GAP, borderRadius: BORDER_RADIUS, overflow: 'hidden' }}>
+    <SafeView style={{ height: maxHeight, gap: GAP, borderRadius: BORDER_RADIUS, overflow: 'hidden' }}>
       <View style={{ flex: 1, flexDirection: 'row', gap: GAP }}>
         {renderItem(media[0], 0)}
         {renderItem(media[1], 1)}
@@ -222,7 +223,7 @@ function QuadMedia({
         {renderItem(media[2], 2)}
         {renderItem(media[3], 3)}
       </View>
-    </View>
+    </SafeView>
   );
 }
 

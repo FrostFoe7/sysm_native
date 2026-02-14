@@ -88,11 +88,11 @@ function FullscreenVideo({ uri, isActive }: { uri: string; isActive: boolean }) 
         <SafeAnimatedView
           entering={FadeIn?.duration(150)}
           exiting={FadeOut?.duration(150)}
+          pointerEvents="none"
           style={{
             position: 'absolute',
             justifyContent: 'center',
             alignItems: 'center',
-            pointerEvents: 'none',
           }}
         >
           <View

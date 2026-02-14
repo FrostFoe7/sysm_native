@@ -1,6 +1,7 @@
 import React, { forwardRef } from 'react';
 import type { VariantProps } from '@gluestack-ui/utils/nativewind-utils';
 import { Animated, Easing, Platform, View } from 'react-native';
+import { SafeAnimatedView } from '@/utils/animatedWebSafe';
 import { skeletonStyle, skeletonTextStyle } from './styles';
 
 type ISkeletonProps = React.ComponentProps<typeof View> &
@@ -18,7 +19,7 @@ type ISkeletonTextProps = React.ComponentProps<typeof View> &
   };
 
 const Skeleton = forwardRef<
-  React.ComponentRef<typeof Animated.View>,
+  React.ComponentRef<typeof SafeAnimatedView>,
   ISkeletonProps
 >(function Skeleton(
   {
@@ -42,7 +43,7 @@ const Skeleton = forwardRef<
     // Web: render non-animated skeleton or children
     if (!isLoaded) {
       return (
-        <View
+        <SafeAnimatedView
           className={`${startColor} ${skeletonStyle({
             variant,
             class: className,
@@ -86,7 +87,7 @@ const Skeleton = forwardRef<
   if (!isLoaded) {
     Animated.loop(pulse).start();
     return (
-      <Animated.View
+      <SafeAnimatedView
         style={{ opacity: pulseAnim }}
         className={`${startColor} ${skeletonStyle({
           variant,

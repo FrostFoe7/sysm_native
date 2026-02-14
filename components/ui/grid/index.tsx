@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import type { VariantProps } from '@gluestack-ui/utils/nativewind-utils';
 import { View, Dimensions, Platform, ViewProps } from 'react-native';
+import { SafeView } from '@/utils/animatedWebSafe';
 import { gridStyle, gridItemStyle } from './styles';
 import { cssInterop } from 'nativewind';
 import {
@@ -156,7 +157,7 @@ const Grid = forwardRef<React.ComponentRef<typeof View>, IGridProps>(
     const borderWidthToSubtract = borderLeftWidth + borderRightWidth;
     return (
       <GridContext.Provider value={contextValue}>
-        <View
+        <SafeView
           ref={ref}
           className={gridStyle({
             class: className + ' ' + gridClassMerged,
@@ -176,7 +177,7 @@ const Grid = forwardRef<React.ComponentRef<typeof View>, IGridProps>(
           {...props}
         >
           {calculatedWidth && childrenWithProps}
-        </View>
+        </SafeView>
       </GridContext.Provider>
     );
   }
@@ -255,7 +256,7 @@ const GridItem = forwardRef<React.ComponentRef<typeof View>, IGridItemProps>(
       props?.index,
     ]);
     return (
-      <View
+      <SafeView
         ref={ref}
         // @ts-expect-error : internal implementation for r-19/react-native-web
         gridItemClass={gridItemClass}

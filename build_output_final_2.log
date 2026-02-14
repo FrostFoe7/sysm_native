@@ -1,0 +1,24 @@
+
+> sysm_native@1.0.0 build /workspaces/codespaces-blank/sysm
+> expo export --platform web
+
+React Compiler enabled
+Starting Metro Bundler
+Static rendering is enabled. Learn more: https://docs.expo.dev/router/reference/static-rendering/
+Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ node_modules/expo-router/node/render.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ node_modules/expo-router/node/render.js ░░░░░░░░░░░░░░░░  4.4% ( 9/43)
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓░░░░░░░░ 56.1% (426/569)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 96.5% (2649/2696)
+λ Bundling failed 15932ms node_modules/expo-router/node/render.js (2696 modules)
+SyntaxError: Error: /workspaces/codespaces-blank/sysm/components/VideoPlayer.tsx: Expected corresponding JSX closing tag for <SafeView>. (283:4)
+
+  281 |         <Text className="text-white text-[11px] font-semibold">VIDEO</Text>
+  282 |       </View>
+> 283 |     </View>
+      |     ^
+  284 |   );
+  285 | }
+  286 |
+ ELIFECYCLE  Command failed with exit code 1.

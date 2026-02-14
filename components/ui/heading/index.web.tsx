@@ -1,4 +1,5 @@
 import React, { forwardRef, memo } from 'react';
+import { StyleSheet } from 'react-native';
 import { headingStyle } from './styles';
 import type { VariantProps } from '@gluestack-ui/utils/nativewind-utils';
 type IHeadingProps = VariantProps<typeof headingStyle> &
@@ -40,6 +41,7 @@ const MappedHeading = memo(
               class: className,
             })}
             {...props}
+            style={props.style ? StyleSheet.flatten(props.style) : undefined}
             ref={ref}
           />
         );
@@ -58,6 +60,7 @@ const MappedHeading = memo(
               class: className,
             })}
             {...props}
+            style={props.style ? StyleSheet.flatten(props.style) : undefined}
             ref={ref}
           />
         );
@@ -76,6 +79,7 @@ const MappedHeading = memo(
               class: className,
             })}
             {...props}
+            style={props.style ? StyleSheet.flatten(props.style) : undefined}
             ref={ref}
           />
         );
@@ -94,6 +98,7 @@ const MappedHeading = memo(
               class: className,
             })}
             {...props}
+            style={props.style ? StyleSheet.flatten(props.style) : undefined}
             ref={ref}
           />
         );
@@ -112,6 +117,7 @@ const MappedHeading = memo(
               class: className,
             })}
             {...props}
+            style={props.style ? StyleSheet.flatten(props.style) : undefined}
             ref={ref}
           />
         );
@@ -131,6 +137,7 @@ const MappedHeading = memo(
               class: className,
             })}
             {...props}
+            style={props.style ? StyleSheet.flatten(props.style) : undefined}
             ref={ref}
           />
         );
@@ -149,6 +156,7 @@ const MappedHeading = memo(
               class: className,
             })}
             {...props}
+            style={props.style ? StyleSheet.flatten(props.style) : undefined}
             ref={ref}
           />
         );
@@ -186,6 +194,7 @@ const Heading = memo(
             class: className,
           })}
           {...props}
+          style={props.style ? StyleSheet.flatten(props.style) : undefined}
           ref={ref}
         />
       );

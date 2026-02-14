@@ -1,4 +1,5 @@
-import { Platform, View as RNView, Pressable as RNPressable, Text as RNText } from 'react-native';
+import { Platform, View as RNView, Pressable as RNPressable, Text as RNText, StyleSheet } from 'react-native';
+import React, { forwardRef } from 'react';
 
 /**
  * Reliable web detection
@@ -56,8 +57,8 @@ if (isNative) {
  */
 export function useAnimatedStyle(worklet: () => Record<string, any>) {
   if (isWeb) {
-    // Return a plain style object on web to avoid Reanimated proxy issues
-    return worklet();
+    // Return a plain flattened style object on web to avoid Reanimated proxy issues
+    return StyleSheet.flatten(worklet());
   }
   return useAnimatedStyleBase(worklet);
 }
@@ -87,9 +88,41 @@ export const FadeOut = FadeOutBase;
 /**
  * Web-safe animated components
  */
-export const SafeAnimatedView = isWeb ? RNView : Animated.View || RNView;
-export const SafeAnimatedPressable = isWeb ? RNPressable : Animated.createAnimatedComponent(RNPressable);
-export const SafeAnimatedText = isWeb ? RNText : Animated.Text || Animated.createAnimatedComponent(RNText);
+export const SafeAnimatedView = isWeb 
+  ? forwardRef(({ entering, exiting, layout, ...props }: any, ref) => (
+      <RNView 
+        {...props} 
+        style={props.style ? StyleSheet.flatten(props.style) : undefined} 
+        ref={ref} 
+      />
+    ))
+  : Animated.View || RNView;
+
+export const SafeAnimatedPressable = isWeb 
+  ? forwardRef(({ entering, exiting, layout, ...props }: any, ref) => (
+      <RNPressable 
+        {...props} 
+        style={props.style ? StyleSheet.flatten(props.style) : undefined} 
+        ref={ref} 
+      />
+    ))
+  : Animated.createAnimatedComponent(RNPressable);
+
+export const SafeAnimatedText = isWeb 
+  ? forwardRef(({ entering, exiting, layout, ...props }: any, ref) => (
+      <RNText 
+        {...props} 
+        style={props.style ? StyleSheet.flatten(props.style) : undefined} 
+        ref={ref} 
+      />
+    ))
+  : Animated.Text || Animated.createAnimatedComponent(RNText);
+
+/**
+ * Non-animated safe aliases for use with array styles on web
+ */
+export const SafeView = SafeAnimatedView;
+export const SafeText = SafeAnimatedText;
 
 /**
  * Helper to wrap components for animations

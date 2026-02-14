@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { config } from './config';
-import { View, ViewProps } from 'react-native';
+import { ViewProps } from 'react-native';
+import { SafeView } from '@/utils/animatedWebSafe';
 import { OverlayProvider } from '@gluestack-ui/core/overlay/creator';
 import { ToastProvider } from '@gluestack-ui/core/toast/creator';
 import { useColorScheme } from 'nativewind';
@@ -23,7 +24,7 @@ export function GluestackUIProvider({
   }, [mode]);
 
   return (
-    <View
+    <SafeView
       style={[
         config[colorScheme!],
         { flex: 1, height: '100%', width: '100%' },
@@ -33,6 +34,6 @@ export function GluestackUIProvider({
       <OverlayProvider>
         <ToastProvider>{props.children}</ToastProvider>
       </OverlayProvider>
-    </View>
+    </SafeView>
   );
 }

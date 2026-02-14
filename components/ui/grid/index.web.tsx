@@ -1,4 +1,5 @@
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import { gridStyle, gridItemStyle } from './styles';
 
 import type { VariantProps } from '@gluestack-ui/utils/nativewind-utils';
@@ -32,6 +33,7 @@ const Grid = React.forwardRef<HTMLDivElement, IGridProps>(function Grid(
         class: className + ' ' + finalGridClass,
       })}
       {...props}
+      style={props.style ? StyleSheet.flatten(props.style) : undefined}
     />
   );
 });
@@ -55,6 +57,7 @@ const GridItem = React.forwardRef<HTMLDivElement, IGridItemProps>(
           class: className + ' ' + finalGridItemClass,
         })}
         {...props}
+        style={props.style ? StyleSheet.flatten(props.style) : undefined}
       />
     );
   }

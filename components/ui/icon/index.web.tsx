@@ -1,4 +1,5 @@
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import { createIcon } from '@gluestack-ui/core/icon/creator';
 import { tva } from '@gluestack-ui/utils/nativewind-utils';
 import { VariantProps } from '@gluestack-ui/utils/nativewind-utils';
@@ -36,6 +37,7 @@ export const Icon = React.forwardRef<
         // @ts-expect-error : TODO: fix this
         ref={ref}
         {...props}
+        style={props.style ? StyleSheet.flatten(props.style) : undefined}
         className={iconStyle({ class: className })}
         size={size}
       />
@@ -49,6 +51,7 @@ export const Icon = React.forwardRef<
         // @ts-expect-error : TODO: fix this
         ref={ref}
         {...props}
+        style={props.style ? StyleSheet.flatten(props.style) : undefined}
         className={iconStyle({ class: className })}
       />
     );
@@ -58,6 +61,7 @@ export const Icon = React.forwardRef<
       // @ts-expect-error : TODO: fix this
       ref={ref}
       {...props}
+      style={props.style ? StyleSheet.flatten(props.style) : undefined}
       className={iconStyle({ size, class: className })}
     />
   );

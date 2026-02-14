@@ -1,4 +1,5 @@
 import React, { createContext, useMemo, useContext } from 'react';
+import { StyleSheet } from 'react-native';
 import {
   tableStyle,
   tableHeaderStyle,
@@ -28,6 +29,7 @@ const Table = React.forwardRef<HTMLTableElement, React.ComponentProps<'table'>>(
         ref={ref}
         className={tableStyle({ class: className })}
         {...props}
+        style={props.style ? StyleSheet.flatten(props.style) : undefined}
       />
     );
   }
@@ -48,6 +50,7 @@ const TableHeader = React.forwardRef<
         ref={ref}
         className={tableHeaderStyle({ class: className })}
         {...props}
+        style={props.style ? StyleSheet.flatten(props.style) : undefined}
       />
     </TableHeaderContext.Provider>
   );
@@ -62,6 +65,7 @@ const TableBody = React.forwardRef<
       ref={ref}
       className={tableBodyStyle({ class: className })}
       {...props}
+      style={props.style ? StyleSheet.flatten(props.style) : undefined}
     />
   );
 });
@@ -81,6 +85,7 @@ const TableFooter = React.forwardRef<
         ref={ref}
         className={tableFooterStyle({ class: className })}
         {...props}
+        style={props.style ? StyleSheet.flatten(props.style) : undefined}
       />
     </TableFooterContext.Provider>
   );
@@ -91,7 +96,12 @@ const TableHead = React.forwardRef<
   React.ComponentProps<'th'>
 >(function TableHead({ className, ...props }, ref) {
   return (
-    <th ref={ref} className={tableHeadStyle({ class: className })} {...props} />
+    <th 
+      ref={ref} 
+      className={tableHeadStyle({ class: className })} 
+      {...props} 
+      style={props.style ? StyleSheet.flatten(props.style) : undefined}
+    />
   );
 });
 
@@ -110,6 +120,7 @@ const TableRow = React.forwardRef<
         class: className,
       })}
       {...props}
+      style={props.style ? StyleSheet.flatten(props.style) : undefined}
     />
   );
 });
@@ -119,7 +130,12 @@ const TableData = React.forwardRef<
   React.ComponentProps<'td'>
 >(function TableData({ className, ...props }, ref) {
   return (
-    <td ref={ref} className={tableDataStyle({ class: className })} {...props} />
+    <td 
+      ref={ref} 
+      className={tableDataStyle({ class: className })} 
+      {...props} 
+      style={props.style ? StyleSheet.flatten(props.style) : undefined}
+    />
   );
 });
 
@@ -132,6 +148,7 @@ const TableCaption = React.forwardRef<
       ref={ref}
       className={tableCaptionStyle({ class: className })}
       {...props}
+      style={props.style ? StyleSheet.flatten(props.style) : undefined}
     />
   );
 });
