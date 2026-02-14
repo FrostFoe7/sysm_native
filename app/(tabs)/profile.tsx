@@ -191,6 +191,8 @@ export default function ProfileScreen() {
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 24 }}
+        scrollEnabled
+        nestedScrollEnabled
         ListEmptyComponent={
           <View className="items-center justify-center py-16">
             <Text className="text-[15px] text-[#555555]">
