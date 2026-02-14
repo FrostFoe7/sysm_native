@@ -12,7 +12,7 @@ import {
   Platform,
 } from 'react-native';
 import { Text } from '@/components/ui/text';
-import { Avatar, AvatarImage, AvatarFallbackText } from '@/components/ui/avatar';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { HStack } from '@/components/ui/hstack';
 import { VStack } from '@/components/ui/vstack';
 import { Divider } from '@/components/ui/divider';
@@ -43,7 +43,6 @@ function CommentItem({ comment }: { comment: ReelCommentWithAuthor }) {
     <HStack className="px-4 py-3" space="sm" style={{ alignItems: 'flex-start' }}>
       <Avatar size="xs">
         <AvatarImage source={{ uri: comment.author.avatar_url }} />
-        <AvatarFallbackText>{comment.author.display_name}</AvatarFallbackText>
       </Avatar>
       <VStack className="flex-1" space="xs">
         <HStack space="sm" style={{ alignItems: 'center' }}>
@@ -220,7 +219,6 @@ export function ReelCommentSheet({
             >
               <Avatar size="xs">
                 <AvatarImage source={{ uri: currentUser.avatar_url }} />
-                <AvatarFallbackText>{currentUser.display_name}</AvatarFallbackText>
               </Avatar>
               <View
                 style={{

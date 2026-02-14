@@ -15,7 +15,7 @@ import { Heading } from '@/components/ui/heading';
 import { HStack } from '@/components/ui/hstack';
 import { VStack } from '@/components/ui/vstack';
 import { Box } from '@/components/ui/box';
-import { Avatar, AvatarImage, AvatarFallbackText } from '@/components/ui/avatar';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Divider } from '@/components/ui/divider';
 import { Button, ButtonText } from '@/components/ui/button';
 import {
@@ -196,7 +196,6 @@ export default function ExploreScreen() {
               <HStack className="items-center px-4 py-3" space="md">
                 <Avatar size="md">
                   <AvatarImage source={{ uri: item.user.avatar_url }} />
-                  <AvatarFallbackText>{item.user.display_name}</AvatarFallbackText>
                 </Avatar>
                 <VStack className="flex-1 overflow-hidden">
                   <HStack className="items-center" space="xs">

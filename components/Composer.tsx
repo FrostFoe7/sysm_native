@@ -5,7 +5,7 @@ import { TextInput, Pressable, Platform, KeyboardAvoidingView, View, ScrollView 
 import { useRouter } from 'expo-router';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
-import { Avatar, AvatarImage, AvatarFallbackText } from '@/components/ui/avatar';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Text } from '@/components/ui/text';
 import { HStack } from '@/components/ui/hstack';
 import { VStack } from '@/components/ui/vstack';
@@ -173,7 +173,6 @@ export function Composer({
             <VStack className="items-center">
               <Avatar size="sm">
                 <AvatarImage source={{ uri: currentUser.avatar_url }} />
-                <AvatarFallbackText>{currentUser.display_name}</AvatarFallbackText>
               </Avatar>
               <Box className="mt-2 min-h-[24px] w-[2px] flex-1 rounded-full bg-[#2a2a2a]" />
             </VStack>

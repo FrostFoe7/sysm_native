@@ -14,7 +14,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { ThreadCard } from '@/components/ThreadCard';
 import { ShareSheet } from '@/components/ShareSheet';
 import { ThreadOverflowMenu } from '@/components/ThreadOverflowMenu';
-import { Avatar, AvatarImage, AvatarFallbackText } from '@/components/ui/avatar';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Text } from '@/components/ui/text';
 import { HStack } from '@/components/ui/hstack';
 import { Divider } from '@/components/ui/divider';
@@ -332,7 +332,6 @@ export default function ThreadDetailScreen() {
         <HStack className="items-center bg-[#101010] px-4 py-2 pb-3" space="md">
           <Avatar size="xs">
             <AvatarImage source={{ uri: currentUser.avatar_url }} />
-            <AvatarFallbackText>{currentUser.display_name}</AvatarFallbackText>
           </Avatar>
           <TextInput
             ref={inputRef}

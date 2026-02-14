@@ -12,7 +12,7 @@ import { Heading } from '@/components/ui/heading';
 import { HStack } from '@/components/ui/hstack';
 import { VStack } from '@/components/ui/vstack';
 import { Box } from '@/components/ui/box';
-import { Avatar, AvatarImage, AvatarFallbackText } from '@/components/ui/avatar';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Divider } from '@/components/ui/divider';
 import { Button, ButtonText } from '@/components/ui/button';
 import {
@@ -109,7 +109,6 @@ export default function ActivityScreen() {
               <View className="relative">
                 <Avatar size="sm">
                   <AvatarImage source={{ uri: item.actor.avatar_url }} />
-                  <AvatarFallbackText>{item.actor.display_name}</AvatarFallbackText>
                 </Avatar>
                 <View
                   className="absolute -bottom-1 -right-1 size-[18px] items-center justify-center rounded-full border-2 border-[#101010]"

@@ -5,7 +5,7 @@ import { Pressable, View } from 'react-native';
 import { useRouter, usePathname } from 'expo-router';
 import { VStack } from '@/components/ui/vstack';
 import { Text } from '@/components/ui/text';
-import { Avatar, AvatarImage, AvatarFallbackText } from '@/components/ui/avatar';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Divider } from '@/components/ui/divider';
 import { getCurrentUser } from '@/db/selectors';
 import {
@@ -167,7 +167,6 @@ export function DesktopSidebar() {
         >
           <Avatar size="sm">
             <AvatarImage source={{ uri: currentUser.avatar_url }} />
-            <AvatarFallbackText>{currentUser.display_name}</AvatarFallbackText>
           </Avatar>
           <VStack className="flex-1">
             <Text className="text-[14px] font-semibold text-[#f3f5f7]" numberOfLines={1}>

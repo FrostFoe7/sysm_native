@@ -3,7 +3,7 @@
 import React, { useCallback, useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Avatar, AvatarImage, AvatarFallbackText } from '@/components/ui/avatar';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Text } from '@/components/ui/text';
 import { HStack } from '@/components/ui/hstack';
 import { VStack } from '@/components/ui/vstack';
@@ -101,9 +101,6 @@ export function ThreadCard({
           <Pressable onPress={handleAvatarPress}>
             <Avatar size="sm">
               <AvatarImage source={{ uri: thread.author.avatar_url }} />
-              <AvatarFallbackText>
-                {thread.author.display_name}
-              </AvatarFallbackText>
             </Avatar>
           </Pressable>
           {thread.reply_count > 0 && !isDetailView && (

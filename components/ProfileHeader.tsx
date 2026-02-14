@@ -1,7 +1,7 @@
 // components/ProfileHeader.tsx
 
 import React from 'react';
-import { Avatar, AvatarImage, AvatarFallbackText } from '@/components/ui/avatar';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Text } from '@/components/ui/text';
 import { Heading } from '@/components/ui/heading';
 import { HStack } from '@/components/ui/hstack';
@@ -10,7 +10,7 @@ import { Button, ButtonText } from '@/components/ui/button';
 import { Divider } from '@/components/ui/divider';
 import { Box } from '@/components/ui/box';
 import { formatCount } from '@/db/selectors';
-import { BadgeCheck, Globe } from 'lucide-react-native';
+import { BadgeCheck } from 'lucide-react-native';
 import type { User } from '@/db/db';
 
 interface ProfileHeaderProps {
@@ -35,26 +35,25 @@ export function ProfileHeader({
   onEditProfile,
 }: ProfileHeaderProps) {
   return (
-    <VStack className="px-4 pb-2 pt-4">
+    <VStack className="w-full flex-shrink-0 px-4 pt-4 pb-4" space="md">
       {/* Top row: name + avatar */}
-      <HStack className="mb-3 items-start justify-between">
-        <VStack className="mr-4 flex-1 overflow-hidden" space="xs">
+      <HStack className="items-start justify-between w-full gap-3">
+        <VStack className="flex-1 gap-1">
           <Heading
             size="xl"
             className="font-bold text-[#f3f5f7]"
             numberOfLines={1}
-            style={{ overflow: 'hidden' }}
           >
             {user.display_name}
           </Heading>
-          <HStack className="items-center" space="xs">
-            <Text className="text-[15px] text-[#f3f5f7]" numberOfLines={1} style={{ flexShrink: 1 }}>
-              {user.username}
+          <HStack className="items-center gap-1 flex-wrap">
+            <Text className="text-[15px] text-[#f3f5f7]" numberOfLines={1}>
+              @{user.username}
             </Text>
             {user.verified && (
               <BadgeCheck size={14} color="#0095f6" fill="#0095f6" strokeWidth={0} />
             )}
-            <Box className="ml-1 shrink-0 rounded-full bg-[#1e1e1e] px-2 py-0.5">
+            <Box className="rounded-full bg-[#1e1e1e] px-2 py-0.5">
               <Text className="text-[11px] text-[#555555]">threads.net</Text>
             </Box>
           </HStack>
@@ -62,31 +61,29 @@ export function ProfileHeader({
 
         <Avatar size="lg">
           <AvatarImage source={{ uri: user.avatar_url }} />
-          <AvatarFallbackText>{user.display_name}</AvatarFallbackText>
         </Avatar>
       </HStack>
 
       {/* Bio */}
       {user.bio.length > 0 && (
-        <Text className="mb-3 text-[15px] leading-[21px] text-[#f3f5f7]" numberOfLines={5}>
+        <Text className="text-[15px] leading-[21px] text-[#f3f5f7]">
           {user.bio}
         </Text>
       )}
 
       {/* Stats row */}
-      <HStack className="mb-4 items-center" space="sm">
-        <Text className="text-[14px] text-[#555555]">
-          {formatCount(followerCount)} followers
+      <HStack className="items-center gap-2">
+        <Text className="text-[13px] text-[#777777]">
+          <Text className="font-semibold text-[#f3f5f7]">{formatCount(followerCount)}</Text> followers
         </Text>
-        <Text className="text-[14px] text-[#555555]">·</Text>
-        <HStack className="items-center" space="xs">
-          <Globe size={13} color="#555555" strokeWidth={1.8} />
-          <Text className="text-[14px] text-[#555555]">{user.username}</Text>
-        </HStack>
+        <Text className="text-[13px] text-[#777777]">·</Text>
+        <Text className="text-[13px] text-[#777777]">
+          <Text className="font-semibold text-[#f3f5f7]">{formatCount(followingCount)}</Text> following
+        </Text>
       </HStack>
 
       {/* Action buttons */}
-      <HStack className="mb-2" space="sm">
+      <HStack className="w-full gap-2">
         {isCurrentUser ? (
           <>
             <Button
@@ -105,7 +102,7 @@ export function ProfileHeader({
               className="h-9 flex-1 rounded-lg border-[#333333] bg-transparent"
             >
               <ButtonText className="text-[14px] font-semibold text-[#f3f5f7]">
-                Share profile
+                Share
               </ButtonText>
             </Button>
           </>

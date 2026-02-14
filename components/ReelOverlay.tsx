@@ -5,7 +5,7 @@ import React, { useState, useCallback } from 'react';
 import { View, Pressable, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Text } from '@/components/ui/text';
-import { Avatar, AvatarImage, AvatarFallbackText } from '@/components/ui/avatar';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { VStack } from '@/components/ui/vstack';
 import { HStack } from '@/components/ui/hstack';
 import {
@@ -125,7 +125,6 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
           <Pressable onPress={handleAvatarPress}>
             <Avatar size="sm" style={{ borderWidth: 2, borderColor: '#f3f5f7' }}>
               <AvatarImage source={{ uri: reel.author.avatar_url }} />
-              <AvatarFallbackText>{reel.author.display_name}</AvatarFallbackText>
             </Avatar>
           </Pressable>
           {!following && (

@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { useRouter, useNavigation } from 'expo-router';
 import { ScreenLayout } from '@/components/ScreenLayout';
-import { Avatar, AvatarImage, AvatarFallbackText } from '@/components/ui/avatar';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { HStack } from '@/components/ui/hstack';
@@ -172,7 +172,6 @@ export default function EditProfileScreen() {
             >
               <Avatar size="xl">
                 <AvatarImage source={{ uri: avatarUrl }} />
-                <AvatarFallbackText>{displayName}</AvatarFallbackText>
               </Avatar>
               <Box className="absolute bottom-0 right-0 rounded-full border-2 border-[#101010] bg-[#0095f6] p-1.5">
                 <Camera size={14} color="#ffffff" strokeWidth={2.5} />
@@ -209,7 +208,6 @@ export default function EditProfileScreen() {
                   >
                     <Avatar size="md">
                       <AvatarImage source={{ uri: url }} />
-                      <AvatarFallbackText>A</AvatarFallbackText>
                     </Avatar>
                   </Pressable>
                 ))}
