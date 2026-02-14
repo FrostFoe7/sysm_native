@@ -1,13 +1,12 @@
 // app/profile/[id].tsx
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { FlatList, View, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import {
   useSharedValue,
   withSpring,
-  useAnimatedStyle,
 } from '@/utils/animatedWebSafe';
 import { ScreenLayout } from '@/components/ScreenLayout';
 import { ProfileHeader } from '@/components/ProfileHeader';
@@ -17,7 +16,6 @@ import { ThreadOverflowMenu } from '@/components/ThreadOverflowMenu';
 import { AnimatedListItem } from '@/components/AnimatedListItem';
 import { AnimatedTabBar } from '@/components/AnimatedTabBar';
 import { Text } from '@/components/ui/text';
-import { Button, ButtonText } from '@/components/ui/button';
 import {
   getProfile,
   toggleThreadLike,
@@ -54,9 +52,6 @@ export default function UserProfileScreen() {
 
   // Follow button scale animation
   const followScale = useSharedValue(1);
-  const followAnimStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: followScale.value }],
-  }));
 
   useFocusEffect(
     useCallback(() => {
@@ -212,7 +207,7 @@ export default function UserProfileScreen() {
         contentContainerStyle={{ paddingBottom: 24 }}
         ListEmptyComponent={
           <View className="items-center justify-center py-16">
-            <Text className="text-[#555555] text-[15px]">
+            <Text className="text-[15px] text-[#555555]">
               {activeTab === 'threads' ? 'No threads yet' : 'No replies yet'}
             </Text>
           </View>

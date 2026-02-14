@@ -1,7 +1,6 @@
 // components/AppToast.tsx
 
 import React, { createContext, useContext, useCallback, useState, useRef } from 'react';
-import { View } from 'react-native';
 import { 
   useAnimatedStyle, 
   isWeb,
@@ -90,7 +89,7 @@ function ToastView({ item, onDone }: { item: ToastItem; onDone: (id: number) => 
     }, 2200);
 
     return () => clearTimeout(hideTimeout);
-  }, [item.id, onDone]);
+  }, [item.id, onDone, opacity, translateY]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: isWeb ? opacityWeb : opacity.value,
@@ -118,7 +117,7 @@ function ToastView({ item, onDone }: { item: ToastItem; onDone: (id: number) => 
       ]}
     >
       <HStack
-        className="bg-[#2a2a2a] rounded-full px-5 py-3 items-center shadow-lg"
+        className="items-center rounded-full bg-[#2a2a2a] px-5 py-3 shadow-lg"
         space="sm"
         style={{
           shadowColor: '#000',
@@ -129,7 +128,7 @@ function ToastView({ item, onDone }: { item: ToastItem; onDone: (id: number) => 
         }}
       >
         <Icon size={16} color={item.iconColor || '#f3f5f7'} strokeWidth={2} />
-        <Text className="text-[#f3f5f7] text-[14px] font-medium">{item.message}</Text>
+        <Text className="text-[14px] font-medium text-[#f3f5f7]">{item.message}</Text>
       </HStack>
     </SafeAnimatedView>
   );

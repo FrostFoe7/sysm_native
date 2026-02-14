@@ -1,6 +1,6 @@
 // components/ThreadOverflowMenu.tsx
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { Platform, Alert } from 'react-native';
 import {
   Actionsheet,
@@ -31,7 +31,6 @@ import {
   EyeOff,
   Flag,
   Trash2,
-  UserMinus,
   Link2,
 } from 'lucide-react-native';
 
@@ -120,30 +119,30 @@ export function ThreadOverflowMenu({
   return (
     <Actionsheet isOpen={isOpen} onClose={onClose}>
       <ActionsheetBackdrop className="bg-black/60" />
-      <ActionsheetContent className="bg-[#181818] border-t border-[#2a2a2a] rounded-t-3xl pb-8">
+      <ActionsheetContent className="rounded-t-3xl border-t border-[#2a2a2a] bg-[#181818] pb-8">
         <ActionsheetDragIndicatorWrapper>
           <ActionsheetDragIndicator className="bg-[#555555]" />
         </ActionsheetDragIndicatorWrapper>
 
-        <VStack className="w-full mt-2">
+        <VStack className="mt-2 w-full">
           {/* Thread info header */}
           <Text
-            className="text-[#777777] text-[13px] text-center mb-3 px-6"
+            className="mb-3 px-6 text-center text-[13px] text-[#777777]"
             numberOfLines={1}
             style={{ overflow: 'hidden' }}
           >
             @{thread.author.username}&apos;s thread
           </Text>
-          <Divider className="bg-[#2a2a2a] mb-1" />
+          <Divider className="mb-1 bg-[#2a2a2a]" />
 
           {/* Copy link */}
           <ActionsheetItem
-            className="py-4 px-5 active:bg-white/5 rounded-xl"
+            className="rounded-xl px-5 py-4 active:bg-white/5"
             onPress={handleCopyLink}
           >
-            <HStack className="items-center flex-1" space="lg">
+            <HStack className="flex-1 items-center" space="lg">
               <Link2 size={22} color="#f3f5f7" strokeWidth={1.8} />
-              <ActionsheetItemText className="text-[#f3f5f7] text-[16px]">
+              <ActionsheetItemText className="text-[16px] text-[#f3f5f7]">
                 Copy link
               </ActionsheetItemText>
             </HStack>
@@ -151,12 +150,12 @@ export function ThreadOverflowMenu({
 
           {/* Hide thread */}
           <ActionsheetItem
-            className="py-4 px-5 active:bg-white/5 rounded-xl"
+            className="rounded-xl px-5 py-4 active:bg-white/5"
             onPress={handleHide}
           >
-            <HStack className="items-center flex-1" space="lg">
+            <HStack className="flex-1 items-center" space="lg">
               <EyeOff size={22} color="#f3f5f7" strokeWidth={1.8} />
-              <ActionsheetItemText className="text-[#f3f5f7] text-[16px]">
+              <ActionsheetItemText className="text-[16px] text-[#f3f5f7]">
                 Hide
               </ActionsheetItemText>
             </HStack>
@@ -166,31 +165,31 @@ export function ThreadOverflowMenu({
             <>
               {/* Mute/Unmute user */}
               <ActionsheetItem
-                className="py-4 px-5 active:bg-white/5 rounded-xl"
+                className="rounded-xl px-5 py-4 active:bg-white/5"
                 onPress={handleMuteToggle}
               >
-                <HStack className="items-center flex-1" space="lg">
+                <HStack className="flex-1 items-center" space="lg">
                   {muted ? (
                     <Volume2 size={22} color="#f3f5f7" strokeWidth={1.8} />
                   ) : (
                     <VolumeX size={22} color="#f3f5f7" strokeWidth={1.8} />
                   )}
-                  <ActionsheetItemText className="text-[#f3f5f7] text-[16px]" numberOfLines={1}>
+                  <ActionsheetItemText className="text-[16px] text-[#f3f5f7]" numberOfLines={1}>
                     {muted ? `Unmute @${thread.author.username}` : `Mute @${thread.author.username}`}
                   </ActionsheetItemText>
                 </HStack>
               </ActionsheetItem>
 
-              <Divider className="bg-[#2a2a2a] my-1" />
+              <Divider className="my-1 bg-[#2a2a2a]" />
 
               {/* Report */}
               <ActionsheetItem
-                className="py-4 px-5 active:bg-white/5 rounded-xl"
+                className="rounded-xl px-5 py-4 active:bg-white/5"
                 onPress={handleReport}
               >
-                <HStack className="items-center flex-1" space="lg">
+                <HStack className="flex-1 items-center" space="lg">
                   <Flag size={22} color="#ff3040" strokeWidth={1.8} />
-                  <ActionsheetItemText className="text-[#ff3040] text-[16px]">
+                  <ActionsheetItemText className="text-[16px] text-[#ff3040]">
                     Report
                   </ActionsheetItemText>
                 </HStack>
@@ -200,16 +199,16 @@ export function ThreadOverflowMenu({
 
           {isOwnThread && (
             <>
-              <Divider className="bg-[#2a2a2a] my-1" />
+              <Divider className="my-1 bg-[#2a2a2a]" />
 
               {/* Delete thread */}
               <ActionsheetItem
-                className="py-4 px-5 active:bg-white/5 rounded-xl"
+                className="rounded-xl px-5 py-4 active:bg-white/5"
                 onPress={handleDelete}
               >
-                <HStack className="items-center flex-1" space="lg">
+                <HStack className="flex-1 items-center" space="lg">
                   <Trash2 size={22} color="#ff3040" strokeWidth={1.8} />
-                  <ActionsheetItemText className="text-[#ff3040] text-[16px]">
+                  <ActionsheetItemText className="text-[16px] text-[#ff3040]">
                     Delete
                   </ActionsheetItemText>
                 </HStack>

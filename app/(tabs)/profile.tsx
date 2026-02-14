@@ -135,7 +135,7 @@ export default function ProfileScreen() {
   if (isLoading) {
     return (
       <ScreenLayout>
-        <HStack className="px-4 h-[44px] items-center justify-between">
+        <HStack className="h-[44px] items-center justify-between px-4">
           <Pressable hitSlop={8} className="p-1 active:opacity-60">
             <Menu size={24} color="#f3f5f7" />
           </Pressable>
@@ -155,7 +155,7 @@ export default function ProfileScreen() {
   return (
     <ScreenLayout>
       {/* Toolbar */}
-      <HStack className="px-4 h-[44px] items-center justify-between">
+      <HStack className="h-[44px] items-center justify-between px-4">
         <Pressable hitSlop={8} className="p-1 active:opacity-60">
           <Menu size={24} color="#f3f5f7" />
         </Pressable>
@@ -197,7 +197,7 @@ export default function ProfileScreen() {
         contentContainerStyle={{ paddingBottom: 24 }}
         ListEmptyComponent={
           <View className="items-center justify-center py-16">
-            <Text className="text-[#555555] text-[15px]">
+            <Text className="text-[15px] text-[#555555]">
               {activeTab === 'threads' ? 'No threads yet' : 'No replies yet'}
             </Text>
           </View>

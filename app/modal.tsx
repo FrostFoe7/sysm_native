@@ -36,7 +36,7 @@ export default function ComposerModal() {
       >
         <Box
           className={`flex-1 ${
-            isWeb ? 'max-w-[680px] self-center w-full' : ''
+            isWeb ? 'w-full max-w-[680px] self-center' : ''
           }`}
         >
           <Composer

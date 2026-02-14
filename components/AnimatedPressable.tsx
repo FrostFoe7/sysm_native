@@ -40,7 +40,7 @@ export function AnimatedPressable({
       }
       onPressIn?.(e);
     },
-    [scaleValue, onPressIn],
+    [scaleValue, onPressIn, scale],
   );
 
   const handlePressOut = useCallback(
@@ -55,7 +55,7 @@ export function AnimatedPressable({
       }
       onPressOut?.(e);
     },
-    [onPressOut],
+    [onPressOut, scale],
   );
 
   const animatedStyle = useAnimatedStyle(() => ({

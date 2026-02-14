@@ -81,7 +81,7 @@ export default function ThreadDetailScreen() {
         setRepostMap((prev) => ({ ...prev, ...newReposted }));
       }
     }
-  }, [id]);
+  }, [id, likedMap, repostMap]);
 
   // Load on mount and when id changes
   useEffect(() => {
@@ -212,7 +212,7 @@ export default function ThreadDetailScreen() {
   if (!detail) {
     return (
       <View className="flex-1 bg-[#101010]">
-        <Box className={`flex-1 ${Platform.OS === 'web' ? 'max-w-[680px] self-center w-full' : ''}`}>
+        <Box className={`flex-1 ${Platform.OS === 'web' ? 'w-full max-w-[680px] self-center' : ''}`}>
           <ThreadDetailSkeleton />
         </Box>
       </View>
@@ -265,7 +265,7 @@ export default function ThreadDetailScreen() {
             isDetailView
           />
           <View className="px-4 pb-2">
-            <Text className="text-[#555555] text-[13px]">
+            <Text className="text-[13px] text-[#555555]">
               {formatFullDate(item.thread.created_at)}
             </Text>
           </View>
@@ -278,8 +278,8 @@ export default function ThreadDetailScreen() {
       if (detail.replies.length === 0) {
         return (
           <View className="items-center justify-center py-12">
-            <Text className="text-[#555555] text-[15px]">No replies yet</Text>
-            <Text className="text-[#444444] text-[13px] mt-1">Be the first to reply</Text>
+            <Text className="text-[15px] text-[#555555]">No replies yet</Text>
+            <Text className="mt-1 text-[13px] text-[#444444]">Be the first to reply</Text>
           </View>
         );
       }
@@ -314,7 +314,7 @@ export default function ThreadDetailScreen() {
       className="flex-1 bg-[#101010]"
       keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 0}
     >
-      <Box className={`flex-1 ${Platform.OS === 'web' ? 'max-w-[680px] self-center w-full' : ''}`}>
+      <Box className={`flex-1 ${Platform.OS === 'web' ? 'w-full max-w-[680px] self-center' : ''}`}>
         <FlatList
           ref={flatListRef}
           data={listData}
@@ -329,7 +329,7 @@ export default function ThreadDetailScreen() {
         />
 
         <Divider className="bg-[#1e1e1e]" />
-        <HStack className="px-4 py-2 pb-3 items-center bg-[#101010]" space="md">
+        <HStack className="items-center bg-[#101010] px-4 py-2 pb-3" space="md">
           <Avatar size="xs">
             <AvatarImage source={{ uri: currentUser.avatar_url }} />
             <AvatarFallbackText>{currentUser.display_name}</AvatarFallbackText>
@@ -340,7 +340,7 @@ export default function ThreadDetailScreen() {
             onChangeText={setReplyText}
             placeholder={`Reply to ${detail.author.username}...`}
             placeholderTextColor="#555555"
-            className="flex-1 text-[#f3f5f7] text-[15px] h-[36px]"
+            className="h-[36px] flex-1 text-[15px] text-[#f3f5f7]"
             style={{
               ...(Platform.OS === 'web' ? { outlineStyle: 'none' as any } : {}),
               overflow: 'hidden',
@@ -352,7 +352,7 @@ export default function ThreadDetailScreen() {
           <Pressable
             onPress={handleSubmitReply}
             disabled={!replyText.trim()}
-            className={`p-2 rounded-full ${replyText.trim() ? 'active:bg-white/10' : 'opacity-40'}`}
+            className={`rounded-full p-2 ${replyText.trim() ? 'active:bg-white/10' : 'opacity-40'}`}
             hitSlop={8}
           >
             <Send

@@ -161,8 +161,8 @@ export default function HomeScreen() {
   const renderHeader = useCallback(
     () => (
       <View>
-        <View className="items-center pt-3 pb-2">
-          <Text className="text-[#f3f5f7] text-[28px] font-bold tracking-tight mb-2">
+        <View className="items-center pb-2 pt-3">
+          <Text className="mb-2 text-[28px] font-bold tracking-tight text-[#f3f5f7]">
             𝕋
           </Text>
         </View>
@@ -180,7 +180,7 @@ export default function HomeScreen() {
     () => (
       isLoading ? <FeedSkeleton /> : (
         <View className="flex-1 items-center justify-center py-20">
-          <Text className="text-[#555555] text-[15px]">No threads yet</Text>
+          <Text className="text-[15px] text-[#555555]">No threads yet</Text>
         </View>
       )
     ),
@@ -228,7 +228,7 @@ export default function HomeScreen() {
           size="lg"
           placement="bottom right"
           onPress={() => router.push('/modal')}
-          className="mr-4 mb-[16px] w-[56px] h-[56px]"
+          className="mb-[16px] mr-4 size-[56px]"
         >
           <FabIcon as={SquarePen} size="lg" />
         </Fab>

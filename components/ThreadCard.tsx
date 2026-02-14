@@ -87,9 +87,9 @@ export function ThreadCard({
     <VStack>
       {/* Reposted by header */}
       {thread.reposted_by && (
-        <HStack className="items-center px-4 pt-2 pl-[60px]" space="xs">
+        <HStack className="items-center px-4 pl-[60px] pt-2" space="xs">
           <Repeat2 size={13} color="#555555" strokeWidth={2} />
-          <Text className="text-[#555555] text-[13px]" numberOfLines={1}>
+          <Text className="text-[13px] text-[#555555]" numberOfLines={1}>
             {thread.reposted_by.display_name} reposted
           </Text>
         </HStack>
@@ -107,17 +107,17 @@ export function ThreadCard({
             </Avatar>
           </Pressable>
           {thread.reply_count > 0 && !isDetailView && (
-            <View className="flex-1 w-[2px] bg-[#2a2a2a] mt-2 min-h-[20px] rounded-full" />
+            <View className="mt-2 min-h-[20px] w-[2px] flex-1 rounded-full bg-[#2a2a2a]" />
           )}
         </VStack>
 
         {/* Right column: content */}
-        <VStack className="flex-1 flex-shrink" space="xs">
+        <VStack className="flex-1 shrink" space="xs">
           {/* Header row */}
           <HStack className="items-center justify-between">
-            <HStack className="items-center flex-1 mr-2 overflow-hidden" space="xs">
+            <HStack className="mr-2 flex-1 items-center overflow-hidden" space="xs">
               <Pressable onPress={handleUsernamePress} style={{ flexShrink: 1 }}>
-                <Text className="text-[#f3f5f7] font-semibold text-[15px]" numberOfLines={1}>
+                <Text className="text-[15px] font-semibold text-[#f3f5f7]" numberOfLines={1}>
                   {thread.author.username}
                 </Text>
               </Pressable>
@@ -125,13 +125,13 @@ export function ThreadCard({
                 <BadgeCheck size={14} color="#0095f6" fill="#0095f6" strokeWidth={0} />
               )}
             </HStack>
-            <HStack className="items-center flex-shrink-0" space="sm">
-              <Text className="text-[#555555] text-[13px]">
+            <HStack className="shrink-0 items-center" space="sm">
+              <Text className="text-[13px] text-[#555555]">
                 {formatRelativeTime(thread.created_at)}
               </Text>
               <Pressable
                 hitSlop={10}
-                className="p-1 -mr-1 rounded-full active:bg-white/5"
+                className="-mr-1 rounded-full p-1 active:bg-white/5"
                 onPress={handleMore}
               >
                 <MoreHorizontal size={16} color="#555555" />
@@ -141,7 +141,7 @@ export function ThreadCard({
 
           {/* Content */}
           <Text
-            className="text-[#f3f5f7] text-[15px] leading-[21px]"
+            className="text-[15px] leading-[21px] text-[#f3f5f7]"
             numberOfLines={isDetailView ? undefined : 12}
             style={{ overflow: 'hidden' }}
           >
@@ -178,16 +178,16 @@ export function ThreadCard({
           {/* Engagement summary for detail view */}
           {isDetailView && (
             <HStack className="mt-1" space="md">
-              <Text className="text-[#555555] text-[13px]">
+              <Text className="text-[13px] text-[#555555]">
                 {formatCount(thread.reply_count)}{' '}
-                <Text className="text-[#555555] text-[13px]">
+                <Text className="text-[13px] text-[#555555]">
                   {thread.reply_count === 1 ? 'reply' : 'replies'}
                 </Text>
               </Text>
-              <Text className="text-[#555555] text-[13px]">·</Text>
-              <Text className="text-[#555555] text-[13px]">
+              <Text className="text-[13px] text-[#555555]">·</Text>
+              <Text className="text-[13px] text-[#555555]">
                 {formatCount(thread.like_count)}{' '}
-                <Text className="text-[#555555] text-[13px]">
+                <Text className="text-[13px] text-[#555555]">
                   {thread.like_count === 1 ? 'like' : 'likes'}
                 </Text>
               </Text>
@@ -208,7 +208,7 @@ export function ThreadCard({
         </AnimatedPressable>
       )}
 
-      {showDivider && <Divider className="bg-[#1e1e1e] ml-[60px]" />}
+      {showDivider && <Divider className="ml-[60px] bg-[#1e1e1e]" />}
 
       {/* Fullscreen media viewer */}
       {thread.media && thread.media.length > 0 && (

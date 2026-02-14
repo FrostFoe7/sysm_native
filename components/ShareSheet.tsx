@@ -71,79 +71,79 @@ export function ShareSheet({ isOpen, onClose, threadId }: ShareSheetProps) {
   return (
     <Actionsheet isOpen={isOpen} onClose={onClose}>
       <ActionsheetBackdrop className="bg-black/60" />
-      <ActionsheetContent className="bg-[#181818] border-t border-[#2a2a2a] rounded-t-3xl pb-8">
+      <ActionsheetContent className="rounded-t-3xl border-t border-[#2a2a2a] bg-[#181818] pb-8">
         <ActionsheetDragIndicatorWrapper>
           <ActionsheetDragIndicator className="bg-[#555555]" />
         </ActionsheetDragIndicatorWrapper>
 
-        <VStack className="w-full mt-2">
-          <Text className="text-[#f3f5f7] text-[16px] font-semibold text-center mb-3">
+        <VStack className="mt-2 w-full">
+          <Text className="mb-3 text-center text-[16px] font-semibold text-[#f3f5f7]">
             Share
           </Text>
-          <Divider className="bg-[#2a2a2a] mb-1" />
+          <Divider className="mb-1 bg-[#2a2a2a]" />
 
           <ActionsheetItem
-            className="py-4 px-5 active:bg-white/5 rounded-xl"
+            className="rounded-xl px-5 py-4 active:bg-white/5"
             onPress={handleCopyLink}
           >
-            <HStack className="items-center flex-1" space="lg">
+            <HStack className="flex-1 items-center" space="lg">
               <Link2 size={22} color="#f3f5f7" strokeWidth={1.8} />
-              <ActionsheetItemText className="text-[#f3f5f7] text-[16px]">
+              <ActionsheetItemText className="text-[16px] text-[#f3f5f7]">
                 Copy link
               </ActionsheetItemText>
             </HStack>
           </ActionsheetItem>
 
           <ActionsheetItem
-            className="py-4 px-5 active:bg-white/5 rounded-xl"
+            className="rounded-xl px-5 py-4 active:bg-white/5"
             onPress={handleShareExternal}
           >
-            <HStack className="items-center flex-1" space="lg">
+            <HStack className="flex-1 items-center" space="lg">
               <Share2 size={22} color="#f3f5f7" strokeWidth={1.8} />
-              <ActionsheetItemText className="text-[#f3f5f7] text-[16px]">
+              <ActionsheetItemText className="text-[16px] text-[#f3f5f7]">
                 Share via...
               </ActionsheetItemText>
             </HStack>
           </ActionsheetItem>
 
           <ActionsheetItem
-            className="py-4 px-5 active:bg-white/5 rounded-xl"
+            className="rounded-xl px-5 py-4 active:bg-white/5"
             onPress={handleSendVia}
           >
-            <HStack className="items-center flex-1" space="lg">
+            <HStack className="flex-1 items-center" space="lg">
               <MessageSquare size={22} color="#f3f5f7" strokeWidth={1.8} />
-              <ActionsheetItemText className="text-[#f3f5f7] text-[16px]">
+              <ActionsheetItemText className="text-[16px] text-[#f3f5f7]">
                 Send via Direct Message
               </ActionsheetItemText>
             </HStack>
           </ActionsheetItem>
 
           <ActionsheetItem
-            className="py-4 px-5 active:bg-white/5 rounded-xl"
+            className="rounded-xl px-5 py-4 active:bg-white/5"
             onPress={handleBookmark}
           >
-            <HStack className="items-center flex-1" space="lg">
+            <HStack className="flex-1 items-center" space="lg">
               <Bookmark
                 size={22}
                 color="#f3f5f7"
                 strokeWidth={1.8}
                 fill={isBookmarked ? '#f3f5f7' : 'none'}
               />
-              <ActionsheetItemText className="text-[#f3f5f7] text-[16px]">
+              <ActionsheetItemText className="text-[16px] text-[#f3f5f7]">
                 {isBookmarked ? 'Unsave' : 'Save'}
               </ActionsheetItemText>
             </HStack>
           </ActionsheetItem>
 
-          <Divider className="bg-[#2a2a2a] my-1" />
+          <Divider className="my-1 bg-[#2a2a2a]" />
 
           <ActionsheetItem
-            className="py-4 px-5 active:bg-white/5 rounded-xl"
+            className="rounded-xl px-5 py-4 active:bg-white/5"
             onPress={handleReport}
           >
-            <HStack className="items-center flex-1" space="lg">
+            <HStack className="flex-1 items-center" space="lg">
               <Flag size={22} color="#ff3040" strokeWidth={1.8} />
-              <ActionsheetItemText className="text-[#ff3040] text-[16px]">
+              <ActionsheetItemText className="text-[16px] text-[#ff3040]">
                 Report
               </ActionsheetItemText>
             </HStack>

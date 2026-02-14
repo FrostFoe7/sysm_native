@@ -1,7 +1,7 @@
 // components/AnimatedListItem.tsx
 // Fade-in + slide-up entrance animation for list items
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { View } from 'react-native';
 import { 
   useAnimatedStyle, 
@@ -25,7 +25,6 @@ export function AnimatedListItem({
   children,
   maxDelay = 400,
 }: AnimatedListItemProps) {
-  const [isVisible, setIsVisible] = useState(isWeb);
   const opacity = useSharedValue(isWeb ? 1 : 0);
   const translateY = useSharedValue(isWeb ? 0 : 16);
 
@@ -40,8 +39,6 @@ export function AnimatedListItem({
         delay,
         withTiming(0, { duration: 320, easing: Easing.out(Easing.cubic) }),
       );
-    } else {
-      setIsVisible(true);
     }
   }, [index, maxDelay, opacity, translateY]);
 

@@ -39,8 +39,8 @@ function FullscreenVideo({ uri, isActive }: { uri: string; isActive: boolean }) 
 
   useEffect(() => {
     if (!player) return;
-    const sub = player.addListener('playingChange', (e: { isPlaying: boolean }) => {
-      setIsPlaying(e.isPlaying);
+    const sub = player.addListener('playingChange', ({ isPlaying }: { isPlaying: boolean }) => {
+      setIsPlaying(isPlaying);
     });
     return () => sub.remove();
   }, [player]);
@@ -53,7 +53,7 @@ function FullscreenVideo({ uri, isActive }: { uri: string; isActive: boolean }) 
       } else {
         player.pause();
       }
-    } catch (e) {}
+    } catch {}
   }, [isActive, player]);
 
   const togglePlay = useCallback(() => {
@@ -158,19 +158,16 @@ export function FullscreenMediaViewer({
 
   useEffect(() => {
     if (!isWeb || !isOpen) return;
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault();
+    const handler = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
         onClose();
-      } else if (e.key === 'ArrowLeft') {
-        e.preventDefault();
+      } else if (event.key === 'ArrowLeft') {
         setActiveIndex((prev) => {
           const next = Math.max(0, prev - 1);
           scrollRef.current?.scrollTo({ x: next * width, animated: true });
           return next;
         });
-      } else if (e.key === 'ArrowRight') {
-        e.preventDefault();
+      } else if (event.key === 'ArrowRight') {
         setActiveIndex((prev) => {
           const next = Math.min(media.length - 1, prev + 1);
           scrollRef.current?.scrollTo({ x: next * width, animated: true });
@@ -242,7 +239,7 @@ export function FullscreenMediaViewer({
               backgroundColor: 'rgba(255,255,255,0.15)',
             }}
           >
-            <Text className="text-white text-[13px] font-semibold">
+            <Text className="text-[13px] font-semibold text-white">
               {activeIndex + 1} / {media.length}
             </Text>
           </View>

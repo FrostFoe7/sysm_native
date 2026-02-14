@@ -65,7 +65,7 @@ export function AnimatedHeart({ isLiked, onPress, size = 19 }: AnimatedHeartProp
     <Pressable
       onPress={handlePress}
       hitSlop={8}
-      className="p-2 rounded-full active:bg-white/5"
+      className="rounded-full p-2 active:bg-white/5"
     >
       <SafeAnimatedView 
         style={[

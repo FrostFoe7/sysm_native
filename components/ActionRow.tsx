@@ -34,13 +34,13 @@ export function ActionRow({
   const repostColor = isReposted ? '#00ba7c' : '#777777';
 
   return (
-    <HStack className="items-center mt-1 -ml-2 mr-[-8px]" space="xs">
+    <HStack className="-ml-2 mr-[-8px] mt-1 items-center" space="xs">
       {/* Like — animated bounce */}
       <HStack className="items-center">
         <AnimatedHeart isLiked={isLiked} onPress={onLike} />
         {likeCount > 0 && (
           <Text
-            className={`text-[13px] -ml-1 ${
+            className={`-ml-1 text-[13px] ${
               isLiked ? 'text-[#ff3040]' : 'text-[#777777]'
             }`}
           >
@@ -52,12 +52,12 @@ export function ActionRow({
       {/* Reply */}
       <Pressable
         onPress={onReply}
-        className="flex-row items-center p-2 rounded-full active:bg-white/5"
+        className="flex-row items-center rounded-full p-2 active:bg-white/5"
         hitSlop={8}
       >
         <MessageCircle size={19} color="#777777" strokeWidth={1.8} />
         {replyCount > 0 && (
-          <Text className="text-[#777777] text-[13px] ml-1">
+          <Text className="ml-1 text-[13px] text-[#777777]">
             {formatCount(replyCount)}
           </Text>
         )}
@@ -66,12 +66,12 @@ export function ActionRow({
       {/* Repost */}
       <Pressable
         onPress={onRepost}
-        className="flex-row items-center p-2 rounded-full active:bg-white/5"
+        className="flex-row items-center rounded-full p-2 active:bg-white/5"
         hitSlop={8}
       >
         <Repeat2 size={19} color={repostColor} strokeWidth={1.8} />
         {repostCount > 0 && (
-          <Text style={{ color: repostColor }} className="text-[13px] ml-1">
+          <Text style={{ color: repostColor }} className="ml-1 text-[13px]">
             {formatCount(repostCount)}
           </Text>
         )}
@@ -80,7 +80,7 @@ export function ActionRow({
       {/* Share */}
       <Pressable
         onPress={onShare}
-        className="p-2 rounded-full active:bg-white/5"
+        className="rounded-full p-2 active:bg-white/5"
         hitSlop={8}
       >
         <Send size={18} color="#777777" strokeWidth={1.8} />

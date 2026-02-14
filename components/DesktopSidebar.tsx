@@ -4,7 +4,6 @@ import React, { useCallback } from 'react';
 import { Pressable, View } from 'react-native';
 import { useRouter, usePathname } from 'expo-router';
 import { VStack } from '@/components/ui/vstack';
-import { HStack } from '@/components/ui/hstack';
 import { Text } from '@/components/ui/text';
 import { Avatar, AvatarImage, AvatarFallbackText } from '@/components/ui/avatar';
 import { Divider } from '@/components/ui/divider';
@@ -77,7 +76,7 @@ function SidebarNavItem({
   return (
     <Pressable
       onPress={onPress}
-      className="flex-row items-center py-3 px-4 rounded-xl active:bg-white/5"
+      className="flex-row items-center rounded-xl px-4 py-3 active:bg-white/5"
       style={{ gap: 16 }}
     >
       <View className="w-7 items-center">
@@ -90,7 +89,7 @@ function SidebarNavItem({
       </View>
       <Text
         className={`text-[16px] ${
-          isActive ? 'text-[#f3f5f7] font-semibold' : 'text-[#777777]'
+          isActive ? 'font-semibold text-[#f3f5f7]' : 'text-[#777777]'
         }`}
       >
         {item.label}
@@ -125,14 +124,14 @@ export function DesktopSidebar() {
   );
 
   return (
-    <View className="w-[240px] h-full bg-[#101010] border-r border-[#1e1e1e] pt-4 pb-6 flex-col justify-between">
+    <View className="h-full w-[240px] flex-col justify-between border-r border-[#1e1e1e] bg-[#101010] pb-6 pt-4">
       <VStack className="flex-1">
         {/* Logo / Brand */}
         <Pressable
-          className="px-5 py-4 mb-2"
+          className="mb-2 px-5 py-4"
           onPress={() => router.replace('/(tabs)' as any)}
         >
-          <Text className="text-[#f3f5f7] text-[22px] font-bold tracking-tight">
+          <Text className="text-[22px] font-bold tracking-tight text-[#f3f5f7]">
             Threads
           </Text>
         </Pressable>
@@ -152,9 +151,9 @@ export function DesktopSidebar() {
 
       {/* Bottom: user row + menu */}
       <VStack className="px-2">
-        <Divider className="bg-[#1e1e1e] mb-3" />
+        <Divider className="mb-3 bg-[#1e1e1e]" />
         <Pressable
-          className="flex-row items-center py-3 px-4 rounded-xl active:bg-white/5"
+          className="flex-row items-center rounded-xl px-4 py-3 active:bg-white/5"
           style={{ gap: 12 }}
           onPress={() => router.replace('/(tabs)/profile' as any)}
         >
@@ -163,10 +162,10 @@ export function DesktopSidebar() {
             <AvatarFallbackText>{currentUser.display_name}</AvatarFallbackText>
           </Avatar>
           <VStack className="flex-1">
-            <Text className="text-[#f3f5f7] text-[14px] font-semibold" numberOfLines={1}>
+            <Text className="text-[14px] font-semibold text-[#f3f5f7]" numberOfLines={1}>
               {currentUser.display_name}
             </Text>
-            <Text className="text-[#555555] text-[12px]" numberOfLines={1}>
+            <Text className="text-[12px] text-[#555555]" numberOfLines={1}>
               @{currentUser.username}
             </Text>
           </VStack>

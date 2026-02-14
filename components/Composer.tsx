@@ -175,18 +175,18 @@ export function Composer({
                 <AvatarImage source={{ uri: currentUser.avatar_url }} />
                 <AvatarFallbackText>{currentUser.display_name}</AvatarFallbackText>
               </Avatar>
-              <Box className="flex-1 w-[2px] bg-[#2a2a2a] mt-2 rounded-full min-h-[24px]" />
+              <Box className="mt-2 min-h-[24px] w-[2px] flex-1 rounded-full bg-[#2a2a2a]" />
             </VStack>
 
             {/* Input column */}
-            <VStack className="flex-1 flex-shrink" space="xs">
-              <Text className="text-[#f3f5f7] font-semibold text-[15px]">
+            <VStack className="flex-1 shrink" space="xs">
+              <Text className="text-[15px] font-semibold text-[#f3f5f7]">
                 {currentUser.username}
               </Text>
               {replyToUsername && (
-                <Text className="text-[#555555] text-[13px]">
+                <Text className="text-[13px] text-[#555555]">
                   Replying to{' '}
-                  <Text className="text-[#0095f6] text-[13px]">
+                  <Text className="text-[13px] text-[#0095f6]">
                     @{replyToUsername}
                   </Text>
                 </Text>
@@ -204,7 +204,7 @@ export function Composer({
                 multiline
                 autoFocus={autoFocus}
                 maxLength={maxLength}
-                className="text-[#f3f5f7] text-[15px] leading-[21px] min-h-[80px] py-1"
+                className="min-h-[80px] py-1 text-[15px] leading-[21px] text-[#f3f5f7]"
                 style={{
                   textAlignVertical: 'top',
                   ...(Platform.OS === 'web'
@@ -216,7 +216,7 @@ export function Composer({
 
               {/* Media preview grid */}
               {media.length > 0 && (
-                <View className="mt-2 mb-1">
+                <View className="mb-1 mt-2">
                   <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
@@ -234,7 +234,7 @@ export function Composer({
                         }}
                       >
                         {item.loading ? (
-                          <Skeleton variant="rounded" className="w-full h-full bg-[#1e1e1e]" />
+                          <Skeleton variant="rounded" className="size-full bg-[#1e1e1e]" />
                         ) : (
                           <Image
                             source={{ uri: item.uri }}
@@ -256,7 +256,7 @@ export function Composer({
                               backgroundColor: 'rgba(0,0,0,0.6)',
                             }}
                           >
-                            <Text className="text-white text-[10px] font-semibold">VIDEO</Text>
+                            <Text className="text-2xs font-semibold text-white">VIDEO</Text>
                           </View>
                         )}
                         {/* Remove button */}
@@ -284,7 +284,7 @@ export function Composer({
               )}
 
               {/* Toolbar */}
-              <HStack className="items-center mt-2 pb-4" space="lg">
+              <HStack className="mt-2 items-center pb-4" space="lg">
                 <Pressable
                   hitSlop={8}
                   className="active:opacity-60"
@@ -317,13 +317,13 @@ export function Composer({
         <Divider className="bg-[#1e1e1e]" />
 
         {/* Bottom bar */}
-        <HStack className="px-4 py-3 pb-4 items-center justify-between">
+        <HStack className="items-center justify-between px-4 py-3 pb-4">
           <VStack>
-            <Text className="text-[#555555] text-[13px]">
+            <Text className="text-[13px] text-[#555555]">
               Anyone can reply & quote
             </Text>
             {media.length > 0 && (
-              <Text className="text-[#555555] text-[11px] mt-0.5">
+              <Text className="mt-0.5 text-[11px] text-[#555555]">
                 {media.length}/{maxMedia} media
               </Text>
             )}
@@ -342,7 +342,7 @@ export function Composer({
               size="sm"
               onPress={handleSubmit}
               disabled={!isValid}
-              className={`rounded-full px-5 h-9 ${
+              className={`h-9 rounded-full px-5 ${
                 isValid
                   ? 'bg-white'
                   : 'bg-[#333333]'

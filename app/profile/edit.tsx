@@ -19,7 +19,6 @@ import { Divider } from '@/components/ui/divider';
 import { Box } from '@/components/ui/box';
 import { getCurrentUser, updateCurrentUser } from '@/db/selectors';
 import { Camera, X } from 'lucide-react-native';
-import type { User } from '@/db/db';
 
 const MAX_BIO_LENGTH = 150;
 const MAX_NAME_LENGTH = 50;
@@ -55,9 +54,9 @@ function EditField({
 }) {
   return (
     <VStack className="px-4 py-3">
-      <HStack className="items-center justify-between mb-1">
-        <Text className="text-[#777777] text-[13px]">{label}</Text>
-        <Text className="text-[#555555] text-[12px]">
+      <HStack className="mb-1 items-center justify-between">
+        <Text className="text-[13px] text-[#777777]">{label}</Text>
+        <Text className="text-[12px] text-[#555555]">
           {value.length}/{maxLength}
         </Text>
       </HStack>
@@ -79,7 +78,7 @@ function EditField({
           ...(Platform.OS === 'web' ? { outlineStyle: 'none' as any } : {}),
         }}
       />
-      <Divider className="bg-[#2a2a2a] mt-1" />
+      <Divider className="mt-1 bg-[#2a2a2a]" />
     </VStack>
   );
 }
@@ -143,7 +142,7 @@ export default function EditProfileScreen() {
     navigation.setOptions({
       headerLeft: () => (
         <Pressable onPress={handleCancel} hitSlop={12} className="p-1">
-          <Text className="text-[#f3f5f7] text-[16px]">Cancel</Text>
+          <Text className="text-[16px] text-[#f3f5f7]">Cancel</Text>
         </Pressable>
       ),
       headerRight: () => (
@@ -186,20 +185,20 @@ export default function EditProfileScreen() {
                 <AvatarImage source={{ uri: avatarUrl }} />
                 <AvatarFallbackText>{displayName}</AvatarFallbackText>
               </Avatar>
-              <Box className="absolute bottom-0 right-0 bg-[#0095f6] rounded-full p-1.5 border-2 border-[#101010]">
+              <Box className="absolute bottom-0 right-0 rounded-full border-2 border-[#101010] bg-[#0095f6] p-1.5">
                 <Camera size={14} color="#ffffff" strokeWidth={2.5} />
               </Box>
             </Pressable>
-            <Text className="text-[#0095f6] text-[14px] font-medium mt-2">
+            <Text className="mt-2 text-[14px] font-medium text-[#0095f6]">
               Change photo
             </Text>
           </VStack>
 
           {/* Avatar picker grid */}
           {showAvatarPicker && (
-            <VStack className="px-4 mb-4">
-              <HStack className="items-center justify-between mb-3">
-                <Text className="text-[#777777] text-[13px]">Choose avatar</Text>
+            <VStack className="mb-4 px-4">
+              <HStack className="mb-3 items-center justify-between">
+                <Text className="text-[13px] text-[#777777]">Choose avatar</Text>
                 <Pressable
                   onPress={() => setShowAvatarPicker(false)}
                   hitSlop={8}
@@ -226,7 +225,7 @@ export default function EditProfileScreen() {
                   </Pressable>
                 ))}
               </HStack>
-              <Divider className="bg-[#2a2a2a] mt-4" />
+              <Divider className="mt-4 bg-[#2a2a2a]" />
             </VStack>
           )}
 
@@ -258,7 +257,7 @@ export default function EditProfileScreen() {
 
           {/* Username validation */}
           {username.length > 0 && !isValid && (
-            <Text className="text-[#ff3040] text-[13px] px-4 mt-1">
+            <Text className="mt-1 px-4 text-[13px] text-[#ff3040]">
               Username can only contain letters, numbers, periods, and underscores.
             </Text>
           )}

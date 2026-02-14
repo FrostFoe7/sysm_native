@@ -79,7 +79,7 @@ export function VideoPlayer({
       } else {
         player.pause();
       }
-    } catch (e) {}
+    } catch {}
   }, [isVisible, player, autoPlay]);
 
   const scheduleHideControls = useCallback(() => {
@@ -167,7 +167,7 @@ export function VideoPlayer({
               transition={200}
             />
           ) : (
-            <Skeleton variant="rounded" className="w-full h-full bg-[#1e1e1e]" />
+            <Skeleton variant="rounded" className="size-full bg-[#1e1e1e]" />
           )}
           <View
             style={{
@@ -278,7 +278,7 @@ export function VideoPlayer({
           backgroundColor: 'rgba(0,0,0,0.6)',
         }}
       >
-        <Text className="text-white text-[11px] font-semibold">VIDEO</Text>
+        <Text className="text-[11px] font-semibold text-white">VIDEO</Text>
       </View>
     </SafeView>
   );

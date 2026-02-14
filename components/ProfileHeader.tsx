@@ -1,7 +1,6 @@
 // components/ProfileHeader.tsx
 
 import React from 'react';
-import { Pressable, Platform } from 'react-native';
 import { Avatar, AvatarImage, AvatarFallbackText } from '@/components/ui/avatar';
 import { Text } from '@/components/ui/text';
 import { Heading } from '@/components/ui/heading';
@@ -36,27 +35,27 @@ export function ProfileHeader({
   onEditProfile,
 }: ProfileHeaderProps) {
   return (
-    <VStack className="px-4 pt-4 pb-2">
+    <VStack className="px-4 pb-2 pt-4">
       {/* Top row: name + avatar */}
-      <HStack className="items-start justify-between mb-3">
-        <VStack className="flex-1 mr-4 overflow-hidden" space="xs">
+      <HStack className="mb-3 items-start justify-between">
+        <VStack className="mr-4 flex-1 overflow-hidden" space="xs">
           <Heading
             size="xl"
-            className="text-[#f3f5f7] font-bold"
+            className="font-bold text-[#f3f5f7]"
             numberOfLines={1}
             style={{ overflow: 'hidden' }}
           >
             {user.display_name}
           </Heading>
           <HStack className="items-center" space="xs">
-            <Text className="text-[#f3f5f7] text-[15px]" numberOfLines={1} style={{ flexShrink: 1 }}>
+            <Text className="text-[15px] text-[#f3f5f7]" numberOfLines={1} style={{ flexShrink: 1 }}>
               {user.username}
             </Text>
             {user.verified && (
               <BadgeCheck size={14} color="#0095f6" fill="#0095f6" strokeWidth={0} />
             )}
-            <Box className="bg-[#1e1e1e] rounded-full px-2 py-0.5 ml-1 flex-shrink-0">
-              <Text className="text-[#555555] text-[11px]">threads.net</Text>
+            <Box className="ml-1 shrink-0 rounded-full bg-[#1e1e1e] px-2 py-0.5">
+              <Text className="text-[11px] text-[#555555]">threads.net</Text>
             </Box>
           </HStack>
         </VStack>
@@ -69,20 +68,20 @@ export function ProfileHeader({
 
       {/* Bio */}
       {user.bio.length > 0 && (
-        <Text className="text-[#f3f5f7] text-[15px] leading-[21px] mb-3" numberOfLines={5}>
+        <Text className="mb-3 text-[15px] leading-[21px] text-[#f3f5f7]" numberOfLines={5}>
           {user.bio}
         </Text>
       )}
 
       {/* Stats row */}
-      <HStack className="items-center mb-4" space="sm">
-        <Text className="text-[#555555] text-[14px]">
+      <HStack className="mb-4 items-center" space="sm">
+        <Text className="text-[14px] text-[#555555]">
           {formatCount(followerCount)} followers
         </Text>
-        <Text className="text-[#555555] text-[14px]">·</Text>
+        <Text className="text-[14px] text-[#555555]">·</Text>
         <HStack className="items-center" space="xs">
           <Globe size={13} color="#555555" strokeWidth={1.8} />
-          <Text className="text-[#555555] text-[14px]">{user.username}</Text>
+          <Text className="text-[14px] text-[#555555]">{user.username}</Text>
         </HStack>
       </HStack>
 
@@ -93,19 +92,19 @@ export function ProfileHeader({
             <Button
               variant="outline"
               size="sm"
-              className="flex-1 rounded-lg border-[#333333] bg-transparent h-9"
+              className="h-9 flex-1 rounded-lg border-[#333333] bg-transparent"
               onPress={onEditProfile}
             >
-              <ButtonText className="text-[#f3f5f7] text-[14px] font-semibold">
+              <ButtonText className="text-[14px] font-semibold text-[#f3f5f7]">
                 Edit profile
               </ButtonText>
             </Button>
             <Button
               variant="outline"
               size="sm"
-              className="flex-1 rounded-lg border-[#333333] bg-transparent h-9"
+              className="h-9 flex-1 rounded-lg border-[#333333] bg-transparent"
             >
-              <ButtonText className="text-[#f3f5f7] text-[14px] font-semibold">
+              <ButtonText className="text-[14px] font-semibold text-[#f3f5f7]">
                 Share profile
               </ButtonText>
             </Button>
@@ -114,9 +113,9 @@ export function ProfileHeader({
           <>
             <Button
               size="sm"
-              className={`flex-1 rounded-lg h-9 ${
+              className={`h-9 flex-1 rounded-lg ${
                 isFollowing
-                  ? 'bg-transparent border border-[#333333]'
+                  ? 'border border-[#333333] bg-transparent'
                   : 'bg-white'
               }`}
               onPress={onFollowToggle}
@@ -132,9 +131,9 @@ export function ProfileHeader({
             <Button
               variant="outline"
               size="sm"
-              className="flex-1 rounded-lg border-[#333333] bg-transparent h-9"
+              className="h-9 flex-1 rounded-lg border-[#333333] bg-transparent"
             >
-              <ButtonText className="text-[#f3f5f7] text-[14px] font-semibold">
+              <ButtonText className="text-[14px] font-semibold text-[#f3f5f7]">
                 Mention
               </ButtonText>
             </Button>

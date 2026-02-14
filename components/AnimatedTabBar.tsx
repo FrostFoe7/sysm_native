@@ -40,7 +40,7 @@ export function AnimatedTabBar({ tabs, activeKey, onTabPress }: AnimatedTabBarPr
     } else if (isWeb && webWidth > 0) {
       setWebTranslateX(activeIndex * webWidth);
     }
-  }, [activeIndex, webWidth]);
+  }, [activeIndex, webWidth, tabWidth.value, translateX]);
 
   const handleLayout = (e: LayoutChangeEvent) => {
     const w = e.nativeEvent.layout.width / tabs.length;
@@ -90,7 +90,7 @@ export function AnimatedTabBar({ tabs, activeKey, onTabPress }: AnimatedTabBarPr
           isWeb && ({ transition: 'transform 300ms cubic-bezier(0.4, 0.0, 0.2, 1), width 300ms ease' } as any)
         ]}
       >
-        <View className="mx-auto w-[60px] h-full bg-[#f3f5f7] rounded-full" />
+        <View className="mx-auto h-full w-[60px] rounded-full bg-[#f3f5f7]" />
       </SafeAnimatedView>
     </View>
   );

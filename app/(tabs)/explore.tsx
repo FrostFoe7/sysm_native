@@ -28,7 +28,6 @@ import {
   isUserFollowedByCurrentUser,
   isRepostedByCurrentUser,
   toggleRepost,
-  formatCount,
 } from '@/db/selectors';
 import { Search, X, BadgeCheck } from 'lucide-react-native';
 import { ExploreSkeleton } from '@/components/skeletons';
@@ -178,7 +177,7 @@ export default function ExploreScreen() {
       if (item.type === 'section-header') {
         return (
           <AnimatedListItem index={index}>
-            <Box className="px-4 pt-5 pb-2">
+            <Box className="px-4 pb-2 pt-5">
               <Heading size="sm" className="text-[#f3f5f7]">
                 {item.title}
               </Heading>
@@ -194,25 +193,25 @@ export default function ExploreScreen() {
               onPress={() => router.push(`/profile/${item.user.id}`)}
               scaleValue={0.98}
             >
-              <HStack className="px-4 py-3 items-center" space="md">
+              <HStack className="items-center px-4 py-3" space="md">
                 <Avatar size="md">
                   <AvatarImage source={{ uri: item.user.avatar_url }} />
                   <AvatarFallbackText>{item.user.display_name}</AvatarFallbackText>
                 </Avatar>
                 <VStack className="flex-1 overflow-hidden">
                   <HStack className="items-center" space="xs">
-                    <Text className="text-[#f3f5f7] font-bold text-[15px]" numberOfLines={1} style={{ flexShrink: 1 }}>
+                    <Text className="text-[15px] font-bold text-[#f3f5f7]" numberOfLines={1} style={{ flexShrink: 1 }}>
                       {item.user.display_name}
                     </Text>
                     {item.user.verified && (
                       <BadgeCheck size={14} color="#0095f6" fill="#0095f6" />
                     )}
                   </HStack>
-                  <Text className="text-[#555555] text-[14px]" numberOfLines={1}>
+                  <Text className="text-[14px] text-[#555555]" numberOfLines={1}>
                     @{item.user.username}
                   </Text>
                   {item.user.bio ? (
-                    <Text className="text-[#999] text-[13px] mt-0.5" numberOfLines={1}>
+                    <Text className="mt-0.5 text-[13px] text-[#999]" numberOfLines={1}>
                       {item.user.bio}
                     </Text>
                   ) : null}
@@ -222,8 +221,8 @@ export default function ExploreScreen() {
                   variant={item.isFollowed ? 'outline' : 'solid'}
                   className={
                     item.isFollowed
-                      ? 'rounded-lg border-[#333] bg-transparent min-w-[90px]'
-                      : 'rounded-lg bg-[#f3f5f7] min-w-[90px]'
+                      ? 'min-w-[90px] rounded-lg border-[#333] bg-transparent'
+                      : 'min-w-[90px] rounded-lg bg-[#f3f5f7]'
                   }
                   onPress={() => handleFollow(item.user.id)}
                 >
@@ -236,7 +235,7 @@ export default function ExploreScreen() {
                   </ButtonText>
                 </Button>
               </HStack>
-              <Divider className="bg-[#1e1e1e] ml-[72px]" />
+              <Divider className="ml-[72px] bg-[#1e1e1e]" />
             </AnimatedPressable>
           </AnimatedListItem>
         );
@@ -269,8 +268,8 @@ export default function ExploreScreen() {
     <ScreenLayout>
       <View className="flex-1">
         {/* Sticky Search bar */}
-        <View className="sticky top-0 z-10 px-4 pt-4 pb-4 bg-[#101010]">
-          <HStack className="bg-[#1e1e1e] rounded-xl px-4 items-center h-[48px]" space="sm">
+        <View className="sticky top-0 z-10 bg-[#101010] p-4">
+          <HStack className="h-[48px] items-center rounded-xl bg-[#1e1e1e] px-4" space="sm">
             <Search size={18} color="#555555" />
             <TextInput
               value={query}
@@ -278,7 +277,7 @@ export default function ExploreScreen() {
               placeholder="Search"
               placeholderTextColor="#555555"
               numberOfLines={1}
-              className="flex-1 text-[#f3f5f7] text-[15px] h-full"
+              className="h-full flex-1 text-[15px] text-[#f3f5f7]"
               style={Platform.OS === 'web' ? { outlineStyle: 'none' as any } : undefined}
               autoCapitalize="none"
               autoCorrect={false}
@@ -310,7 +309,7 @@ export default function ExploreScreen() {
               <ExploreSkeleton />
             ) : query.trim() ? (
               <View className="items-center justify-center py-16">
-                <Text className="text-[#555555] text-[15px]">No results for &quot;{query}&quot;</Text>
+                <Text className="text-[15px] text-[#555555]">No results for &quot;{query}&quot;</Text>
               </View>
             ) : null
           }

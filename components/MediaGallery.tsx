@@ -1,7 +1,7 @@
 // components/MediaGallery.tsx
 
 import React, { useCallback, useState, memo } from 'react';
-import { View, Pressable, ScrollView, Platform, useWindowDimensions } from 'react-native';
+import { View, Pressable } from 'react-native';
 import { SafeView } from '@/utils/animatedWebSafe';
 import { Image } from 'expo-image';
 import { Skeleton } from '@/components/ui/skeleton';

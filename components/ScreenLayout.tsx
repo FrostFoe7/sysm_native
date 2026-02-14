@@ -26,7 +26,7 @@ export function ScreenLayout({
       className="flex-1 bg-[#101010]"
     >
       <Box
-        className={`flex-1 w-full overflow-hidden ${
+        className={`w-full flex-1 overflow-hidden ${
           Platform.OS === 'web' ? `${maxWidth} self-center` : ''
         }`}
       >

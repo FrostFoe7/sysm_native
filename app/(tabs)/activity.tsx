@@ -4,15 +4,6 @@ import React, { useState, useCallback, useMemo } from 'react';
 import { FlatList, Pressable, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
-import { 
-  isWeb,
-  useSharedValue,
-  withSpring,
-  withTiming,
-  Easing,
-  FadeIn,
-  useAnimatedStyle 
-} from '@/utils/animatedWebSafe';
 import { ScreenLayout } from '@/components/ScreenLayout';
 import { AnimatedListItem } from '@/components/AnimatedListItem';
 import { AnimatedPressable } from '@/components/AnimatedPressable';
@@ -121,7 +112,7 @@ export default function ActivityScreen() {
                   <AvatarFallbackText>{item.actor.display_name}</AvatarFallbackText>
                 </Avatar>
                 <View
-                  className="absolute -bottom-1 -right-1 w-[18px] h-[18px] rounded-full items-center justify-center border-2 border-[#101010]"
+                  className="absolute -bottom-1 -right-1 size-[18px] items-center justify-center rounded-full border-2 border-[#101010]"
                   style={{ backgroundColor: meta.color }}
                 >
                   <IconComponent
@@ -134,19 +125,19 @@ export default function ActivityScreen() {
               </View>
               <VStack className="flex-1 overflow-hidden">
                 <HStack className="items-center" space="xs">
-                  <Text className="text-[#f3f5f7] font-bold text-[14px]" numberOfLines={1} style={{ flexShrink: 1 }}>
+                  <Text className="text-[14px] font-bold text-[#f3f5f7]" numberOfLines={1} style={{ flexShrink: 1 }}>
                     {item.actor.username}
                   </Text>
                   {item.actor.verified && (
                     <BadgeCheck size={14} color="#0095f6" fill="#0095f6" />
                   )}
-                  <Text className="text-[#555555] text-[13px] flex-shrink-0">
+                  <Text className="shrink-0 text-[13px] text-[#555555]">
                     {formatRelativeTime(item.created_at)}
                   </Text>
                 </HStack>
-                <Text className="text-[#999] text-[14px]" numberOfLines={1}>{meta.label}</Text>
+                <Text className="text-[14px] text-[#999]" numberOfLines={1}>{meta.label}</Text>
                 {item.thread && item.thread.content ? (
-                  <Text className="text-[#777] text-[13px] mt-0.5" numberOfLines={2}>
+                  <Text className="mt-0.5 text-[13px] text-[#777]" numberOfLines={2}>
                     {item.thread.content}
                   </Text>
                 ) : null}
@@ -157,8 +148,8 @@ export default function ActivityScreen() {
                   variant={isFollowed ? 'outline' : 'solid'}
                   className={
                     isFollowed
-                      ? 'rounded-lg border-[#333] bg-transparent min-w-[90px]'
-                      : 'rounded-lg bg-[#f3f5f7] min-w-[90px]'
+                      ? 'min-w-[90px] rounded-lg border-[#333] bg-transparent'
+                      : 'min-w-[90px] rounded-lg bg-[#f3f5f7]'
                   }
                   onPress={() => handleFollow(item.actor.id)}
                 >
@@ -172,7 +163,7 @@ export default function ActivityScreen() {
                 </Button>
               )}
             </HStack>
-            <Divider className="bg-[#1e1e1e] ml-[64px]" />
+            <Divider className="ml-[64px] bg-[#1e1e1e]" />
           </AnimatedPressable>
         </AnimatedListItem>
       );
@@ -182,22 +173,22 @@ export default function ActivityScreen() {
 
   return (
     <ScreenLayout>
-      <Box className="px-4 pt-3 pb-1">
+      <Box className="px-4 pb-1 pt-3">
         <Heading size="2xl" className="text-[#f3f5f7]">
           Activity
         </Heading>
       </Box>
 
       {/* Animated pill tabs */}
-      <HStack className="px-4 py-2 overflow-hidden" space="sm">
+      <HStack className="overflow-hidden px-4 py-2" space="sm">
         {tabs.map((tab) => (
           <Pressable
             key={tab.key}
             onPress={() => setActiveTab(tab.key)}
-            className={`px-4 py-[6px] rounded-full border flex-shrink-0 ${
+            className={`shrink-0 rounded-full border px-4 py-[6px] ${
               activeTab === tab.key
-                ? 'bg-[#f3f5f7] border-[#f3f5f7]'
-                : 'bg-transparent border-[#333]'
+                ? 'border-[#f3f5f7] bg-[#f3f5f7]'
+                : 'border-[#333] bg-transparent'
             }`}
           >
             <Text
@@ -222,7 +213,7 @@ export default function ActivityScreen() {
             <ActivitySkeleton />
           ) : (
             <View className="items-center justify-center py-16">
-              <Text className="text-[#555555] text-[15px]">No activity yet</Text>
+              <Text className="text-[15px] text-[#555555]">No activity yet</Text>
             </View>
           )
         }
