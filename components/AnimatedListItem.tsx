@@ -2,21 +2,16 @@
 // Fade-in + slide-up entrance animation for list items
 
 import React, { useEffect, useState } from 'react';
-import { Platform, View } from 'react-native';
-import { useAnimatedStyle, SafeAnimatedView, isWeb } from '@/utils/animatedWebSafe';
-
-// Only import Reanimated on native
-let useSharedValue: any = null;
-let withTiming: any = null;
-let withDelay: any = null;
-let Easing: any = null;
-
-if (!isWeb) {
-  useSharedValue = require('react-native-reanimated').useSharedValue;
-  withTiming = require('react-native-reanimated').withTiming;
-  withDelay = require('react-native-reanimated').withDelay;
-  Easing = require('react-native-reanimated').Easing;
-}
+import { View } from 'react-native';
+import { 
+  useAnimatedStyle, 
+  SafeAnimatedView, 
+  isWeb,
+  useSharedValue,
+  withTiming,
+  withDelay,
+  Easing
+} from '@/utils/animatedWebSafe';
 
 interface AnimatedListItemProps {
   index: number;
@@ -30,14 +25,12 @@ export function AnimatedListItem({
   children,
   maxDelay = 400,
 }: AnimatedListItemProps) {
-  const [isVisible, setIsVisible] = useState(isWeb); // Web items visible immediately
-  const opacity = !isWeb ? useSharedValue(1) : { value: 1 };
-  const translateY = !isWeb ? useSharedValue(0) : { value: 0 };
+  const [isVisible, setIsVisible] = useState(isWeb);
+  const opacity = useSharedValue(isWeb ? 1 : 0);
+  const translateY = useSharedValue(isWeb ? 0 : 16);
 
   useEffect(() => {
     if (!isWeb) {
-      opacity.value = 0;
-      translateY.value = 16;
       const delay = Math.min(index * 60, maxDelay);
       opacity.value = withDelay(
         delay,
@@ -50,15 +43,12 @@ export function AnimatedListItem({
     } else {
       setIsVisible(true);
     }
-  }, [index, maxDelay, opacity, translateY, isWeb]);
+  }, [index, maxDelay, opacity, translateY]);
 
-  const animatedStyle = !isWeb ? {
+  const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
     transform: [{ translateY: translateY.value }],
-  } : {
-    opacity: 1,
-    transform: [{ translateY: 0 }],
-  };
+  }));
 
   // On web, skip animations and render immediately
   if (isWeb) {

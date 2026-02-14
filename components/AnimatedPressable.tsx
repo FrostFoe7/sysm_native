@@ -2,23 +2,15 @@
 // Scale-down press feedback (like iOS press-and-hold)
 
 import React, { useCallback, useState } from 'react';
-import { Pressable, type PressableProps, type ViewStyle, Platform } from 'react-native';
-import { useAnimatedStyle, SafeAnimatedView, isWeb } from '@/utils/animatedWebSafe';
-
-// Only import Reanimated on native
-let Animated: any = null;
-let useSharedValue: any = null;
-let withTiming: any = null;
-let Easing: any = null;
-
-if (!isWeb) {
-  Animated = require('react-native-reanimated').default;
-  useSharedValue = require('react-native-reanimated').useSharedValue;
-  withTiming = require('react-native-reanimated').withTiming;
-  Easing = require('react-native-reanimated').Easing;
-}
-
-const AnimatedPressableBase = !isWeb ? Animated.createAnimatedComponent(Pressable) : Pressable;
+import { type PressableProps, type ViewStyle } from 'react-native';
+import { 
+  useAnimatedStyle, 
+  SafeAnimatedPressable, 
+  isWeb,
+  useSharedValue,
+  withTiming,
+  Easing
+} from '@/utils/animatedWebSafe';
 
 interface AnimatedPressableComponentProps extends PressableProps {
   scaleValue?: number;
@@ -34,7 +26,7 @@ export function AnimatedPressable({
   ...rest
 }: AnimatedPressableComponentProps) {
   const [scaleWeb, setScaleWeb] = useState(1);
-  const scale = !isWeb ? useSharedValue(1) : { value: 1 };
+  const scale = useSharedValue(1);
 
   const handlePressIn = useCallback(
     (e: any) => {
@@ -48,7 +40,7 @@ export function AnimatedPressable({
       }
       onPressIn?.(e);
     },
-    [scale, scaleValue, onPressIn, isWeb],
+    [scaleValue, onPressIn],
   );
 
   const handlePressOut = useCallback(
@@ -63,37 +55,25 @@ export function AnimatedPressable({
       }
       onPressOut?.(e);
     },
-    [scale, onPressOut, isWeb],
+    [onPressOut],
   );
 
-  const animatedStyle = !isWeb ? {
-    transform: [{ scale: scale.value }],
-  } : {
-    transform: [{ scale: scaleWeb }],
-  };
-
-  // On web, use plain Pressable without animations
-  if (isWeb) {
-    return (
-      <Pressable
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
-        style={[{ transform: [{ scale: scaleWeb }] }, style as ViewStyle]}
-        {...rest}
-      >
-        {children}
-      </Pressable>
-    );
-  }
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: isWeb ? scaleWeb : scale.value }],
+  }));
 
   return (
-    <AnimatedPressableBase
+    <SafeAnimatedPressable
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
-      style={[animatedStyle, style as ViewStyle]}
+      style={[
+        animatedStyle, 
+        style as ViewStyle,
+        isWeb && ({ transition: 'transform 150ms ease-out' } as any)
+      ]}
       {...rest}
     >
       {children}
-    </AnimatedPressableBase>
+    </SafeAnimatedPressable>
   );
 }

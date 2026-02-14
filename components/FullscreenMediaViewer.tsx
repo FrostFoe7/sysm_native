@@ -8,32 +8,18 @@ import {
   ScrollView,
   useWindowDimensions,
   Platform,
-  StatusBar,
-  Animated as RNAnimated,
 } from 'react-native';
 import { Image } from 'expo-image';
 import { useVideoPlayer, VideoView, VideoPlayer as VideoPlayerType } from 'expo-video';
 import { Text } from '@/components/ui/text';
-import { X, ChevronLeft, ChevronRight, Play, Pause, Volume2, VolumeX } from 'lucide-react-native';
-import { useAnimatedStyle, isWeb, SafeAnimatedView } from '@/utils/animatedWebSafe';
+import { X, ChevronLeft, ChevronRight, Play, Volume2, VolumeX } from 'lucide-react-native';
+import { 
+  isWeb, 
+  SafeAnimatedView,
+  FadeIn,
+  FadeOut
+} from '@/utils/animatedWebSafe';
 import type { MediaItem } from '@/db/db';
-
-// Only import Reanimated on native platforms
-let Animated: any = null;
-let useSharedValue: any = null;
-let withTiming: any = null;
-let withSpring: any = null;
-let FadeIn: any = null;
-let FadeOut: any = null;
-
-if (!isWeb) {
-  Animated = require('react-native-reanimated').default;
-  useSharedValue = require('react-native-reanimated').useSharedValue;
-  withTiming = require('react-native-reanimated').withTiming;
-  withSpring = require('react-native-reanimated').withSpring;
-  FadeIn = require('react-native-reanimated').FadeIn;
-  FadeOut = require('react-native-reanimated').FadeOut;
-}
 
 interface FullscreenMediaViewerProps {
   isOpen: boolean;
@@ -48,7 +34,6 @@ function FullscreenVideo({ uri, isActive }: { uri: string; isActive: boolean }) 
 
   const player = useVideoPlayer(uri, (p: VideoPlayerType) => {
     p.loop = true;
-    // On web, always mute due to autoplay policies
     p.muted = isWeb ? true : true;
   });
 
@@ -68,9 +53,7 @@ function FullscreenVideo({ uri, isActive }: { uri: string; isActive: boolean }) 
       } else {
         player.pause();
       }
-    } catch (e) {
-      // Silently catch any playback errors
-    }
+    } catch (e) {}
   }, [isActive, player]);
 
   const togglePlay = useCallback(() => {
@@ -101,7 +84,7 @@ function FullscreenVideo({ uri, isActive }: { uri: string; isActive: boolean }) 
       </Pressable>
 
       {/* Play/Pause center overlay */}
-      {!isPlaying && !isWeb && (
+      {!isPlaying && (
         <SafeAnimatedView
           entering={FadeIn?.duration(150)}
           exiting={FadeOut?.duration(150)}
@@ -109,35 +92,6 @@ function FullscreenVideo({ uri, isActive }: { uri: string; isActive: boolean }) 
             position: 'absolute',
             justifyContent: 'center',
             alignItems: 'center',
-          }}
-          pointerEvents="none"
-        >
-          <View
-            style={{
-              width: 64,
-              height: 64,
-              borderRadius: 32,
-              backgroundColor: 'rgba(0,0,0,0.6)',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <Play size={28} color="#ffffff" fill="#ffffff" />
-          </View>
-        </SafeAnimatedView>
-      )}
-
-      {/* Play/Pause center overlay (web) */}
-      {!isPlaying && isWeb && (
-        <View
-          style={{
-            position: 'absolute',
-            justifyContent: 'center',
-            alignItems: 'center',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
             pointerEvents: 'none',
           }}
         >
@@ -153,7 +107,7 @@ function FullscreenVideo({ uri, isActive }: { uri: string; isActive: boolean }) 
           >
             <Play size={28} color="#ffffff" fill="#ffffff" />
           </View>
-        </View>
+        </SafeAnimatedView>
       )}
 
       {/* Mute button */}
@@ -193,7 +147,6 @@ export function FullscreenMediaViewer({
   const scrollRef = useRef<ScrollView>(null);
   const isDesktop = isWeb && width >= 768;
 
-  // Reset on open
   useEffect(() => {
     if (isOpen) {
       setActiveIndex(initialIndex);
@@ -203,7 +156,6 @@ export function FullscreenMediaViewer({
     }
   }, [isOpen, initialIndex, width]);
 
-  // Desktop keyboard navigation
   useEffect(() => {
     if (!isWeb || !isOpen) return;
     const handler = (e: KeyboardEvent) => {
@@ -258,7 +210,6 @@ export function FullscreenMediaViewer({
   return (
     <Modal visible={isOpen} transparent animationType="fade" onRequestClose={onClose} statusBarTranslucent>
       <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.95)' }}>
-        {/* Close button */}
         <Pressable
           onPress={onClose}
           style={{
@@ -278,7 +229,6 @@ export function FullscreenMediaViewer({
           <X size={20} color="#ffffff" />
         </Pressable>
 
-        {/* Page indicator */}
         {media.length > 1 && (
           <View
             style={{
@@ -298,7 +248,6 @@ export function FullscreenMediaViewer({
           </View>
         )}
 
-        {/* Swipeable media */}
         <ScrollView
           ref={scrollRef}
           horizontal
@@ -327,7 +276,6 @@ export function FullscreenMediaViewer({
           ))}
         </ScrollView>
 
-        {/* Desktop arrow navigation */}
         {isDesktop && media.length > 1 && (
           <>
             {activeIndex > 0 && (
@@ -373,7 +321,6 @@ export function FullscreenMediaViewer({
           </>
         )}
 
-        {/* Dot indicators */}
         {media.length > 1 && (
           <View
             style={{

@@ -2,19 +2,16 @@
 // Horizontally sliding underline tab indicator
 
 import React, { useEffect, useState } from 'react';
-import { Pressable, LayoutChangeEvent, View, Platform } from 'react-native';
-import { useAnimatedStyle, isWeb, SafeAnimatedView } from '@/utils/animatedWebSafe';
+import { Pressable, LayoutChangeEvent, View } from 'react-native';
+import { 
+  useAnimatedStyle, 
+  isWeb, 
+  SafeAnimatedView,
+  useSharedValue,
+  withSpring
+} from '@/utils/animatedWebSafe';
 import { Text } from '@/components/ui/text';
 import { HStack } from '@/components/ui/hstack';
-
-// Only import Reanimated on native
-let useSharedValue: any = null;
-let withSpring: any = null;
-
-if (!isWeb) {
-  useSharedValue = require('react-native-reanimated').useSharedValue;
-  withSpring = require('react-native-reanimated').withSpring;
-}
 
 interface Tab {
   key: string;
@@ -34,18 +31,16 @@ export function AnimatedTabBar({ tabs, activeKey, onTabPress }: AnimatedTabBarPr
   const [webTranslateX, setWebTranslateX] = useState(0);
   const [webWidth, setWebWidth] = useState(0);
   
-  const translateX = !isWeb ? useSharedValue(0) : { value: 0 };
-  const tabWidth = !isWeb ? useSharedValue(0) : { value: 0 };
+  const translateX = useSharedValue(0);
+  const tabWidth = useSharedValue(0);
 
   useEffect(() => {
-    if (!isWeb && tabWidth.value !== undefined && tabWidth.value > 0) {
+    if (!isWeb && tabWidth.value > 0) {
       translateX.value = withSpring(activeIndex * tabWidth.value, springConfig);
-    } else if (isWeb) {
+    } else if (isWeb && webWidth > 0) {
       setWebTranslateX(activeIndex * webWidth);
-    } else {
-      translateX.value = activeIndex * tabWidth.value;
     }
-  }, [activeIndex, translateX, tabWidth, isWeb, webWidth]);
+  }, [activeIndex, webWidth]);
 
   const handleLayout = (e: LayoutChangeEvent) => {
     const w = e.nativeEvent.layout.width / tabs.length;
@@ -58,14 +53,10 @@ export function AnimatedTabBar({ tabs, activeKey, onTabPress }: AnimatedTabBarPr
     }
   };
 
-  const underlineStyle = !isWeb ? {
-    transform: [{ translateX: translateX.value }],
-    width: tabWidth.value,
-  } : {
-    transform: [{ translateX: webTranslateX }],
-    width: webWidth,
-    transition: 'transform 300ms cubic-bezier(0.4, 0.0, 0.2, 1)',
-  };
+  const animatedUnderlineStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: isWeb ? webTranslateX : translateX.value }],
+    width: isWeb ? webWidth : tabWidth.value,
+  }));
 
   return (
     <View className="border-b border-[#1e1e1e]" onLayout={handleLayout}>
@@ -86,36 +77,21 @@ export function AnimatedTabBar({ tabs, activeKey, onTabPress }: AnimatedTabBarPr
           </Pressable>
         ))}
       </HStack>
-      {!isWeb ? (
-        <SafeAnimatedView
-          style={[
-            {
-              position: 'absolute',
-              bottom: 0,
-              height: 1.5,
-              borderRadius: 1,
-            },
-            underlineStyle,
-          ]}
-        >
-          <View className="mx-auto w-[60px] h-full bg-[#f3f5f7] rounded-full" />
-        </SafeAnimatedView>
-      ) : (
-        <View
-          style={[
-            {
-              position: 'absolute',
-              bottom: 0,
-              height: 1.5,
-              borderRadius: 1,
-              left: activeIndex * (tabWidth.value || 0) + (tabWidth.value || 0) / 2 - 30,
-              width: 60,
-              backgroundColor: '#f3f5f7',
-              transition: 'left 200ms ease-in-out',
-            } as any,
-          ]}
-        />
-      )}
+      <SafeAnimatedView
+        style={[
+          {
+            position: 'absolute',
+            bottom: 0,
+            height: 1.5,
+            borderRadius: 1,
+            backgroundColor: '#f3f5f7',
+          },
+          animatedUnderlineStyle,
+          isWeb && ({ transition: 'transform 300ms cubic-bezier(0.4, 0.0, 0.2, 1), width 300ms ease' } as any)
+        ]}
+      >
+        <View className="mx-auto w-[60px] h-full bg-[#f3f5f7] rounded-full" />
+      </SafeAnimatedView>
     </View>
   );
 }

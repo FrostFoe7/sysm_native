@@ -4,11 +4,11 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { FlatList, View, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
-import Animated, {
+import {
   useSharedValue,
   withSpring,
-} from 'react-native-reanimated';
-import { useAnimatedStyle } from '@/utils/animatedWebSafe';
+  useAnimatedStyle,
+} from '@/utils/animatedWebSafe';
 import { ScreenLayout } from '@/components/ScreenLayout';
 import { ProfileHeader } from '@/components/ProfileHeader';
 import { ThreadCard } from '@/components/ThreadCard';

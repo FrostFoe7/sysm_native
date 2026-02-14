@@ -1,8 +1,15 @@
 // components/AppToast.tsx
 
 import React, { createContext, useContext, useCallback, useState, useRef } from 'react';
-import { Platform, View } from 'react-native';
-import { useAnimatedStyle, isWeb } from '@/utils/animatedWebSafe';
+import { View } from 'react-native';
+import { 
+  useAnimatedStyle, 
+  isWeb,
+  useSharedValue,
+  withTiming,
+  Easing,
+  SafeAnimatedView
+} from '@/utils/animatedWebSafe';
 import { HStack } from '@/components/ui/hstack';
 import { Text } from '@/components/ui/text';
 import {
@@ -18,25 +25,6 @@ import {
   Repeat2,
 } from 'lucide-react-native';
 import type { LucideIcon } from 'lucide-react-native';
-
-// Only import Reanimated on native
-let useSharedValue: any = null;
-let withTiming: any = null;
-let withDelay: any = null;
-let withSequence: any = null;
-let Easing: any = null;
-let runOnJS: any = null;
-let Animated: any = null;
-
-if (!isWeb) {
-  useSharedValue = require('react-native-reanimated').useSharedValue;
-  withTiming = require('react-native-reanimated').withTiming;
-  withDelay = require('react-native-reanimated').withDelay;
-  withSequence = require('react-native-reanimated').withSequence;
-  Easing = require('react-native-reanimated').Easing;
-  runOnJS = require('react-native-reanimated').runOnJS;
-  Animated = require('react-native-reanimated').default;
-}
 
 interface ToastItem {
   id: number;
@@ -76,8 +64,8 @@ function ToastView({ item, onDone }: { item: ToastItem; onDone: (id: number) => 
   const [opacityWeb, setOpacityWeb] = useState(1);
   const [translateWeb, setTranslateWeb] = useState(0);
   
-  const opacity = !isWeb ? useSharedValue(1) : { value: 1 };
-  const translateY = !isWeb ? useSharedValue(0) : { value: 0 };
+  const opacity = useSharedValue(1);
+  const translateY = useSharedValue(0);
 
   React.useEffect(() => {
     if (!isWeb) {
@@ -85,6 +73,9 @@ function ToastView({ item, onDone }: { item: ToastItem; onDone: (id: number) => 
       translateY.value = 20;
       opacity.value = withTiming(1, { duration: 200, easing: Easing.out(Easing.cubic) });
       translateY.value = withTiming(0, { duration: 200, easing: Easing.out(Easing.cubic) });
+    } else {
+      setOpacityWeb(1);
+      setTranslateWeb(0);
     }
 
     const hideTimeout = setTimeout(() => {
@@ -93,21 +84,18 @@ function ToastView({ item, onDone }: { item: ToastItem; onDone: (id: number) => 
         translateY.value = withTiming(20, { duration: 200, easing: Easing.in(Easing.cubic) });
       } else {
         setOpacityWeb(0);
+        setTranslateWeb(20);
       }
       setTimeout(() => onDone(item.id), 220);
     }, 2200);
 
     return () => clearTimeout(hideTimeout);
-  }, [item.id, onDone, opacity, translateY, isWeb]);
+  }, [item.id, onDone]);
 
-  const animStyle = !isWeb ? {
-    opacity: opacity.value,
-    transform: [{ translateY: translateY.value }],
-  } : {
-    opacity: opacityWeb,
-    transform: [{ translateY: translateWeb }],
-    transition: 'opacity 200ms ease-in-out, transform 200ms ease-in-out',
-  };
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: isWeb ? opacityWeb : opacity.value,
+    transform: [{ translateY: isWeb ? translateWeb : translateY.value }],
+  }));
 
   const Icon = item.icon || Check;
 
@@ -121,8 +109,14 @@ function ToastView({ item, onDone }: { item: ToastItem; onDone: (id: number) => 
     pointerEvents: 'none' as const,
   };
 
-  return !isWeb ? (
-    <Animated.View style={[baseStyle, animStyle]}>
+  return (
+    <SafeAnimatedView 
+      style={[
+        baseStyle, 
+        animatedStyle,
+        isWeb && ({ transition: 'opacity 200ms ease-in-out, transform 200ms ease-in-out' } as any)
+      ]}
+    >
       <HStack
         className="bg-[#2a2a2a] rounded-full px-5 py-3 items-center shadow-lg"
         space="sm"
@@ -137,24 +131,7 @@ function ToastView({ item, onDone }: { item: ToastItem; onDone: (id: number) => 
         <Icon size={16} color={item.iconColor || '#f3f5f7'} strokeWidth={2} />
         <Text className="text-[#f3f5f7] text-[14px] font-medium">{item.message}</Text>
       </HStack>
-    </Animated.View>
-  ) : (
-    <View style={[baseStyle, animStyle] as any}>
-      <HStack
-        className="bg-[#2a2a2a] rounded-full px-5 py-3 items-center shadow-lg"
-        space="sm"
-        style={{
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.3,
-          shadowRadius: 8,
-          elevation: 8,
-        }}
-      >
-        <Icon size={16} color={item.iconColor || '#f3f5f7'} strokeWidth={2} />
-        <Text className="text-[#f3f5f7] text-[14px] font-medium">{item.message}</Text>
-      </HStack>
-    </View>
+    </SafeAnimatedView>
   );
 }
 

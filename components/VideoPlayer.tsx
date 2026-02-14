@@ -1,28 +1,22 @@
 // components/VideoPlayer.tsx
 
 import React, { useCallback, useRef, useState, useEffect } from 'react';
-import { View, Pressable, Platform, Animated as RNAnimated } from 'react-native';
+import { View, Pressable } from 'react-native';
 import { useVideoPlayer, VideoView, VideoPlayer as VideoPlayerType } from 'expo-video';
 import { Text } from '@/components/ui/text';
-import { Play, Pause, Volume2, VolumeX } from 'lucide-react-native';
-import { isWeb, SafeAnimatedView } from '@/utils/animatedWebSafe';
+import { Play, Volume2, VolumeX } from 'lucide-react-native';
+import { 
+  isWeb, 
+  SafeAnimatedView, 
+  useSharedValue, 
+  withTiming, 
+  FadeIn, 
+  FadeOut,
+  useAnimatedStyle,
+  SafeAnimatedPressable
+} from '@/utils/animatedWebSafe';
 import { Image } from 'expo-image';
 import { Skeleton } from '@/components/ui/skeleton';
-
-// Only import Reanimated on native platforms
-let Animated: any = null;
-let useSharedValue: any = null;
-let withTiming: any = null;
-let FadeIn: any = null;
-let FadeOut: any = null;
-
-if (!isWeb) {
-  Animated = require('react-native-reanimated').default;
-  useSharedValue = require('react-native-reanimated').useSharedValue;
-  withTiming = require('react-native-reanimated').withTiming;
-  FadeIn = require('react-native-reanimated').FadeIn;
-  FadeOut = require('react-native-reanimated').FadeOut;
-}
 
 interface VideoPlayerProps {
   uri: string;
@@ -35,8 +29,6 @@ interface VideoPlayerProps {
   onPress?: () => void;
   style?: any;
 }
-
-const AnimatedPressable = !isWeb ? Animated.createAnimatedComponent(Pressable) : Pressable;
 
 export function VideoPlayer({
   uri,
@@ -51,17 +43,14 @@ export function VideoPlayer({
   const [isMuted, setIsMuted] = useState(muted);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [showThumbnail, setShowThumbnail] = useState(true);
   const [controlsOpacityWeb, setControlsOpacityWeb] = useState(1);
   
-  // Only use Reanimated on native
-  const controlsOpacity = !isWeb ? useSharedValue(1) : { value: 1 };
+  const controlsOpacity = useSharedValue(1);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isDesktop = isWeb;
 
   const player = useVideoPlayer(uri, (p: VideoPlayerType) => {
     p.loop = true;
-    // On web, always mute and don't autoplay due to browser policies
     p.muted = isWeb ? true : muted;
   });
 
@@ -89,9 +78,7 @@ export function VideoPlayer({
       } else {
         player.pause();
       }
-    } catch (e) {
-      // Silently catch any playback errors
-    }
+    } catch (e) {}
   }, [isVisible, player, autoPlay]);
 
   const scheduleHideControls = useCallback(() => {
@@ -104,7 +91,7 @@ export function VideoPlayer({
       }
       setShowControls(false);
     }, 2500);
-  }, [controlsOpacity, isWeb]);
+  }, [controlsOpacity]);
 
   const handlePress = useCallback(() => {
     if (onPress) {
@@ -129,7 +116,7 @@ export function VideoPlayer({
       }
       scheduleHideControls();
     }
-  }, [showControls, isPlaying, player, onPress, controlsOpacity, scheduleHideControls, isWeb]);
+  }, [showControls, isPlaying, player, onPress, controlsOpacity, scheduleHideControls]);
 
   const handleMuteToggle = useCallback(() => {
     if (!player) return;
@@ -138,40 +125,25 @@ export function VideoPlayer({
     player.muted = newMuted;
   }, [isMuted, player]);
 
-  // Conditional animation style - only for native
-  const animatedControlsStyle = !isWeb ? {
-    opacity: controlsOpacity.value,
-  } : {
-    opacity: controlsOpacityWeb,
-  };
+  const animatedControlsStyle = useAnimatedStyle(() => ({
+    opacity: isWeb ? controlsOpacityWeb : controlsOpacity.value,
+  }));
 
   const handleHover = useCallback(() => {
     if (!isDesktop || !player) return;
     player.play();
-    if (isDesktop) {
-      if (isWeb) {
-        setControlsOpacityWeb(1);
-      } else {
-        controlsOpacity.value = withTiming(1, { duration: 200 });
-      }
-    }
+    setControlsOpacityWeb(1);
     setShowControls(true);
-  }, [isDesktop, player, controlsOpacity, isWeb]);
+  }, [isDesktop, player]);
 
   const handleHoverOut = useCallback(() => {
     if (!isDesktop || !player) return;
     if (!autoPlay) {
       player.pause();
     }
-    if (isDesktop) {
-      if (isWeb) {
-        setControlsOpacityWeb(0);
-      } else {
-        controlsOpacity.value = withTiming(0, { duration: 300 });
-      }
-    }
+    setControlsOpacityWeb(0);
     setShowControls(false);
-  }, [isDesktop, player, autoPlay, controlsOpacity, isWeb]);
+  }, [isDesktop, player, autoPlay]);
 
   return (
     <View
@@ -196,7 +168,6 @@ export function VideoPlayer({
           ) : (
             <Skeleton variant="rounded" className="w-full h-full bg-[#1e1e1e]" />
           )}
-          {/* Play icon overlay on thumbnail */}
           <View
             style={{
               position: 'absolute',
@@ -234,96 +205,41 @@ export function VideoPlayer({
         />
       </Pressable>
 
-      {/* Controls overlay - Web version */}
-      {isDesktop && (
-        <View
-          style={[
-            {
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
+      {/* Controls overlay */}
+      <SafeAnimatedView
+        style={[
+          {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            justifyContent: 'center',
+            alignItems: 'center',
+            pointerEvents: showControls ? 'auto' : 'none',
+          },
+          animatedControlsStyle,
+          isWeb && ({ transition: 'opacity 200ms ease-in-out' } as any)
+        ]}
+      >
+        {!isPlaying && (
+          <SafeAnimatedPressable
+            onPress={handlePress}
+            entering={FadeIn?.duration(150)}
+            exiting={FadeOut?.duration(150)}
+            style={{
+              width: 48,
+              height: 48,
+              borderRadius: 24,
+              backgroundColor: 'rgba(0,0,0,0.6)',
               justifyContent: 'center',
               alignItems: 'center',
-              pointerEvents: showControls ? 'auto' : 'none',
-              opacity: showControls ? 1 : 0,
-              transition: 'opacity 200ms ease-in-out',
-            } as any,
-          ]}
-        >
-          {/* Center play/pause */}
-          {!isPlaying && (
-            <Pressable
-              onPress={handlePress}
-              style={{
-                width: 48,
-                height: 48,
-                borderRadius: 24,
-                backgroundColor: 'rgba(0,0,0,0.6)',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <Play size={22} color="#ffffff" fill="#ffffff" />
-            </Pressable>
-          )}
-        </View>
-      )}
-
-      {/* Controls overlay - Native version */}
-      {!isDesktop && (
-        <SafeAnimatedView
-          style={[
-            {
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              justifyContent: 'center',
-              alignItems: 'center',
-              pointerEvents: showControls ? 'auto' : 'none',
-            },
-            animatedControlsStyle,
-          ]}
-        >
-          {/* Center play/pause */}
-          {!isPlaying && (
-            !isWeb ? (
-              <SafeAnimatedView entering={FadeIn?.duration(150)} exiting={FadeOut?.duration(150)}>
-                <Pressable
-                  onPress={handlePress}
-                  style={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: 24,
-                    backgroundColor: 'rgba(0,0,0,0.6)',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}
-                >
-                  <Play size={22} color="#ffffff" fill="#ffffff" />
-                </Pressable>
-              </SafeAnimatedView>
-            ) : (
-              <Pressable
-                onPress={handlePress}
-                style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 24,
-                  backgroundColor: 'rgba(0,0,0,0.6)',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                <Play size={22} color="#ffffff" fill="#ffffff" />
-              </Pressable>
-            )
-          )}
-        </SafeAnimatedView>
-      )}
+            }}
+          >
+            <Play size={22} color="#ffffff" fill="#ffffff" />
+          </SafeAnimatedPressable>
+        )}
+      </SafeAnimatedView>
 
       {/* Mute button - bottom right */}
       <Pressable

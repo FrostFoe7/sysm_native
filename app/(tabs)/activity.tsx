@@ -1,17 +1,18 @@
 // app/(tabs)/activity.tsx
 
 import React, { useState, useCallback, useMemo } from 'react';
-import { FlatList, Pressable, View, Platform } from 'react-native';
+import { FlatList, Pressable, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
-import Animated, {
+import { 
+  isWeb,
   useSharedValue,
   withSpring,
   withTiming,
   Easing,
   FadeIn,
-} from 'react-native-reanimated';
-import { useAnimatedStyle } from '@/utils/animatedWebSafe';
+  useAnimatedStyle 
+} from '@/utils/animatedWebSafe';
 import { ScreenLayout } from '@/components/ScreenLayout';
 import { AnimatedListItem } from '@/components/AnimatedListItem';
 import { AnimatedPressable } from '@/components/AnimatedPressable';

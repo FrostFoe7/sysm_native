@@ -2,20 +2,16 @@
 // Bouncy scale animation on the heart icon when liked
 
 import React, { useEffect, useState } from 'react';
-import { Pressable, Platform } from 'react-native';
+import { Pressable } from 'react-native';
 import { Heart } from 'lucide-react-native';
-import { SafeAnimatedView, isWeb } from '@/utils/animatedWebSafe';
-
-// Only import Reanimated on native
-let useSharedValue: any = null;
-let withSpring: any = null;
-let withSequence: any = null;
-
-if (!isWeb) {
-  useSharedValue = require('react-native-reanimated').useSharedValue;
-  withSpring = require('react-native-reanimated').withSpring;
-  withSequence = require('react-native-reanimated').withSequence;
-}
+import { 
+  SafeAnimatedView, 
+  isWeb, 
+  useSharedValue, 
+  withSpring, 
+  withSequence,
+  useAnimatedStyle 
+} from '@/utils/animatedWebSafe';
 
 interface AnimatedHeartProps {
   isLiked: boolean;
@@ -27,18 +23,15 @@ const springConfig = { damping: 6, stiffness: 400, mass: 0.4 };
 
 export function AnimatedHeart({ isLiked, onPress, size = 19 }: AnimatedHeartProps) {
   const [scaleWeb, setScaleWeb] = useState(1);
-  const scale = !isWeb ? useSharedValue(1) : { value: 1 };
-  const liked = !isWeb ? useSharedValue(isLiked ? 1 : 0) : { value: isLiked ? 1 : 0 };
+  const scale = useSharedValue(1);
+  const liked = useSharedValue(isLiked ? 1 : 0);
 
   useEffect(() => {
-    if (!isWeb) {
-      liked.value = isLiked ? 1 : 0;
-    }
-  }, [isLiked, liked, isWeb]);
+    liked.value = isLiked ? 1 : 0;
+  }, [isLiked, liked]);
 
   const handlePress = () => {
     if (!isWeb) {
-      // Bounce animation on native only
       scale.value = withSequence(
         withSpring(0.7, { damping: 20, stiffness: 600 }),
         withSpring(1.3, springConfig),
@@ -51,6 +44,10 @@ export function AnimatedHeart({ isLiked, onPress, size = 19 }: AnimatedHeartProp
     }
     onPress();
   };
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: isWeb ? scaleWeb : scale.value }],
+  }));
 
   const heartColor = isLiked ? '#ff3040' : '#777777';
   const heartFill = isLiked ? '#ff3040' : 'transparent';
@@ -70,15 +67,14 @@ export function AnimatedHeart({ isLiked, onPress, size = 19 }: AnimatedHeartProp
       hitSlop={8}
       className="p-2 rounded-full active:bg-white/5"
     >
-      {!isWeb ? (
-        <SafeAnimatedView style={{ transform: [{ scale: scale.value }] }}>
-          {heartIcon}
-        </SafeAnimatedView>
-      ) : (
-        <div style={{ transform: `scale(${scaleWeb})`, transition: 'transform 200ms ease-out' }}>
-          {heartIcon}
-        </div>
-      )}
+      <SafeAnimatedView 
+        style={[
+          animatedStyle,
+          isWeb && ({ transition: 'transform 200ms ease-out' } as any)
+        ]}
+      >
+        {heartIcon}
+      </SafeAnimatedView>
     </Pressable>
   );
 }
