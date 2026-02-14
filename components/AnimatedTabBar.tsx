@@ -10,6 +10,7 @@ import {
   useSharedValue,
   withSpring
 } from '@/utils/animatedWebSafe';
+import { SPRING_CONFIG } from '@/constants/ui';
 import { Text } from '@/components/ui/text';
 import { HStack } from '@/components/ui/hstack';
 
@@ -24,8 +25,6 @@ interface AnimatedTabBarProps {
   onTabPress: (key: string) => void;
 }
 
-const springConfig = { damping: 20, stiffness: 200 };
-
 export function AnimatedTabBar({ tabs, activeKey, onTabPress }: AnimatedTabBarProps) {
   const activeIndex = tabs.findIndex((t) => t.key === activeKey);
   const [webTranslateX, setWebTranslateX] = useState(0);
@@ -36,7 +35,7 @@ export function AnimatedTabBar({ tabs, activeKey, onTabPress }: AnimatedTabBarPr
 
   useEffect(() => {
     if (!isWeb && tabWidth.value > 0) {
-      translateX.value = withSpring(activeIndex * tabWidth.value, springConfig);
+      translateX.value = withSpring(activeIndex * tabWidth.value, SPRING_CONFIG);
     } else if (isWeb && webWidth > 0) {
       setWebTranslateX(activeIndex * webWidth);
     }

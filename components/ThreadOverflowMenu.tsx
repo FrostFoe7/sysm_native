@@ -23,7 +23,7 @@ import {
   hideThread,
   deleteThread as deleteThreadAction,
 } from '@/db/selectors';
-import { CURRENT_USER_ID } from '@/db/db';
+import { CURRENT_USER_ID } from '@/constants/app';
 import type { ThreadWithAuthor } from '@/db/db';
 import {
   VolumeX,

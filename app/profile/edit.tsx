@@ -19,23 +19,12 @@ import { Divider } from '@/components/ui/divider';
 import { Box } from '@/components/ui/box';
 import { getCurrentUser, updateCurrentUser } from '@/db/selectors';
 import { Camera, X } from 'lucide-react-native';
-
-const MAX_BIO_LENGTH = 150;
-const MAX_NAME_LENGTH = 50;
-const MAX_USERNAME_LENGTH = 30;
-
-const AVATAR_OPTIONS = [
-  'https://i.pravatar.cc/300?img=60',
-  'https://i.pravatar.cc/300?img=61',
-  'https://i.pravatar.cc/300?img=62',
-  'https://i.pravatar.cc/300?img=63',
-  'https://i.pravatar.cc/300?img=64',
-  'https://i.pravatar.cc/300?img=65',
-  'https://i.pravatar.cc/300?img=66',
-  'https://i.pravatar.cc/300?img=67',
-  'https://i.pravatar.cc/300?img=68',
-  'https://i.pravatar.cc/300?img=69',
-];
+import { 
+  MAX_BIO_LENGTH, 
+  MAX_NAME_LENGTH, 
+  MAX_USERNAME_LENGTH, 
+  AVATAR_OPTIONS 
+} from '@/constants/app';
 
 function EditField({
   label,

@@ -4,8 +4,7 @@ import React from 'react';
 import { Platform, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from '@/components/ui/safe-area-view';
 import { Box } from '@/components/ui/box';
-
-const DESKTOP_BREAKPOINT = 1024;
+import { DESKTOP_BREAKPOINT } from '@/constants/ui';
 
 interface ScreenLayoutProps {
   children: React.ReactNode;

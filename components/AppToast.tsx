@@ -13,17 +13,9 @@ import { HStack } from '@/components/ui/hstack';
 import { Text } from '@/components/ui/text';
 import {
   Check,
-  Link2,
-  Trash2,
-  EyeOff,
-  VolumeX,
-  Volume2,
-  Bookmark,
-  Flag,
-  AlertCircle,
-  Repeat2,
 } from 'lucide-react-native';
 import type { LucideIcon } from 'lucide-react-native';
+import { TOAST_ICONS } from '@/constants/icons';
 
 interface ToastItem {
   id: number;
@@ -43,21 +35,6 @@ const ToastContext = createContext<ToastContextType>({
 export function useAppToast() {
   return useContext(ToastContext);
 }
-
-const TOAST_ICONS = {
-  copied: Link2,
-  deleted: Trash2,
-  hidden: EyeOff,
-  muted: VolumeX,
-  unmuted: Volume2,
-  saved: Bookmark,
-  reported: Flag,
-  reposted: Repeat2,
-  success: Check,
-  error: AlertCircle,
-} as const;
-
-export { TOAST_ICONS };
 
 function ToastView({ item, onDone }: { item: ToastItem; onDone: (id: number) => void }) {
   const [opacityWeb, setOpacityWeb] = useState(1);

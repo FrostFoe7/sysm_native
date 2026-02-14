@@ -5,8 +5,7 @@ import { SafeView } from '@/utils/animatedWebSafe';
 import { OverlayProvider } from '@gluestack-ui/core/overlay/creator';
 import { ToastProvider } from '@gluestack-ui/core/toast/creator';
 import { useColorScheme } from 'nativewind';
-
-export type ModeType = 'light' | 'dark' | 'system';
+import type { ModeType } from '@/types/types';
 
 export function GluestackUIProvider({
   mode = 'light',

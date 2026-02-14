@@ -27,11 +27,8 @@ import {
 } from '@/db/selectors';
 import type { ThreadWithAuthor } from '@/db/db';
 import { ProfileHeaderSkeleton, FeedSkeleton, TabBarSkeleton } from '@/components/skeletons';
-
-const TABS = [
-  { key: 'threads', label: 'Threads' },
-  { key: 'replies', label: 'Replies' },
-];
+import { PROFILE_TABS } from '@/constants/app';
+import { SPRING_CONFIG } from '@/constants/ui';
 
 export default function UserProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -83,7 +80,7 @@ export default function UserProfileScreen() {
     if (Platform.OS !== 'web') {
       followScale.value = withSpring(0.9, { damping: 15, stiffness: 400 });
       setTimeout(() => {
-        followScale.value = withSpring(1, { damping: 10, stiffness: 300 });
+        followScale.value = withSpring(1, SPRING_CONFIG);
       }, 100);
     }
     const result = toggleUserFollow(id);
@@ -183,7 +180,7 @@ export default function UserProfileScreen() {
         onFollowToggle={handleFollow}
       />
 
-      <AnimatedTabBar tabs={TABS} activeKey={activeTab} onTabPress={setActiveTab} />
+      <AnimatedTabBar tabs={PROFILE_TABS} activeKey={activeTab} onTabPress={setActiveTab} />
 
       <FlatList
         data={data}

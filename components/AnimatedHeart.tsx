@@ -12,14 +12,13 @@ import {
   withSequence,
   useAnimatedStyle 
 } from '@/utils/animatedWebSafe';
+import { BOUNCY_SPRING_CONFIG } from '@/constants/ui';
 
 interface AnimatedHeartProps {
   isLiked: boolean;
   onPress: () => void;
   size?: number;
 }
-
-const springConfig = { damping: 6, stiffness: 400, mass: 0.4 };
 
 export function AnimatedHeart({ isLiked, onPress, size = 19 }: AnimatedHeartProps) {
   const [scaleWeb, setScaleWeb] = useState(1);
@@ -34,8 +33,8 @@ export function AnimatedHeart({ isLiked, onPress, size = 19 }: AnimatedHeartProp
     if (!isWeb) {
       scale.value = withSequence(
         withSpring(0.7, { damping: 20, stiffness: 600 }),
-        withSpring(1.3, springConfig),
-        withSpring(1, springConfig),
+        withSpring(1.3, BOUNCY_SPRING_CONFIG),
+        withSpring(1, BOUNCY_SPRING_CONFIG),
       );
     } else {
       // Web: quick scale animation via state

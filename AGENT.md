@@ -43,6 +43,35 @@ This document tracks the setup and configuration of the `sysm_native` project.
   - `babel.config.js` was updated with `module-resolver` alias for `@/` and `tailwind.config`.
   - `app/_layout.tsx` was updated to include `GluestackUIProvider`.
 
+### 3. Web Safety & Animation Architecture
+- **Web-Safe Abstraction**: Created `@/utils/animatedWebSafe.tsx` to handle Reanimated hooks and components conditionally.
+  - Returns plain objects/components on web to avoid `CSSStyleDeclaration` errors.
+  - Automatically flattens style arrays using `StyleSheet.flatten` on web.
+  - Strips Reanimated-specific props (`entering`, `exiting`, `layout`) on web to prevent crashes.
+- **Bug Fixes**:
+  - Resolved `Failed to set an indexed property on 'CSSStyleDeclaration'` by moving `pointerEvents` from style objects to component props.
+  - Audited and fixed all web-specific UI components (`*.web.tsx`) to ensure style flattening for standard DOM elements.
+- **Component Standardization**:
+  - Migrated `Skeleton`, `ThemedView`, and `ThemedText` to use the web-safe abstraction.
+  - Updated `Grid`, `VideoPlayer`, and `MediaGallery` for web stability.
+
+### 4. Code Quality & Linting
+- **Tailwind Linting**: Integrated `eslint-plugin-tailwindcss` for consistent class ordering and validation.
+- **Zero-Warning Policy**: Resolved all 109 linting warnings, including:
+  - Unused imports and variables.
+  - Missing `useEffect` and `useCallback` dependencies.
+  - Improper `catch` block variable usage.
+- **TypeScript Hardening**: Removed all `@ts-ignore` and `@ts-expect-error` comments by providing proper explicit typing (especially in the Icon system).
+
+### 5. Architectural Centralization
+- **Centralized Constants**: Created `constants/` directory with organized files:
+  - `app.ts`: Global config, limits, and seeded data identifiers.
+  - `ui.ts`: Layout measurements, breakpoints, and shared animation configs.
+  - `icons.ts`: Shared icon mappings and toast configurations.
+- **Centralized Types**: Created `types/types.ts` containing all core domain interfaces and common UI types, ensuring a single source of truth for the project's data structures.
+
 ## Current Project State
-- NativeWind v5 and gluestack-ui v3 are fully integrated.
-- The project is ready for building UI components using both Tailwind utility classes and gluestack-ui's primitive components.
+- NativeWind v5 and gluestack-ui v3 are fully integrated and hardened for web stability.
+- The project follows a strict architectural pattern with centralized types and constants.
+- 0 Linting errors/warnings and a successful web build pipeline.
+- The codebase is ready for high-scale feature development with a stable foundation.

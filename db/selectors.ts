@@ -1,7 +1,8 @@
 // db/selectors.ts
 
-import { db, CURRENT_USER_ID } from './db';
-import type { User, Thread, ThreadWithAuthor, ThreadWithReplies, MediaItem } from './db';
+import { db } from './db';
+import { CURRENT_USER_ID } from '@/constants/app';
+import type { User, Thread, ThreadWithAuthor, ThreadWithReplies, MediaItem, ActivityItem } from '@/types/types';
 
 // ─── Hydration helpers ──────────────────────────────────────────────────────────
 
@@ -340,14 +341,6 @@ export function getSuggestedFollows(): (User & { isFollowing: boolean })[] {
 }
 
 // ─── Activity / Notifications (simplified) ──────────────────────────────────────
-
-export interface ActivityItem {
-  id: string;
-  type: 'like' | 'reply' | 'follow';
-  actor: User;
-  thread?: ThreadWithAuthor;
-  created_at: string;
-}
 
 export function getActivity(): ActivityItem[] {
   const items: ActivityItem[] = [];

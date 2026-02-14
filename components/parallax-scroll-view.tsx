@@ -11,10 +11,9 @@ import {
 import { ThemedView } from '@/components/themed-view';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { HEADER_HEIGHT } from '@/constants/ui';
 
 const SafeAnimatedScrollView = createAnimatedComponent(ScrollView);
-
-const HEADER_HEIGHT = 250;
 
 type Props = PropsWithChildren<{
   headerImage: ReactElement;

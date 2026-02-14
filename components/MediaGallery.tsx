@@ -6,7 +6,8 @@ import { SafeView } from '@/utils/animatedWebSafe';
 import { Image } from 'expo-image';
 import { Skeleton } from '@/components/ui/skeleton';
 import { VideoPlayer } from '@/components/VideoPlayer';
-import type { MediaItem } from '@/db/db';
+import type { MediaItem } from '@/types/types';
+import { BORDER_RADIUS, GAP } from '@/constants/ui';
 
 interface MediaGalleryProps {
   media: MediaItem[];
@@ -14,9 +15,6 @@ interface MediaGalleryProps {
   isVisible?: boolean;
   maxHeight?: number;
 }
-
-const BORDER_RADIUS = 12;
-const GAP = 2;
 
 function MediaSkeleton({ style }: { style?: any }) {
   return (

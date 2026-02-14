@@ -22,11 +22,7 @@ import {
 import { SquarePen } from 'lucide-react-native';
 import { FeedSkeleton } from '@/components/skeletons';
 import type { ThreadWithAuthor } from '@/db/db';
-
-const TABS = [
-  { key: 'foryou', label: 'For you' },
-  { key: 'following', label: 'Following' },
-];
+import { FEED_TABS } from '@/constants/app';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -166,9 +162,10 @@ export default function HomeScreen() {
             𝕋
           </Text>
         </View>
-        <AnimatedTabBar
-          tabs={TABS}
-          activeKey={activeTab}
+              <AnimatedTabBar
+                tabs={FEED_TABS}
+                activeKey={activeTab}
+        
           onTabPress={setActiveTab}
         />
       </View>

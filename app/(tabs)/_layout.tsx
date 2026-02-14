@@ -6,8 +6,7 @@ import { Platform, View, useWindowDimensions } from 'react-native';
 import { Home, Search, Heart, User } from 'lucide-react-native';
 import { HapticTab } from '@/components/haptic-tab';
 import { DesktopSidebar } from '@/components/DesktopSidebar';
-
-const DESKTOP_BREAKPOINT = 1024;
+import { DESKTOP_BREAKPOINT } from '@/constants/ui';
 
 function TabsNavigator({ hideTabBar }: { hideTabBar: boolean }) {
   return (

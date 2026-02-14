@@ -1,0 +1,24 @@
+
+> sysm_native@1.0.0 build /workspaces/codespaces-blank/sysm
+> expo export --platform web
+
+React Compiler enabled
+Starting Metro Bundler
+Static rendering is enabled. Learn more: https://docs.expo.dev/router/reference/static-rendering/
+Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+λ node_modules/expo-router/node/render.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web node_modules/expo-router/entry.js ▓▓▓▓░░░░░░░░░░░░ 25.0% (10/20)
+λ node_modules/expo-router/node/render.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 94.2% (2409/2482)
+λ node_modules/expo-router/node/render.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+Web Bundling failed 18069ms node_modules/expo-router/entry.js (2647 modules)
+SyntaxError: Error: /workspaces/codespaces-blank/sysm/components/AnimatedHeart.tsx: Unexpected token, expected ";" (19:7)
+
+  17 | interface AnimatedHeartProps {
+  18 |
+> 19 | export function AnimatedHeart({ isLiked, onPress, size = 19 }: AnimatedHeartProps) {
+     |        ^
+  20 |   const [scaleWeb, setScaleWeb] = useState(1);
+  21 |   const scale = useSharedValue(1);
+  22 |   const liked = useSharedValue(isLiked ? 1 : 0);
+ ELIFECYCLE  Command failed with exit code 1.

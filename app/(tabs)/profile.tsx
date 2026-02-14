@@ -20,15 +20,11 @@ import {
   isRepostedByCurrentUser,
   toggleRepost,
 } from '@/db/selectors';
-import { CURRENT_USER_ID } from '@/db/db';
+import { CURRENT_USER_ID } from '@/constants/app';
 import { Menu, Settings } from 'lucide-react-native';
 import { ProfileHeaderSkeleton, FeedSkeleton, TabBarSkeleton } from '@/components/skeletons';
 import type { ThreadWithAuthor } from '@/db/db';
-
-const TABS = [
-  { key: 'threads', label: 'Threads' },
-  { key: 'replies', label: 'Replies' },
-];
+import { PROFILE_TABS } from '@/constants/app';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -173,7 +169,7 @@ export default function ProfileScreen() {
         onEditProfile={() => router.push('/profile/edit')}
       />
 
-      <AnimatedTabBar tabs={TABS} activeKey={activeTab} onTabPress={setActiveTab} />
+      <AnimatedTabBar tabs={PROFILE_TABS} activeKey={activeTab} onTabPress={setActiveTab} />
 
       <FlatList
         data={data}

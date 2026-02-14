@@ -8,19 +8,15 @@ Static rendering is enabled. Learn more: https://docs.expo.dev/router/reference/
 Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
 λ node_modules/expo-router/node/render.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
 Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-λ node_modules/expo-router/node/render.js ░░░░░░░░░░░░░░░░  3.4% ( 7/38)
-Web node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-λ node_modules/expo-router/node/render.js ▓▓░░░░░░░░░░░░░░ 17.1% (144/348)
-Web node_modules/expo-router/entry.js ▓▓░░░░░░░░░░░░░░ 16.2% (107/279)
-λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 95.3% (2539/2601)
-Web node_modules/expo-router/entry.js ▓▓░░░░░░░░░░░░░░ 17.6% (125/298)
-λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 95.3% (2539/2601)
-λ Bundled 28211ms node_modules/expo-router/node/render.js (2601 modules)
-Web Bundled 28763ms node_modules/expo-router/entry.js (2804 modules)
+λ node_modules/expo-router/node/render.js ░░░░░░░░░░░░░░░░  3.8% ( 8/41)
+λ Bundled 16928ms node_modules/expo-router/node/render.js (2713 modules)
+Web node_modules/expo-router/entry.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 97.3% (2735/2772)
+λ node_modules/expo-router/node/render.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 96.2% (2661/2713)
+Web Bundled 17707ms node_modules/expo-router/entry.js (2806 modules)
 
 › web bundles (2):
 _expo/static/css/web-d9cfe190d8c07214e8eaf59978cad056.css (1.09 MB)
-_expo/static/js/web/entry-0e4da1e653be2f10fd6e5001d6622a65.js (3.65 MB)
+_expo/static/js/web/entry-34a546e8b9a607c5a96044ee0087eee9.js (3.66 MB)
 
 › Static routes (16):
 /new (36.6 kB)
