@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  View,
 } from 'react-native';
 import { useRouter, useNavigation } from 'expo-router';
 import { ScreenLayout } from '@/components/ScreenLayout';

@@ -160,10 +160,11 @@ async function trackReelView(reelId: string): Promise<void> {
     value: 1,
   });
   // Increment view count
-  await supabase.rpc('increment_reel_views', { p_reel_id: reelId }).catch(() => {
-    // If RPC doesn't exist yet, update directly
-    supabase.from('reels').update({ view_count: supabase.rpc('', {}) as any }).eq('id', reelId);
-  });
+  try {
+    await supabase.rpc('increment_reel_views', { p_reel_id: reelId });
+  } catch {
+    // RPC may not exist yet
+  }
 }
 
 async function recordWatchTime(reelId: string, watchTimeMs: number, durationMs: number): Promise<void> {

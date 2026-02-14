@@ -8,7 +8,7 @@ import { Text } from '@/components/ui/text';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Divider } from '@/components/ui/divider';
 import { UserService } from '@/services/user.service';
-import type { User } from '@/types/types';
+import type { User as UserType } from '@/types/types';
 import {
   Home,
   Search,
@@ -118,7 +118,7 @@ function SidebarNavItem({
 export function DesktopSidebar() {
   const router = useRouter();
   const pathname = usePathname();
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<UserType | null>(null);
 
   useEffect(() => {
     UserService.getCurrentUser().then(setCurrentUser).catch(console.error);

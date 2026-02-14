@@ -78,7 +78,7 @@ export function MessageBubble({
 
   // Check if current user has reacted with this emoji
   const hasReacted = (emoji: string) =>
-    message.reactions.some((r) => r.user_id === CURRENT_USER_ID && r.emoji === emoji);
+    message.reactions.some((r) => r.user_id === currentUserId && r.emoji === emoji);
 
   // Aggregate reactions
   const reactionCounts = message.reactions.reduce(

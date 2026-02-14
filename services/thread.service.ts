@@ -157,7 +157,7 @@ async function getThreadAncestors(threadId: string): Promise<ThreadWithAuthor[]>
   let currentId: string | null = threadId;
 
   while (currentId) {
-    const { data: thread } = await supabase
+    const { data: thread }: { data: any } = await supabase
       .from('threads')
       .select('*, users!threads_user_id_fkey(*)')
       .eq('id', currentId)
@@ -166,7 +166,7 @@ async function getThreadAncestors(threadId: string): Promise<ThreadWithAuthor[]>
 
     if (!thread?.parent_id) break;
 
-    const { data: parent } = await supabase
+    const { data: parent }: { data: any } = await supabase
       .from('threads')
       .select('*, users!threads_user_id_fkey(*)')
       .eq('id', thread.parent_id)

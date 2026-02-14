@@ -243,7 +243,6 @@ export default function ThreadDetailScreen() {
         <ThreadCard
           thread={{
             ...item.thread,
-            like_count: threadLikeCounts[item.thread.id] ?? item.thread.like_count,
           }}
           isLiked={likedMap[item.thread.id] ?? false}
           isReposted={repostMap[item.thread.id] ?? false}
@@ -263,7 +262,6 @@ export default function ThreadDetailScreen() {
           <ThreadCard
             thread={{
               ...item.thread,
-              like_count: threadLikeCounts[item.thread.id] ?? item.thread.like_count,
             }}
             isLiked={likedMap[item.thread.id] ?? false}
             isReposted={repostMap[item.thread.id] ?? false}
@@ -302,7 +300,6 @@ export default function ThreadDetailScreen() {
         <ThreadCard
           thread={{
             ...item.thread,
-            like_count: threadLikeCounts[item.thread.id] ?? item.thread.like_count,
           }}
           isLiked={likedMap[item.thread.id] ?? false}
           isReposted={repostMap[item.thread.id] ?? false}

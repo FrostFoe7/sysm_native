@@ -24,7 +24,7 @@ export function useChat(conversationId: string) {
       ]);
       
       setMessages(msgData);
-      setDetails(detailData);
+      setDetails(detailData ?? null);
       
       // Mark as read when focusing/loading
       await ChatService.markAsRead(conversationId);
