@@ -30,3 +30,18 @@ export const FEED_TABS = [
   { key: 'foryou', label: 'For you' },
   { key: 'following', label: 'Following' },
 ];
+
+// ─── DM Constants ─────────────────────────────────────────────────────────────
+
+export const MAX_MESSAGE_LENGTH = 1000;
+export const MAX_GROUP_NAME_LENGTH = 50;
+export const MAX_GROUP_MEMBERS = 32;
+
+export const REACTION_EMOJIS = ['❤️', '😂', '😮', '😢', '🔥', '👍'];
+
+export const MESSAGE_ACTIONS = [
+  { key: 'reply', label: 'Reply' },
+  { key: 'react', label: 'React' },
+  { key: 'copy', label: 'Copy' },
+  { key: 'delete', label: 'Delete' },
+] as const;

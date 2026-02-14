@@ -2,8 +2,8 @@
 
 import { db } from './db';
 import { CURRENT_USER_ID } from '@/constants/app';
-import type { User, Thread, ThreadWithAuthor, ThreadWithReplies, MediaItem, ActivityItem, ReelWithAuthor, ReelCommentWithAuthor } from '@/types/types';
-export type { ActivityItem };
+import type { User, Thread, ThreadWithAuthor, ThreadWithReplies, MediaItem, ActivityItem, ReelWithAuthor, ReelCommentWithAuthor, ConversationWithDetails, MessageWithSender, DirectMessage, Conversation, ConversationParticipant, MessageType, Reel } from '@/types/types';
+export type { ActivityItem, ConversationWithDetails, MessageWithSender };
 
 // ─── Hydration helpers ──────────────────────────────────────────────────────────
 
@@ -523,4 +523,195 @@ export function createReel(params: {
 }): ReelWithAuthor {
   const reel = db.createReel({ ...params, author_id: CURRENT_USER_ID });
   return hydrateReel(reel);
+}
+
+// ─── DM selectors ───────────────────────────────────────────────────────────────
+
+function hydrateMessage(message: DirectMessage): MessageWithSender {
+  const sender = db.getUserById(message.sender_id)!;
+  let replyTo: (DirectMessage & { sender: User }) | null = null;
+  if (message.reply_to_id) {
+    const replyMsg = db.getMessageById(message.reply_to_id);
+    if (replyMsg) {
+      const replySender = db.getUserById(replyMsg.sender_id)!;
+      replyTo = { ...replyMsg, sender: replySender };
+    }
+  }
+  let sharedThread: (Thread & { author: User }) | null = null;
+  if (message.shared_thread_id) {
+    const thread = db.getThreadById(message.shared_thread_id);
+    if (thread) {
+      const threadAuthor = db.getUserById(thread.user_id)!;
+      sharedThread = { ...thread, author: threadAuthor };
+    }
+  }
+  let sharedReel: (Reel & { author: User }) | null = null;
+  if (message.shared_reel_id) {
+    const reel = db.getReelById(message.shared_reel_id);
+    if (reel) {
+      const reelAuthor = db.getUserById(reel.author_id)!;
+      sharedReel = { ...reel, author: reelAuthor };
+    }
+  }
+  return { ...message, sender, replyTo, sharedThread, sharedReel };
+}
+
+function hydrateConversation(conv: Conversation): ConversationWithDetails {
+  const participants = db.getParticipantsForConversation(conv.id).map((cp) => ({
+    ...cp,
+    user: db.getUserById(cp.user_id)!,
+  }));
+  const otherUsers = participants
+    .filter((p) => p.user_id !== CURRENT_USER_ID)
+    .map((p) => p.user);
+  const typingUsers = participants
+    .filter((p) => p.user_id !== CURRENT_USER_ID && p.is_typing)
+    .map((p) => p.user);
+  
+  let lastMessage: (DirectMessage & { sender: User }) | null = null;
+  if (conv.last_message_id) {
+    const msg = db.getMessageById(conv.last_message_id);
+    if (msg) {
+      const sender = db.getUserById(msg.sender_id)!;
+      lastMessage = { ...msg, sender };
+    }
+  }
+  const unreadCount = db.getUnreadCount(conv.id, CURRENT_USER_ID);
+
+  return { conversation: conv, participants, lastMessage, unreadCount, otherUsers, typingUsers };
+}
+
+export function getInbox(): ConversationWithDetails[] {
+  const convs = db.getConversationsForUser(CURRENT_USER_ID);
+  return convs.map(hydrateConversation);
+}
+
+export function getConversation(conversationId: string): ConversationWithDetails | undefined {
+  const conv = db.getConversationById(conversationId);
+  if (!conv) return undefined;
+  return hydrateConversation(conv);
+}
+
+export function getMessages(conversationId: string): MessageWithSender[] {
+  const messages = db.getMessagesForConversation(conversationId);
+  return messages.map(hydrateMessage);
+}
+
+export function sendMessage(params: {
+  conversationId: string;
+  content: string;
+  type?: MessageType;
+  mediaUrl?: string;
+  mediaThumbnail?: string;
+  replyToId?: string;
+  sharedThreadId?: string;
+  sharedReelId?: string;
+}): MessageWithSender {
+  const msg = db.sendMessage({
+    conversation_id: params.conversationId,
+    sender_id: CURRENT_USER_ID,
+    type: params.type ?? 'text',
+    content: params.content,
+    media_url: params.mediaUrl,
+    media_thumbnail: params.mediaThumbnail,
+    reply_to_id: params.replyToId,
+    shared_thread_id: params.sharedThreadId,
+    shared_reel_id: params.sharedReelId,
+  });
+  return hydrateMessage(msg);
+}
+
+export function markConversationAsRead(conversationId: string): void {
+  db.markConversationRead(conversationId, CURRENT_USER_ID);
+}
+
+export function toggleMessageReaction(messageId: string, emoji: string): boolean {
+  return db.toggleMessageReaction(messageId, CURRENT_USER_ID, emoji);
+}
+
+export function deleteMessage(messageId: string): boolean {
+  return db.deleteMessage(messageId);
+}
+
+export function toggleConversationPin(conversationId: string): boolean {
+  return db.toggleConversationPin(conversationId);
+}
+
+export function toggleConversationMute(conversationId: string): boolean {
+  return db.toggleConversationMute(conversationId);
+}
+
+export function createDirectConversation(otherUserId: string): ConversationWithDetails {
+  // Check if conversation already exists
+  const existing = db.findDirectConversation(CURRENT_USER_ID, otherUserId);
+  if (existing) return hydrateConversation(existing);
+
+  const conv = db.createConversation({
+    type: 'direct',
+    created_by: CURRENT_USER_ID,
+    participant_ids: [CURRENT_USER_ID, otherUserId],
+  });
+  return hydrateConversation(conv);
+}
+
+export function createGroupConversation(params: {
+  name: string;
+  avatarUrl?: string;
+  memberIds: string[];
+}): ConversationWithDetails {
+  const conv = db.createConversation({
+    type: 'group',
+    name: params.name,
+    avatar_url: params.avatarUrl,
+    created_by: CURRENT_USER_ID,
+    participant_ids: [CURRENT_USER_ID, ...params.memberIds],
+  });
+  return hydrateConversation(conv);
+}
+
+export function addGroupMember(conversationId: string, userId: string): void {
+  db.addGroupMember(conversationId, userId, CURRENT_USER_ID);
+}
+
+export function removeGroupMember(conversationId: string, userId: string): void {
+  db.removeGroupMember(conversationId, userId, CURRENT_USER_ID);
+}
+
+export function leaveGroup(conversationId: string): void {
+  db.removeGroupMember(conversationId, CURRENT_USER_ID, CURRENT_USER_ID);
+}
+
+export function promoteToAdmin(conversationId: string, userId: string): void {
+  db.promoteToAdmin(conversationId, userId);
+}
+
+export function updateGroupInfo(conversationId: string, updates: { name?: string; avatarUrl?: string }): void {
+  db.updateGroupInfo(conversationId, { name: updates.name, avatar_url: updates.avatarUrl });
+}
+
+export function searchInbox(query: string): ConversationWithDetails[] {
+  const convs = db.searchConversations(CURRENT_USER_ID, query);
+  return convs.map(hydrateConversation);
+}
+
+export function getTotalUnreadCount(): number {
+  const convs = db.getConversationsForUser(CURRENT_USER_ID);
+  return convs.reduce((sum, c) => sum + db.getUnreadCount(c.id, CURRENT_USER_ID), 0);
+}
+
+export function getOrCreateDirectConversation(otherUserId: string): ConversationWithDetails {
+  return createDirectConversation(otherUserId);
+}
+
+export function formatMessagePreview(message: DirectMessage): string {
+  if (message.is_deleted) return 'Message deleted';
+  switch (message.type) {
+    case 'image': return '📷 Photo';
+    case 'video': return '🎥 Video';
+    case 'reel_share': return '🎬 Shared a reel';
+    case 'thread_share': return '📝 Shared a thread';
+    case 'voice_note': return '🎙️ Voice message';
+    case 'system': return message.content;
+    default: return message.content;
+  }
 }

@@ -30,9 +30,18 @@ import type {
   ReelComment,
   ReelWithAuthor,
   ReelCommentWithAuthor,
+  Conversation,
+  ConversationParticipant,
+  DirectMessage,
+  MessageReaction,
+  ConversationType,
+  MessageType,
+  MessageStatus,
+  ParticipantRole,
 } from '@/types/types';
 
 export { User, MediaItem, Thread, Like, Follow, Repost, Bookmark, ThreadWithAuthor, ThreadWithReplies, Reel, ReelComment, ReelWithAuthor, ReelCommentWithAuthor };
+export type { Conversation, ConversationParticipant, DirectMessage, MessageReaction };
 
 // ─── Seeded Users ───────────────────────────────────────────────────────────────
 
@@ -792,6 +801,189 @@ const REPOSTS: Repost[] = [
   { id: 'rp-008', user_id: 'u-004', thread_id: 't-008', created_at: '2026-02-12T16:30:00Z' },
 ];
 
+// ─── Seeded Conversations ───────────────────────────────────────────────────────
+
+const CONVERSATIONS: Conversation[] = [
+  // 1:1 with Alice
+  {
+    id: 'conv-001',
+    type: 'direct',
+    name: null,
+    avatar_url: null,
+    created_by: 'u-000',
+    created_at: '2026-02-10T08:00:00Z',
+    updated_at: '2026-02-14T09:15:00Z',
+    is_muted: false,
+    is_pinned: true,
+    last_message_id: 'dm-006',
+  },
+  // 1:1 with Marcus
+  {
+    id: 'conv-002',
+    type: 'direct',
+    name: null,
+    avatar_url: null,
+    created_by: 'u-002',
+    created_at: '2026-02-11T14:00:00Z',
+    updated_at: '2026-02-14T08:30:00Z',
+    is_muted: false,
+    is_pinned: false,
+    last_message_id: 'dm-010',
+  },
+  // Group: Design Team
+  {
+    id: 'conv-003',
+    type: 'group',
+    name: 'Design Team 🎨',
+    avatar_url: 'https://i.pravatar.cc/150?u=designteam',
+    created_by: 'u-000',
+    created_at: '2026-02-08T10:00:00Z',
+    updated_at: '2026-02-14T07:45:00Z',
+    is_muted: false,
+    is_pinned: true,
+    last_message_id: 'dm-018',
+  },
+  // 1:1 with Priya
+  {
+    id: 'conv-004',
+    type: 'direct',
+    name: null,
+    avatar_url: null,
+    created_by: 'u-003',
+    created_at: '2026-02-12T09:00:00Z',
+    updated_at: '2026-02-13T22:10:00Z',
+    is_muted: false,
+    is_pinned: false,
+    last_message_id: 'dm-023',
+  },
+  // Group: Dev Chat
+  {
+    id: 'conv-005',
+    type: 'group',
+    name: 'Dev Chat 💻',
+    avatar_url: 'https://i.pravatar.cc/150?u=devchat',
+    created_by: 'u-006',
+    created_at: '2026-02-05T12:00:00Z',
+    updated_at: '2026-02-14T06:20:00Z',
+    is_muted: true,
+    is_pinned: false,
+    last_message_id: 'dm-030',
+  },
+  // 1:1 with Jordan
+  {
+    id: 'conv-006',
+    type: 'direct',
+    name: null,
+    avatar_url: null,
+    created_by: 'u-004',
+    created_at: '2026-02-13T11:00:00Z',
+    updated_at: '2026-02-13T18:30:00Z',
+    is_muted: false,
+    is_pinned: false,
+    last_message_id: 'dm-034',
+  },
+  // 1:1 with Sarah
+  {
+    id: 'conv-007',
+    type: 'direct',
+    name: null,
+    avatar_url: null,
+    created_by: 'u-000',
+    created_at: '2026-02-09T15:00:00Z',
+    updated_at: '2026-02-12T20:45:00Z',
+    is_muted: false,
+    is_pinned: false,
+    last_message_id: 'dm-038',
+  },
+];
+
+// ─── Seeded Conversation Participants ───────────────────────────────────────────
+
+const CONVERSATION_PARTICIPANTS: ConversationParticipant[] = [
+  // conv-001: You + Alice
+  { id: 'cp-001', conversation_id: 'conv-001', user_id: 'u-000', role: 'admin', joined_at: '2026-02-10T08:00:00Z', last_read_message_id: 'dm-006', is_typing: false },
+  { id: 'cp-002', conversation_id: 'conv-001', user_id: 'u-001', role: 'admin', joined_at: '2026-02-10T08:00:00Z', last_read_message_id: 'dm-005', is_typing: false },
+  // conv-002: You + Marcus
+  { id: 'cp-003', conversation_id: 'conv-002', user_id: 'u-000', role: 'admin', joined_at: '2026-02-11T14:00:00Z', last_read_message_id: 'dm-009', is_typing: false },
+  { id: 'cp-004', conversation_id: 'conv-002', user_id: 'u-002', role: 'admin', joined_at: '2026-02-11T14:00:00Z', last_read_message_id: 'dm-010', is_typing: false },
+  // conv-003: Group (You, Alice, Marcus, Elena)
+  { id: 'cp-005', conversation_id: 'conv-003', user_id: 'u-000', role: 'admin', joined_at: '2026-02-08T10:00:00Z', last_read_message_id: 'dm-016', is_typing: false },
+  { id: 'cp-006', conversation_id: 'conv-003', user_id: 'u-001', role: 'member', joined_at: '2026-02-08T10:00:00Z', last_read_message_id: 'dm-018', is_typing: false },
+  { id: 'cp-007', conversation_id: 'conv-003', user_id: 'u-002', role: 'member', joined_at: '2026-02-08T10:00:00Z', last_read_message_id: 'dm-018', is_typing: false },
+  { id: 'cp-008', conversation_id: 'conv-003', user_id: 'u-005', role: 'member', joined_at: '2026-02-08T10:00:00Z', last_read_message_id: 'dm-017', is_typing: false },
+  // conv-004: You + Priya
+  { id: 'cp-009', conversation_id: 'conv-004', user_id: 'u-000', role: 'admin', joined_at: '2026-02-12T09:00:00Z', last_read_message_id: 'dm-023', is_typing: false },
+  { id: 'cp-010', conversation_id: 'conv-004', user_id: 'u-003', role: 'admin', joined_at: '2026-02-12T09:00:00Z', last_read_message_id: 'dm-022', is_typing: false },
+  // conv-005: Group (You, Alice, David, Priya, Sarah)
+  { id: 'cp-011', conversation_id: 'conv-005', user_id: 'u-000', role: 'member', joined_at: '2026-02-05T12:00:00Z', last_read_message_id: 'dm-028', is_typing: false },
+  { id: 'cp-012', conversation_id: 'conv-005', user_id: 'u-001', role: 'member', joined_at: '2026-02-05T12:00:00Z', last_read_message_id: 'dm-030', is_typing: false },
+  { id: 'cp-013', conversation_id: 'conv-005', user_id: 'u-006', role: 'admin', joined_at: '2026-02-05T12:00:00Z', last_read_message_id: 'dm-030', is_typing: false },
+  { id: 'cp-014', conversation_id: 'conv-005', user_id: 'u-003', role: 'member', joined_at: '2026-02-05T12:00:00Z', last_read_message_id: 'dm-029', is_typing: false },
+  { id: 'cp-015', conversation_id: 'conv-005', user_id: 'u-007', role: 'member', joined_at: '2026-02-05T12:00:00Z', last_read_message_id: 'dm-030', is_typing: false },
+  // conv-006: You + Jordan
+  { id: 'cp-016', conversation_id: 'conv-006', user_id: 'u-000', role: 'admin', joined_at: '2026-02-13T11:00:00Z', last_read_message_id: 'dm-034', is_typing: false },
+  { id: 'cp-017', conversation_id: 'conv-006', user_id: 'u-004', role: 'admin', joined_at: '2026-02-13T11:00:00Z', last_read_message_id: 'dm-033', is_typing: false },
+  // conv-007: You + Sarah
+  { id: 'cp-018', conversation_id: 'conv-007', user_id: 'u-000', role: 'admin', joined_at: '2026-02-09T15:00:00Z', last_read_message_id: 'dm-038', is_typing: false },
+  { id: 'cp-019', conversation_id: 'conv-007', user_id: 'u-007', role: 'admin', joined_at: '2026-02-09T15:00:00Z', last_read_message_id: 'dm-037', is_typing: false },
+];
+
+// ─── Seeded Direct Messages ────────────────────────────────────────────────────
+
+const DIRECT_MESSAGES: DirectMessage[] = [
+  // Conv-001: You + Alice (design system discussion)
+  { id: 'dm-001', conversation_id: 'conv-001', sender_id: 'u-001', type: 'text', content: 'Hey! Have you seen the new NativeWind v4 release? 🚀', media_url: null, media_thumbnail: null, reply_to_id: null, shared_thread_id: null, shared_reel_id: null, reactions: [], status: 'seen', created_at: '2026-02-13T08:00:00Z', is_deleted: false },
+  { id: 'dm-002', conversation_id: 'conv-001', sender_id: 'u-000', type: 'text', content: 'Yes!! The CSS variable support is amazing. We should migrate ASAP', media_url: null, media_thumbnail: null, reply_to_id: null, shared_thread_id: null, shared_reel_id: null, reactions: [{ user_id: 'u-001', emoji: '🔥', created_at: '2026-02-13T08:02:00Z' }], status: 'seen', created_at: '2026-02-13T08:01:00Z', is_deleted: false },
+  { id: 'dm-003', conversation_id: 'conv-001', sender_id: 'u-001', type: 'text', content: 'Right? I already started a branch. The perf gains are insane — bundle size dropped 15%', media_url: null, media_thumbnail: null, reply_to_id: 'dm-002', shared_thread_id: null, shared_reel_id: null, reactions: [], status: 'seen', created_at: '2026-02-13T08:05:00Z', is_deleted: false },
+  { id: 'dm-004', conversation_id: 'conv-001', sender_id: 'u-001', type: 'image', content: 'Check out the benchmark results', media_url: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop', media_thumbnail: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=200&h=150&fit=crop', reply_to_id: null, shared_thread_id: null, shared_reel_id: null, reactions: [{ user_id: 'u-000', emoji: '😍', created_at: '2026-02-13T08:12:00Z' }], status: 'seen', created_at: '2026-02-13T08:10:00Z', is_deleted: false },
+  { id: 'dm-005', conversation_id: 'conv-001', sender_id: 'u-000', type: 'thread_share', content: 'This thread explains the migration path really well', media_url: null, media_thumbnail: null, reply_to_id: null, shared_thread_id: 't-001', shared_reel_id: null, reactions: [], status: 'seen', created_at: '2026-02-14T09:10:00Z', is_deleted: false },
+  { id: 'dm-006', conversation_id: 'conv-001', sender_id: 'u-000', type: 'text', content: "Let's pair on it tomorrow? I'm free after 2pm", media_url: null, media_thumbnail: null, reply_to_id: null, shared_thread_id: null, shared_reel_id: null, reactions: [], status: 'sent', created_at: '2026-02-14T09:15:00Z', is_deleted: false },
+
+  // Conv-002: You + Marcus (design review)
+  { id: 'dm-007', conversation_id: 'conv-002', sender_id: 'u-002', type: 'text', content: 'Yo can you review the new component API I proposed?', media_url: null, media_thumbnail: null, reply_to_id: null, shared_thread_id: null, shared_reel_id: null, reactions: [], status: 'seen', created_at: '2026-02-14T07:00:00Z', is_deleted: false },
+  { id: 'dm-008', conversation_id: 'conv-002', sender_id: 'u-000', type: 'text', content: 'Sure, send it over', media_url: null, media_thumbnail: null, reply_to_id: null, shared_thread_id: null, shared_reel_id: null, reactions: [], status: 'seen', created_at: '2026-02-14T07:02:00Z', is_deleted: false },
+  { id: 'dm-009', conversation_id: 'conv-002', sender_id: 'u-002', type: 'image', content: 'Here are the Figma specs', media_url: 'https://images.unsplash.com/photo-1587620962725-abab7fe55159?w=800&h=600&fit=crop', media_thumbnail: 'https://images.unsplash.com/photo-1587620962725-abab7fe55159?w=200&h=150&fit=crop', reply_to_id: null, shared_thread_id: null, shared_reel_id: null, reactions: [], status: 'seen', created_at: '2026-02-14T07:05:00Z', is_deleted: false },
+  { id: 'dm-010', conversation_id: 'conv-002', sender_id: 'u-002', type: 'text', content: 'Let me know what you think. I want to finalize before the sprint review 🙏', media_url: null, media_thumbnail: null, reply_to_id: null, shared_thread_id: null, shared_reel_id: null, reactions: [{ user_id: 'u-000', emoji: '👍', created_at: '2026-02-14T08:32:00Z' }], status: 'delivered', created_at: '2026-02-14T08:30:00Z', is_deleted: false },
+
+  // Conv-003: Design Team Group (You, Alice, Marcus, Elena)
+  { id: 'dm-011', conversation_id: 'conv-003', sender_id: 'u-000', type: 'text', content: 'Team standup — what is everyone working on today?', media_url: null, media_thumbnail: null, reply_to_id: null, shared_thread_id: null, shared_reel_id: null, reactions: [], status: 'seen', created_at: '2026-02-14T06:00:00Z', is_deleted: false },
+  { id: 'dm-012', conversation_id: 'conv-003', sender_id: 'u-001', type: 'text', content: 'Finishing the button component variants. Should have PR up by noon', media_url: null, media_thumbnail: null, reply_to_id: 'dm-011', shared_thread_id: null, shared_reel_id: null, reactions: [{ user_id: 'u-000', emoji: '💪', created_at: '2026-02-14T06:05:00Z' }], status: 'seen', created_at: '2026-02-14T06:03:00Z', is_deleted: false },
+  { id: 'dm-013', conversation_id: 'conv-003', sender_id: 'u-002', type: 'text', content: 'Working on the token system. Need feedback on the naming convention', media_url: null, media_thumbnail: null, reply_to_id: 'dm-011', shared_thread_id: null, shared_reel_id: null, reactions: [], status: 'seen', created_at: '2026-02-14T06:05:00Z', is_deleted: false },
+  { id: 'dm-014', conversation_id: 'conv-003', sender_id: 'u-005', type: 'text', content: "I'll be doing accessibility audit for the modal component today 🎯", media_url: null, media_thumbnail: null, reply_to_id: 'dm-011', shared_thread_id: null, shared_reel_id: null, reactions: [{ user_id: 'u-000', emoji: '❤️', created_at: '2026-02-14T06:10:00Z' }, { user_id: 'u-001', emoji: '🙌', created_at: '2026-02-14T06:11:00Z' }], status: 'seen', created_at: '2026-02-14T06:08:00Z', is_deleted: false },
+  { id: 'dm-015', conversation_id: 'conv-003', sender_id: 'u-000', type: 'text', content: 'Awesome, all sounds great! Elena, can you share the a11y checklist?', media_url: null, media_thumbnail: null, reply_to_id: 'dm-014', shared_thread_id: null, shared_reel_id: null, reactions: [], status: 'seen', created_at: '2026-02-14T06:12:00Z', is_deleted: false },
+  { id: 'dm-016', conversation_id: 'conv-003', sender_id: 'u-005', type: 'image', content: 'Here you go! Updated checklist with WCAG 2.2 additions', media_url: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=600&fit=crop', media_thumbnail: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=200&h=150&fit=crop', reply_to_id: 'dm-015', shared_thread_id: null, shared_reel_id: null, reactions: [{ user_id: 'u-000', emoji: '🔥', created_at: '2026-02-14T06:32:00Z' }], status: 'seen', created_at: '2026-02-14T06:30:00Z', is_deleted: false },
+  { id: 'dm-017', conversation_id: 'conv-003', sender_id: 'u-001', type: 'text', content: 'This is super helpful, thanks Elena! 🙌', media_url: null, media_thumbnail: null, reply_to_id: 'dm-016', shared_thread_id: null, shared_reel_id: null, reactions: [], status: 'seen', created_at: '2026-02-14T07:00:00Z', is_deleted: false },
+  { id: 'dm-018', conversation_id: 'conv-003', sender_id: 'u-002', type: 'text', content: 'Quick sync at 3pm everyone? Want to align on the token naming before I push', media_url: null, media_thumbnail: null, reply_to_id: null, shared_thread_id: null, shared_reel_id: null, reactions: [{ user_id: 'u-001', emoji: '👍', created_at: '2026-02-14T07:50:00Z' }], status: 'delivered', created_at: '2026-02-14T07:45:00Z', is_deleted: false },
+
+  // Conv-004: You + Priya (code help)
+  { id: 'dm-019', conversation_id: 'conv-004', sender_id: 'u-003', type: 'text', content: "Hey! Quick question about that TypeScript pattern you shared", media_url: null, media_thumbnail: null, reply_to_id: null, shared_thread_id: null, shared_reel_id: null, reactions: [], status: 'seen', created_at: '2026-02-13T20:00:00Z', is_deleted: false },
+  { id: 'dm-020', conversation_id: 'conv-004', sender_id: 'u-000', type: 'text', content: 'Yeah of course, what do you need?', media_url: null, media_thumbnail: null, reply_to_id: null, shared_thread_id: null, shared_reel_id: null, reactions: [], status: 'seen', created_at: '2026-02-13T20:05:00Z', is_deleted: false },
+  { id: 'dm-021', conversation_id: 'conv-004', sender_id: 'u-003', type: 'thread_share', content: "Can you explain this part more? The mapped types section", media_url: null, media_thumbnail: null, reply_to_id: null, shared_thread_id: 't-004', shared_reel_id: null, reactions: [], status: 'seen', created_at: '2026-02-13T20:10:00Z', is_deleted: false },
+  { id: 'dm-022', conversation_id: 'conv-004', sender_id: 'u-000', type: 'text', content: "Sure! So the idea is you define a single source of truth type and derive everything from it. Makes refactoring way easier because changes cascade automatically.", media_url: null, media_thumbnail: null, reply_to_id: 'dm-021', shared_thread_id: null, shared_reel_id: null, reactions: [{ user_id: 'u-003', emoji: '💡', created_at: '2026-02-13T22:00:00Z' }], status: 'seen', created_at: '2026-02-13T21:00:00Z', is_deleted: false },
+  { id: 'dm-023', conversation_id: 'conv-004', sender_id: 'u-003', type: 'text', content: "That makes so much sense! Thank you 🙏 I'll try refactoring my project with this approach", media_url: null, media_thumbnail: null, reply_to_id: null, shared_thread_id: null, shared_reel_id: null, reactions: [{ user_id: 'u-000', emoji: '❤️', created_at: '2026-02-13T22:12:00Z' }], status: 'seen', created_at: '2026-02-13T22:10:00Z', is_deleted: false },
+
+  // Conv-005: Dev Chat Group (You, Alice, David, Priya, Sarah)
+  { id: 'dm-024', conversation_id: 'conv-005', sender_id: 'u-006', type: 'text', content: 'Just pushed v3.1 hotfix for the CLI. Critical bug with Windows paths resolved', media_url: null, media_thumbnail: null, reply_to_id: null, shared_thread_id: null, shared_reel_id: null, reactions: [{ user_id: 'u-001', emoji: '🎉', created_at: '2026-02-14T05:02:00Z' }], status: 'seen', created_at: '2026-02-14T05:00:00Z', is_deleted: false },
+  { id: 'dm-025', conversation_id: 'conv-005', sender_id: 'u-007', type: 'text', content: "Nice! We'd been hitting that in our CI/CD pipeline", media_url: null, media_thumbnail: null, reply_to_id: 'dm-024', shared_thread_id: null, shared_reel_id: null, reactions: [], status: 'seen', created_at: '2026-02-14T05:05:00Z', is_deleted: false },
+  { id: 'dm-026', conversation_id: 'conv-005', sender_id: 'u-003', type: 'text', content: 'Same here. Thanks David!', media_url: null, media_thumbnail: null, reply_to_id: null, shared_thread_id: null, shared_reel_id: null, reactions: [], status: 'seen', created_at: '2026-02-14T05:10:00Z', is_deleted: false },
+  { id: 'dm-027', conversation_id: 'conv-005', sender_id: 'u-001', type: 'reel_share', content: 'lol this is so relatable 😂', media_url: null, media_thumbnail: null, reply_to_id: null, shared_thread_id: null, shared_reel_id: 'reel-001', reactions: [{ user_id: 'u-006', emoji: '😂', created_at: '2026-02-14T05:25:00Z' }], status: 'seen', created_at: '2026-02-14T05:20:00Z', is_deleted: false },
+  { id: 'dm-028', conversation_id: 'conv-005', sender_id: 'u-000', type: 'text', content: "Anyone tried Bun 2.0 yet? The startup time is wild", media_url: null, media_thumbnail: null, reply_to_id: null, shared_thread_id: null, shared_reel_id: null, reactions: [{ user_id: 'u-007', emoji: '👀', created_at: '2026-02-14T05:35:00Z' }], status: 'seen', created_at: '2026-02-14T05:30:00Z', is_deleted: false },
+  { id: 'dm-029', conversation_id: 'conv-005', sender_id: 'u-006', type: 'text', content: 'Yeah, we benchmarked it. 2x faster than Node for our use case', media_url: null, media_thumbnail: null, reply_to_id: 'dm-028', shared_thread_id: null, shared_reel_id: null, reactions: [{ user_id: 'u-000', emoji: '🔥', created_at: '2026-02-14T06:01:00Z' }], status: 'seen', created_at: '2026-02-14T06:00:00Z', is_deleted: false },
+  { id: 'dm-030', conversation_id: 'conv-005', sender_id: 'u-007', type: 'text', content: "We should do a comparison blog post. I'll set up the test suite this weekend", media_url: null, media_thumbnail: null, reply_to_id: null, shared_thread_id: null, shared_reel_id: null, reactions: [{ user_id: 'u-001', emoji: '💯', created_at: '2026-02-14T06:22:00Z' }, { user_id: 'u-006', emoji: '👍', created_at: '2026-02-14T06:23:00Z' }], status: 'delivered', created_at: '2026-02-14T06:20:00Z', is_deleted: false },
+
+  // Conv-006: You + Jordan (journalism)
+  { id: 'dm-031', conversation_id: 'conv-006', sender_id: 'u-004', type: 'text', content: "Hey, I'm writing a piece on new developer tools. Can I quote you on the CLI rewrite?", media_url: null, media_thumbnail: null, reply_to_id: null, shared_thread_id: null, shared_reel_id: null, reactions: [], status: 'seen', created_at: '2026-02-13T15:00:00Z', is_deleted: false },
+  { id: 'dm-032', conversation_id: 'conv-006', sender_id: 'u-000', type: 'text', content: "Of course! Happy to help. What angle are you taking?", media_url: null, media_thumbnail: null, reply_to_id: null, shared_thread_id: null, shared_reel_id: null, reactions: [], status: 'seen', created_at: '2026-02-13T15:30:00Z', is_deleted: false },
+  { id: 'dm-033', conversation_id: 'conv-006', sender_id: 'u-004', type: 'text', content: "Focusing on the Rust migration trend in developer tooling. Seems like everyone is rewriting their CLIs in Rust", media_url: null, media_thumbnail: null, reply_to_id: null, shared_thread_id: null, shared_reel_id: null, reactions: [{ user_id: 'u-000', emoji: '👍', created_at: '2026-02-13T16:02:00Z' }], status: 'seen', created_at: '2026-02-13T16:00:00Z', is_deleted: false },
+  { id: 'dm-034', conversation_id: 'conv-006', sender_id: 'u-000', type: 'text', content: "That's a great angle! I can share some benchmark data too if you want. DM me your email and I'll send it over", media_url: null, media_thumbnail: null, reply_to_id: null, shared_thread_id: null, shared_reel_id: null, reactions: [], status: 'sent', created_at: '2026-02-13T18:30:00Z', is_deleted: false },
+
+  // Conv-007: You + Sarah (AI discussion)
+  { id: 'dm-035', conversation_id: 'conv-007', sender_id: 'u-007', type: 'text', content: "Your thread about fine-tuning was interesting. Have you tried LoRA on smaller models?", media_url: null, media_thumbnail: null, reply_to_id: null, shared_thread_id: null, shared_reel_id: null, reactions: [], status: 'seen', created_at: '2026-02-12T18:00:00Z', is_deleted: false },
+  { id: 'dm-036', conversation_id: 'conv-007', sender_id: 'u-000', type: 'text', content: "Yeah! LoRA is incredible for the compute savings. We got 90% of full fine-tune quality at 1/10th the cost", media_url: null, media_thumbnail: null, reply_to_id: null, shared_thread_id: null, shared_reel_id: null, reactions: [{ user_id: 'u-007', emoji: '🤯', created_at: '2026-02-12T19:02:00Z' }], status: 'seen', created_at: '2026-02-12T19:00:00Z', is_deleted: false },
+  { id: 'dm-037', conversation_id: 'conv-007', sender_id: 'u-007', type: 'text', content: "That's exactly what our paper found too. We should collaborate on something!", media_url: null, media_thumbnail: null, reply_to_id: null, shared_thread_id: null, shared_reel_id: null, reactions: [{ user_id: 'u-000', emoji: '❤️', created_at: '2026-02-12T20:35:00Z' }], status: 'seen', created_at: '2026-02-12T20:30:00Z', is_deleted: false },
+  { id: 'dm-038', conversation_id: 'conv-007', sender_id: 'u-000', type: 'text', content: "I'd love that! Let's set up a call next week to brainstorm 🧠", media_url: null, media_thumbnail: null, reply_to_id: null, shared_thread_id: null, shared_reel_id: null, reactions: [], status: 'sent', created_at: '2026-02-12T20:45:00Z', is_deleted: false },
+];
+
 // ─── In-Memory Database ─────────────────────────────────────────────────────────
 
 class Database {
@@ -806,6 +998,9 @@ class Database {
   reelLikes: { reel_id: string; user_id: string }[];
   muted_users: string[];
   hidden_threads: string[];
+  conversations: Conversation[];
+  conversationParticipants: ConversationParticipant[];
+  directMessages: DirectMessage[];
 
   constructor() {
     this.users = [
@@ -828,6 +1023,9 @@ class Database {
     this.reelLikes = REELS.filter((r) => r.isLiked).map((r) => ({ reel_id: r.id, user_id: 'u-000' }));
     this.muted_users = [];
     this.hidden_threads = [];
+    this.conversations = [...CONVERSATIONS];
+    this.conversationParticipants = [...CONVERSATION_PARTICIPANTS];
+    this.directMessages = [...DIRECT_MESSAGES];
   }
 
   // ── User CRUD ───────────────────────────────────────────────────────────────
@@ -1218,6 +1416,369 @@ class Database {
     };
     this.reels.unshift(reel);
     return reel;
+  }
+
+  // ── Conversation CRUD ───────────────────────────────────────────────────────
+
+  getConversationById(id: string): Conversation | undefined {
+    return this.conversations.find((c) => c.id === id);
+  }
+
+  getConversationsForUser(userId: string): Conversation[] {
+    const participantConvIds = this.conversationParticipants
+      .filter((cp) => cp.user_id === userId)
+      .map((cp) => cp.conversation_id);
+    return this.conversations
+      .filter((c) => participantConvIds.includes(c.id))
+      .sort((a, b) => {
+        // Pinned first, then by updated_at
+        if (a.is_pinned && !b.is_pinned) return -1;
+        if (!a.is_pinned && b.is_pinned) return 1;
+        return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+      });
+  }
+
+  getParticipantsForConversation(conversationId: string): ConversationParticipant[] {
+    return this.conversationParticipants.filter(
+      (cp) => cp.conversation_id === conversationId,
+    );
+  }
+
+  getMessagesForConversation(conversationId: string): DirectMessage[] {
+    return this.directMessages
+      .filter((m) => m.conversation_id === conversationId)
+      .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+  }
+
+  getMessageById(id: string): DirectMessage | undefined {
+    return this.directMessages.find((m) => m.id === id);
+  }
+
+  getUnreadCount(conversationId: string, userId: string): number {
+    const participant = this.conversationParticipants.find(
+      (cp) => cp.conversation_id === conversationId && cp.user_id === userId,
+    );
+    if (!participant || !participant.last_read_message_id) {
+      return this.directMessages.filter((m) => m.conversation_id === conversationId && m.sender_id !== userId).length;
+    }
+    const lastReadMessage = this.directMessages.find((m) => m.id === participant.last_read_message_id);
+    if (!lastReadMessage) return 0;
+    return this.directMessages.filter(
+      (m) =>
+        m.conversation_id === conversationId &&
+        m.sender_id !== userId &&
+        new Date(m.created_at).getTime() > new Date(lastReadMessage.created_at).getTime(),
+    ).length;
+  }
+
+  createConversation(params: {
+    type: ConversationType;
+    name?: string;
+    avatar_url?: string;
+    created_by: string;
+    participant_ids: string[];
+  }): Conversation {
+    const now = new Date().toISOString();
+    const conversation: Conversation = {
+      id: uuid(),
+      type: params.type,
+      name: params.name ?? null,
+      avatar_url: params.avatar_url ?? null,
+      created_by: params.created_by,
+      created_at: now,
+      updated_at: now,
+      is_muted: false,
+      is_pinned: false,
+      last_message_id: null,
+    };
+    this.conversations.push(conversation);
+
+    // Add participants
+    for (const userId of params.participant_ids) {
+      const cp: ConversationParticipant = {
+        id: uuid(),
+        conversation_id: conversation.id,
+        user_id: userId,
+        role: userId === params.created_by ? 'admin' : 'member',
+        joined_at: now,
+        last_read_message_id: null,
+        is_typing: false,
+      };
+      this.conversationParticipants.push(cp);
+    }
+
+    // Add system message for group creation
+    if (params.type === 'group') {
+      const creator = this.getUserById(params.created_by);
+      const systemMsg: DirectMessage = {
+        id: uuid(),
+        conversation_id: conversation.id,
+        sender_id: params.created_by,
+        type: 'system',
+        content: `${creator?.display_name ?? 'Someone'} created the group "${params.name}"`,
+        media_url: null,
+        media_thumbnail: null,
+        reply_to_id: null,
+        shared_thread_id: null,
+        shared_reel_id: null,
+        reactions: [],
+        status: 'seen',
+        created_at: now,
+        is_deleted: false,
+      };
+      this.directMessages.push(systemMsg);
+      conversation.last_message_id = systemMsg.id;
+    }
+
+    return conversation;
+  }
+
+  sendMessage(params: {
+    conversation_id: string;
+    sender_id: string;
+    type: MessageType;
+    content: string;
+    media_url?: string;
+    media_thumbnail?: string;
+    reply_to_id?: string;
+    shared_thread_id?: string;
+    shared_reel_id?: string;
+  }): DirectMessage {
+    const now = new Date().toISOString();
+    const message: DirectMessage = {
+      id: uuid(),
+      conversation_id: params.conversation_id,
+      sender_id: params.sender_id,
+      type: params.type,
+      content: params.content,
+      media_url: params.media_url ?? null,
+      media_thumbnail: params.media_thumbnail ?? null,
+      reply_to_id: params.reply_to_id ?? null,
+      shared_thread_id: params.shared_thread_id ?? null,
+      shared_reel_id: params.shared_reel_id ?? null,
+      reactions: [],
+      status: 'sent',
+      created_at: now,
+      is_deleted: false,
+    };
+    this.directMessages.push(message);
+
+    // Update conversation
+    const conv = this.getConversationById(params.conversation_id);
+    if (conv) {
+      conv.last_message_id = message.id;
+      conv.updated_at = now;
+    }
+
+    // Mark sender as read
+    const senderParticipant = this.conversationParticipants.find(
+      (cp) => cp.conversation_id === params.conversation_id && cp.user_id === params.sender_id,
+    );
+    if (senderParticipant) {
+      senderParticipant.last_read_message_id = message.id;
+    }
+
+    return message;
+  }
+
+  markConversationRead(conversationId: string, userId: string): void {
+    const messages = this.getMessagesForConversation(conversationId);
+    const lastMsg = messages[messages.length - 1];
+    if (!lastMsg) return;
+
+    const participant = this.conversationParticipants.find(
+      (cp) => cp.conversation_id === conversationId && cp.user_id === userId,
+    );
+    if (participant) {
+      participant.last_read_message_id = lastMsg.id;
+    }
+  }
+
+  toggleMessageReaction(messageId: string, userId: string, emoji: string): boolean {
+    const message = this.getMessageById(messageId);
+    if (!message) return false;
+
+    const existing = message.reactions.findIndex(
+      (r) => r.user_id === userId && r.emoji === emoji,
+    );
+
+    if (existing >= 0) {
+      message.reactions.splice(existing, 1);
+      return false;
+    }
+
+    message.reactions.push({
+      user_id: userId,
+      emoji,
+      created_at: new Date().toISOString(),
+    });
+    return true;
+  }
+
+  deleteMessage(messageId: string): boolean {
+    const message = this.getMessageById(messageId);
+    if (!message) return false;
+    message.is_deleted = true;
+    message.content = 'This message was deleted';
+    message.media_url = null;
+    message.media_thumbnail = null;
+    return true;
+  }
+
+  toggleConversationPin(conversationId: string): boolean {
+    const conv = this.getConversationById(conversationId);
+    if (!conv) return false;
+    conv.is_pinned = !conv.is_pinned;
+    return conv.is_pinned;
+  }
+
+  toggleConversationMute(conversationId: string): boolean {
+    const conv = this.getConversationById(conversationId);
+    if (!conv) return false;
+    conv.is_muted = !conv.is_muted;
+    return conv.is_muted;
+  }
+
+  updateGroupInfo(
+    conversationId: string,
+    updates: Partial<Pick<Conversation, 'name' | 'avatar_url'>>,
+  ): Conversation | undefined {
+    const conv = this.getConversationById(conversationId);
+    if (!conv || conv.type !== 'group') return undefined;
+    if (updates.name !== undefined) conv.name = updates.name;
+    if (updates.avatar_url !== undefined) conv.avatar_url = updates.avatar_url;
+    return conv;
+  }
+
+  addGroupMember(conversationId: string, userId: string, addedBy: string): ConversationParticipant | undefined {
+    const conv = this.getConversationById(conversationId);
+    if (!conv || conv.type !== 'group') return undefined;
+
+    // Check if already a participant
+    const existing = this.conversationParticipants.find(
+      (cp) => cp.conversation_id === conversationId && cp.user_id === userId,
+    );
+    if (existing) return existing;
+
+    const now = new Date().toISOString();
+    const cp: ConversationParticipant = {
+      id: uuid(),
+      conversation_id: conversationId,
+      user_id: userId,
+      role: 'member',
+      joined_at: now,
+      last_read_message_id: null,
+      is_typing: false,
+    };
+    this.conversationParticipants.push(cp);
+
+    // System message
+    const adder = this.getUserById(addedBy);
+    const added = this.getUserById(userId);
+    const sysMsg: DirectMessage = {
+      id: uuid(),
+      conversation_id: conversationId,
+      sender_id: addedBy,
+      type: 'system',
+      content: `${adder?.display_name} added ${added?.display_name}`,
+      media_url: null,
+      media_thumbnail: null,
+      reply_to_id: null,
+      shared_thread_id: null,
+      shared_reel_id: null,
+      reactions: [],
+      status: 'seen',
+      created_at: now,
+      is_deleted: false,
+    };
+    this.directMessages.push(sysMsg);
+    conv.last_message_id = sysMsg.id;
+    conv.updated_at = now;
+
+    return cp;
+  }
+
+  removeGroupMember(conversationId: string, userId: string, removedBy: string): boolean {
+    const conv = this.getConversationById(conversationId);
+    if (!conv || conv.type !== 'group') return false;
+
+    this.conversationParticipants = this.conversationParticipants.filter(
+      (cp) => !(cp.conversation_id === conversationId && cp.user_id === userId),
+    );
+
+    const now = new Date().toISOString();
+    const remover = this.getUserById(removedBy);
+    const removed = this.getUserById(userId);
+    const isLeave = removedBy === userId;
+
+    const sysMsg: DirectMessage = {
+      id: uuid(),
+      conversation_id: conversationId,
+      sender_id: removedBy,
+      type: 'system',
+      content: isLeave
+        ? `${removed?.display_name} left the group`
+        : `${remover?.display_name} removed ${removed?.display_name}`,
+      media_url: null,
+      media_thumbnail: null,
+      reply_to_id: null,
+      shared_thread_id: null,
+      shared_reel_id: null,
+      reactions: [],
+      status: 'seen',
+      created_at: now,
+      is_deleted: false,
+    };
+    this.directMessages.push(sysMsg);
+    conv.last_message_id = sysMsg.id;
+    conv.updated_at = now;
+
+    return true;
+  }
+
+  promoteToAdmin(conversationId: string, userId: string): boolean {
+    const cp = this.conversationParticipants.find(
+      (p) => p.conversation_id === conversationId && p.user_id === userId,
+    );
+    if (!cp) return false;
+    cp.role = 'admin';
+    return true;
+  }
+
+  findDirectConversation(userId1: string, userId2: string): Conversation | undefined {
+    return this.conversations.find((c) => {
+      if (c.type !== 'direct') return false;
+      const participants = this.getParticipantsForConversation(c.id);
+      const userIds = participants.map((p) => p.user_id);
+      return userIds.includes(userId1) && userIds.includes(userId2) && participants.length === 2;
+    });
+  }
+
+  setTyping(conversationId: string, userId: string, isTyping: boolean): void {
+    const cp = this.conversationParticipants.find(
+      (p) => p.conversation_id === conversationId && p.user_id === userId,
+    );
+    if (cp) cp.is_typing = isTyping;
+  }
+
+  searchConversations(userId: string, query: string): Conversation[] {
+    const lowerQuery = query.toLowerCase();
+    const userConvs = this.getConversationsForUser(userId);
+    return userConvs.filter((c) => {
+      // Search group name
+      if (c.name && c.name.toLowerCase().includes(lowerQuery)) return true;
+      // Search participant names
+      const participants = this.getParticipantsForConversation(c.id);
+      for (const p of participants) {
+        const user = this.getUserById(p.user_id);
+        if (user && (user.username.toLowerCase().includes(lowerQuery) || user.display_name.toLowerCase().includes(lowerQuery))) {
+          return true;
+        }
+      }
+      // Search message content
+      const messages = this.getMessagesForConversation(c.id);
+      return messages.some((m) => m.content.toLowerCase().includes(lowerQuery));
+    });
   }
 }
 

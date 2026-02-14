@@ -231,3 +231,68 @@ export function TabBarSkeleton() {
     </HStack>
   );
 }
+
+// ─── Conversation row skeleton ────────────────────────
+
+export function ConversationRowSkeleton() {
+  return (
+    <View>
+      <HStack className="px-4 py-3" space="md">
+        <Skeleton variant="circular" className={`size-[52px] ${BONE_COLOR}`} />
+        <VStack className="flex-1 justify-center" space="sm">
+          <HStack className="items-center justify-between">
+            <Skeleton variant="rounded" className={`h-[14px] w-[140px] ${BONE_COLOR}`} />
+            <Skeleton variant="rounded" className={`h-[11px] w-[32px] ${BONE_COLOR}`} />
+          </HStack>
+          <Skeleton variant="rounded" className={`h-[13px] w-[200px] ${BONE_COLOR}`} />
+        </VStack>
+      </HStack>
+      <Divider className="ml-[76px] bg-[#1e1e1e]" />
+    </View>
+  );
+}
+
+// ─── Inbox screen skeleton ────────────────────────────
+
+export function InboxSkeleton({ count = 8 }: { count?: number }) {
+  return (
+    <View>
+      {Array.from({ length: count }).map((_, i) => (
+        <ConversationRowSkeleton key={`inbox-sk-${i}`} />
+      ))}
+    </View>
+  );
+}
+
+// ─── Chat message skeleton ────────────────────────────
+
+export function ChatMessageSkeleton({ isMe = false }: { isMe?: boolean }) {
+  return (
+    <View className={`flex-row px-4 py-1 ${isMe ? 'justify-end' : 'justify-start'}`}>
+      {!isMe && <Skeleton variant="circular" className={`mr-2 size-[28px] ${BONE_COLOR}`} />}
+      <VStack space="xs">
+        <Skeleton
+          variant="rounded"
+          className={`h-[36px] rounded-2xl ${isMe ? 'w-[180px]' : 'w-[220px]'} ${BONE_COLOR}`}
+        />
+      </VStack>
+    </View>
+  );
+}
+
+// ─── Chat screen skeleton ─────────────────────────────
+
+export function ChatSkeleton() {
+  return (
+    <View className="flex-1 pt-4">
+      <ChatMessageSkeleton isMe={false} />
+      <ChatMessageSkeleton isMe={false} />
+      <ChatMessageSkeleton isMe={true} />
+      <ChatMessageSkeleton isMe={false} />
+      <ChatMessageSkeleton isMe={true} />
+      <ChatMessageSkeleton isMe={true} />
+      <ChatMessageSkeleton isMe={false} />
+      <ChatMessageSkeleton isMe={true} />
+    </View>
+  );
+}

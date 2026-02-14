@@ -72,6 +72,27 @@ export default function RootLayout() {
             }}
           />
           <Stack.Screen
+            name="conversation/[id]"
+            options={{
+              headerShown: false,
+              animation: 'slide_from_right',
+            }}
+          />
+          <Stack.Screen
+            name="new-chat"
+            options={{
+              headerShown: false,
+              animation: 'slide_from_right',
+            }}
+          />
+          <Stack.Screen
+            name="group-info/[id]"
+            options={{
+              headerShown: false,
+              animation: 'slide_from_right',
+            }}
+          />
+          <Stack.Screen
             name="modal"
             options={{
               presentation: 'modal',

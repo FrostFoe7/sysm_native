@@ -16,6 +16,7 @@ import {
   User,
   Film,
   AlignJustify,
+  Send,
 } from 'lucide-react-native';
 
 interface NavItem {
@@ -58,6 +59,13 @@ const NAV_ITEMS: NavItem[] = [
     label: 'Activity',
     path: '/(tabs)/activity',
     matchPaths: ['/(tabs)/activity', '/activity'],
+    fillWhenActive: true,
+  },
+  {
+    icon: Send,
+    label: 'Messages',
+    path: '/(tabs)/inbox',
+    matchPaths: ['/(tabs)/inbox', '/inbox'],
     fillWhenActive: true,
   },
   {
