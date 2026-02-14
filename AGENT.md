@@ -71,7 +71,6 @@ This document tracks the setup and configuration of the `sysm_native` project.
 - **Centralized Types**: Created `types/types.ts` containing all core domain interfaces and common UI types, ensuring a single source of truth for the project's data structures.
 
 ## Current Project State
-- NativeWind v5 and gluestack-ui v3 are fully integrated and hardened for web stability.
 - The project follows a strict architectural pattern with centralized types and constants.
 - 0 Linting errors/warnings and a successful web build pipeline.
 - The codebase is ready for high-scale feature development with a stable foundation.
