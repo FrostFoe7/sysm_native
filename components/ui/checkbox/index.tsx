@@ -122,9 +122,11 @@ const Checkbox = React.forwardRef<
         size,
       })}
       {...props}
-      context={{
-        size,
-      }}
+      {...({
+        context: {
+          size,
+        },
+      } as any)}
       ref={ref}
     />
   );
@@ -141,14 +143,16 @@ const CheckboxIndicator = React.forwardRef<
 >(function CheckboxIndicator({ className, ...props }, ref) {
   const { size: parentSize } = useStyleContext(SCOPE);
 
+  const UICheckboxIndicator = UICheckbox.Indicator as any;
+
   return (
-    <UICheckbox.Indicator
+    <UICheckboxIndicator
       className={checkboxIndicatorStyle({
         parentVariants: {
           size: parentSize,
         },
         class: className,
-      })}
+      }) as any}
       {...props}
       ref={ref}
     />
@@ -164,14 +168,17 @@ const CheckboxLabel = React.forwardRef<
   ICheckboxLabelProps
 >(function CheckboxLabel({ className, ...props }, ref) {
   const { size: parentSize } = useStyleContext(SCOPE);
+
+  const UICheckboxLabel = UICheckbox.Label as any;
+
   return (
-    <UICheckbox.Label
+    <UICheckboxLabel
       className={checkboxLabelStyle({
         parentVariants: {
           size: parentSize,
         },
         class: className,
-      })}
+      }) as any}
       {...props}
       ref={ref}
     />
@@ -189,37 +196,39 @@ const CheckboxIcon = React.forwardRef<
 >(function CheckboxIcon({ className, size, ...props }, ref) {
   const { size: parentSize } = useStyleContext(SCOPE);
 
+  const UICheckboxIcon = UICheckbox.Icon as any;
+
   if (typeof size === 'number') {
     return (
-      <UICheckbox.Icon
+      <UICheckboxIcon
         ref={ref}
         {...props}
-        className={checkboxIconStyle({ class: className })}
+        className={checkboxIconStyle({ class: className }) as any}
         size={size}
       />
     );
   } else if (
-    (props.height !== undefined || props.width !== undefined) &&
+    ((props as any).height !== undefined || (props as any).width !== undefined) &&
     size === undefined
   ) {
     return (
-      <UICheckbox.Icon
+      <UICheckboxIcon
         ref={ref}
         {...props}
-        className={checkboxIconStyle({ class: className })}
+        className={checkboxIconStyle({ class: className }) as any}
       />
     );
   }
 
   return (
-    <UICheckbox.Icon
+    <UICheckboxIcon
       className={checkboxIconStyle({
         parentVariants: {
           size: parentSize,
         },
-        size,
+        size: size as any,
         class: className,
-      })}
+      }) as any}
       {...props}
       ref={ref}
     />
