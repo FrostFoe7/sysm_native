@@ -1,5 +1,18 @@
 // app/_layout.tsx
 
+// Critical: Polyfill import.meta for @supabase/supabase-js (must run before any imports)
+if (typeof globalThis !== 'undefined') {
+  Object.defineProperty(globalThis, 'import', {
+    value: {
+      meta: {
+        url: typeof window !== 'undefined' ? window.location.href : 'https://example.com/'
+      }
+    },
+    writable: true,
+    configurable: true
+  });
+}
+
 import React, { useEffect } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { DarkTheme, ThemeProvider } from '@react-navigation/native';

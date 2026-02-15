@@ -1,7 +1,22 @@
+// Critical: Polyfill import.meta before any imports
+if (typeof globalThis !== 'undefined' && !Object.getOwnPropertyDescriptor(globalThis, 'import')) {
+  Object.defineProperty(globalThis, 'import', {
+    value: {
+      meta: {
+        url: typeof window !== 'undefined' ? window.location.href : 'https://example.com/'
+      }
+    },
+    writable: true,
+    configurable: true,
+    enumerable: false
+  });
+}
+
 import { createClient } from '@supabase/supabase-js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL ?? 'http://localhost:54321';
+// Hardcoded environment variables from .env
+const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL ?? '';
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? '';
 
 // SSR-safe no-op storage — AsyncStorage accesses `window` which doesn't exist
