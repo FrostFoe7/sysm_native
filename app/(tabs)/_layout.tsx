@@ -2,11 +2,10 @@
 
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Platform, View, useWindowDimensions } from 'react-native';
+import { Platform, View } from 'react-native';
 import { Home, Search, Heart, User, Film, Send } from 'lucide-react-native';
 import { HapticTab } from '@/components/haptic-tab';
 import { DesktopSidebar } from '@/components/DesktopSidebar';
-import { DESKTOP_BREAKPOINT } from '@/constants/ui';
 
 function TabsNavigator({ hideTabBar }: { hideTabBar: boolean }) {
   return (
@@ -123,19 +122,20 @@ function TabsNavigator({ hideTabBar }: { hideTabBar: boolean }) {
 }
 
 export default function TabLayout() {
-  const { width } = useWindowDimensions();
-  const isDesktop = Platform.OS === 'web' && width >= DESKTOP_BREAKPOINT;
-
-  if (isDesktop) {
-    return (
-      <View className="flex-1 flex-row bg-brand-dark">
+  return (
+    <>
+      {/* Desktop Layout (lg: breakpoint) */}
+      <View className="hidden flex-1 flex-row bg-brand-dark lg:flex">
         <DesktopSidebar />
         <View className="flex-1">
-          <TabsNavigator hideTabBar />
+          <TabsNavigator hideTabBar={true} />
         </View>
       </View>
-    );
-  }
 
-  return <TabsNavigator hideTabBar={false} />;
+      {/* Mobile/Tablet Layout (up to lg breakpoint) */}
+      <View className="flex-1 lg:hidden">
+        <TabsNavigator hideTabBar={false} />
+      </View>
+    </>
+  );
 }

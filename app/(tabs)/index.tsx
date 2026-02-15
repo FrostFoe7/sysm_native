@@ -1,7 +1,7 @@
 // app/(tabs)/index.tsx
 
 import React, { useState, useCallback, useRef } from 'react';
-import { FlatList, RefreshControl, Platform, View, useWindowDimensions } from 'react-native';
+import { FlatList, RefreshControl, Platform, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ScreenLayout } from '@/components/ScreenLayout';
 import { ThreadCard } from '@/components/ThreadCard';
@@ -21,9 +21,6 @@ import type { ThreadWithAuthor } from '@/types/types';
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { width } = useWindowDimensions();
-  const isDesktop = Platform.OS === 'web' && width >= 1024;
-  
   const [activeTab, setActiveTab] = useState<'foryou' | 'following'>('foryou');
 
   const { 
@@ -110,10 +107,9 @@ export default function HomeScreen() {
             𝕋
           </Text>
         </View>
-              <AnimatedTabBar
-                tabs={FEED_TABS}
-                activeKey={activeTab}
-        
+        <AnimatedTabBar
+          tabs={FEED_TABS}
+          activeKey={activeTab}
           onTabPress={handleTabSwitch}
         />
       </View>
@@ -134,8 +130,8 @@ export default function HomeScreen() {
 
   return (
     <ScreenLayout>
-      <View className={`flex-1 ${isDesktop ? 'flex-row justify-center' : ''}`}>
-        <View className={`flex-1 ${isDesktop ? 'max-w-[600px]' : ''}`}>
+      <View className="flex-1 lg:flex-row lg:justify-center">
+        <View className="flex-1 lg:max-w-[600px]">
           <FlatList
             ref={flatListRef}
             data={feed}
@@ -158,8 +154,13 @@ export default function HomeScreen() {
             }}
           />
         </View>
-        {isDesktop && <DesktopRightColumn />}
+        
+        {/* Desktop Sidebar (lg: breakpoint) */}
+        <View className="hidden lg:flex">
+          <DesktopRightColumn />
+        </View>
       </View>
+
       <ShareSheet
         isOpen={shareThreadId !== null}
         onClose={() => setShareThreadId(null)}
@@ -173,7 +174,9 @@ export default function HomeScreen() {
         onThreadHidden={handleThreadHidden}
         onUserMuted={handleUserMuted}
       />
-      {!isDesktop && (
+
+      {/* Mobile FAB (Hidden on Desktop) */}
+      <View className="lg:hidden">
         <Fab
           size="lg"
           placement="bottom right"
@@ -182,7 +185,7 @@ export default function HomeScreen() {
         >
           <FabIcon as={SquarePen} size="lg" />
         </Fab>
-      )}
+      </View>
     </ScreenLayout>
   );
 }

@@ -9,6 +9,7 @@ import { ShareSheet } from '@/components/ShareSheet';
 import { ThreadOverflowMenu } from '@/components/ThreadOverflowMenu';
 import { AnimatedListItem } from '@/components/AnimatedListItem';
 import { AnimatedPressable } from '@/components/AnimatedPressable';
+import { DesktopRightColumn } from '@/components/DesktopRightColumn';
 import { Text } from '@/components/ui/text';
 import { Heading } from '@/components/ui/heading';
 import { HStack } from '@/components/ui/hstack';
@@ -182,10 +183,9 @@ export default function ExploreScreen() {
       setOverflowThread(allThreads.find((t) => t.id === threadId) ?? null);
     },
     [exploreListData]
-    // Note: dependencies needed for stability
   );
 
-  const handleThreadDeleted = useCallback((threadId: string) => {
+  const handleThreadDeleted = useCallback((_threadId: string) => {
     setRefreshKey((k) => k + 1);
   }, []);
 
@@ -290,54 +290,60 @@ export default function ExploreScreen() {
 
   return (
     <ScreenLayout>
-      <View className="flex-1">
-        {/* Sticky Search bar */}
-        <View className="sticky top-0 z-10 bg-brand-dark p-4">
-          <HStack className="h-[48px] items-center rounded-xl bg-brand-border px-4" space="sm">
-            <Search size={18} color="brand-muted" />
-            <TextInput
-              value={query}
-              onChangeText={handleQueryChange}
-              placeholder="Search"
-              placeholderTextColor="brand-muted"
-              numberOfLines={1}
-              className="h-full flex-1 text-[15px] text-brand-light"
-              style={Platform.OS === 'web' ? { outlineStyle: 'none' as any } : undefined}
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-            {query.length > 0 && (
-              <Pressable onPress={() => {
-                setQuery('');
-              }} hitSlop={8}>
-                <X size={16} color="brand-muted" />
-              </Pressable>
-            )}
-          </HStack>
+      <View className="flex-1 lg:flex-row lg:justify-center">
+        <View className="flex-1 lg:max-w-[600px]">
+          {/* Sticky Search bar */}
+          <View className="sticky top-0 z-10 bg-brand-dark p-4 lg:pt-8">
+            <HStack className="h-[48px] items-center rounded-xl bg-brand-border px-4" space="sm">
+              <Search size={18} color="brand-muted" />
+              <TextInput
+                value={query}
+                onChangeText={handleQueryChange}
+                placeholder="Search"
+                placeholderTextColor="brand-muted"
+                numberOfLines={1}
+                className="h-full flex-1 text-[15px] text-brand-light"
+                style={Platform.OS === 'web' ? { outlineStyle: 'none' as any } : undefined}
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+              {query.length > 0 && (
+                <Pressable onPress={() => setQuery('')} hitSlop={8}>
+                  <X size={16} color="brand-muted" />
+                </Pressable>
+              )}
+            </HStack>
+          </View>
+
+          <FlatList
+            data={exploreListData}
+            renderItem={renderItem}
+            keyExtractor={(item, index) => {
+              if (item.type === 'section-header') return `header-${item.title}`;
+              if (item.type === 'user') return `user-${item.user.id}`;
+              if (item.type === 'thread') return `thread-${item.thread.id}`;
+              return `item-${index}`;
+            }}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 24 }}
+            ListEmptyComponent={
+              isLoading ? (
+                <ExploreSkeleton />
+              ) : query.trim() ? (
+                <View className="items-center justify-center py-16">
+                  <Text className="text-[15px] text-brand-muted">No results for &quot;{query}&quot;</Text>
+                </View>
+              ) : null
+            }
+          />
         </View>
 
-        <FlatList
-          data={exploreListData}
-          renderItem={renderItem}
-          keyExtractor={(item, index) => {
-            if (item.type === 'section-header') return `header-${item.title}`;
-            if (item.type === 'user') return `user-${item.user.id}`;
-            if (item.type === 'thread') return `thread-${item.thread.id}`;
-            return `item-${index}`;
-          }}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 24 }}
-          ListEmptyComponent={
-            isLoading ? (
-              <ExploreSkeleton />
-            ) : query.trim() ? (
-              <View className="items-center justify-center py-16">
-                <Text className="text-[15px] text-brand-muted">No results for &quot;{query}&quot;</Text>
-              </View>
-            ) : null
-          }
-        />
+        {/* Desktop Sidebar (lg: breakpoint) */}
+        <View className="hidden lg:flex">
+          <DesktopRightColumn />
+        </View>
       </View>
+
       <ShareSheet
         isOpen={shareThreadId !== null}
         onClose={() => setShareThreadId(null)}
