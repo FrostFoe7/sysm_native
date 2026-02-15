@@ -68,6 +68,8 @@ function rpcRowToThread(row: any): RankedThread {
     reply_count: row.reply_count,
     like_count: row.like_count,
     repost_count: row.repost_count,
+    is_liked: row.is_liked,
+    is_reposted: row.is_reposted,
     created_at: row.created_at,
     updated_at: row.created_at,
     author,

@@ -37,6 +37,9 @@ export interface Thread {
   reply_count: number;
   like_count: number;
   repost_count: number;
+  is_liked?: boolean;
+  is_reposted?: boolean;
+  is_bookmarked?: boolean;
   created_at: string;
   updated_at: string;
 }

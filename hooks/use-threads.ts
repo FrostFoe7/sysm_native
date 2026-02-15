@@ -41,8 +41,8 @@ export function useThreadsFeed(feedType: 'foryou' | 'following' = 'foryou') {
       const newReposted: Record<string, boolean> = {};
       for (const t of feed) {
         // The RPC returns these as part of the row
-        newLiked[t.id] = (t as any).is_liked ?? false;
-        newReposted[t.id] = (t as any).is_reposted ?? false;
+        newLiked[t.id] = t.is_liked ?? false;
+        newReposted[t.id] = t.is_reposted ?? false;
       }
       syncInteractions({ liked: newLiked, reposted: newReposted });
       
