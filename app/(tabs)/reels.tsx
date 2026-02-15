@@ -1,7 +1,7 @@
 // app/(tabs)/reels.tsx
 // Instagram Reels: fullscreen vertical paging feed
 
-import React, { useCallback, useRef, useState, useMemo, useLayoutEffect } from 'react';
+import React, { useCallback, useRef, useState, useMemo, useLayoutEffect, useEffect } from 'react';
 import {
   View,
   FlatList,
@@ -34,9 +34,12 @@ export default function ReelsScreen() {
     setActiveIndex,
     isMuted,
     toggleMute,
+    onReelVisible,
+    onReelHidden,
   } = useReels();
 
   const flatListRef = useRef<FlatList>(null);
+  const prevActiveRef = useRef<string | null>(null);
 
   // Hide bottom tab bar on this screen
   useLayoutEffect(() => {
@@ -57,7 +60,7 @@ export default function ReelsScreen() {
     };
   }, [navigation]);
 
-  // Viewability tracking: only one reel plays at a time
+  // Viewability tracking: only one reel plays at a time + watch-time signals
   const viewabilityConfig = useRef({
     viewAreaCoveragePercentThreshold: 60,
     minimumViewTime: 100,
@@ -66,10 +69,29 @@ export default function ReelsScreen() {
   const onViewableItemsChanged = useRef(
     ({ viewableItems }: { viewableItems: ViewToken[] }) => {
       if (viewableItems.length > 0 && viewableItems[0].index != null) {
-        setActiveIndex(viewableItems[0].index);
+        const newIndex = viewableItems[0].index;
+        setActiveIndex(newIndex);
       }
     },
   ).current;
+
+  // Track reel visibility for watch-time reporting
+  useEffect(() => {
+    if (reels.length === 0) return;
+    const currentReel = reels[activeIndex];
+    if (!currentReel) return;
+
+    const prevId = prevActiveRef.current;
+    if (prevId && prevId !== currentReel.id) {
+      onReelHidden(prevId);
+    }
+    onReelVisible(currentReel.id);
+    prevActiveRef.current = currentReel.id;
+
+    return () => {
+      // Report watch time when component unmounts or reel changes
+    };
+  }, [activeIndex, reels, onReelVisible, onReelHidden]);
 
   const renderItem = useCallback(
     ({ item, index }: { item: ReelWithAuthor; index: number }) => {

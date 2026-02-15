@@ -38,10 +38,10 @@ function rowToUser(row: any): User {
 
 // ─── Feed queries ────────────────────────────────────────────────────────────────
 
-async function getForYouFeed(limit = 30, offset = 0): Promise<ThreadWithAuthor[]> {
+async function getForYouFeed(limit = 25, offset = 0): Promise<ThreadWithAuthor[]> {
   const userId = await getCachedUserId();
 
-  const { data, error } = await supabase.rpc('get_for_you_feed', {
+  const { data, error } = await supabase.rpc('rpc_rank_threads', {
     p_user_id: userId,
     p_limit: limit,
     p_offset: offset,

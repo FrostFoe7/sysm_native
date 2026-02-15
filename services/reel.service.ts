@@ -36,7 +36,7 @@ function rowToReel(row: any, author: User): ReelWithAuthor {
 async function getFeed(limit = 15, offset = 0): Promise<ReelWithAuthor[]> {
   const userId = await getCachedUserId();
 
-  const { data, error } = await supabase.rpc('get_reels_feed', {
+  const { data, error } = await supabase.rpc('rpc_rank_reels', {
     p_user_id: userId,
     p_limit: limit,
     p_offset: offset,
@@ -170,22 +170,24 @@ async function trackReelView(reelId: string): Promise<void> {
 async function recordWatchTime(reelId: string, watchTimeMs: number, durationMs: number): Promise<void> {
   const userId = await getCachedUserId();
   const completionRate = durationMs > 0 ? watchTimeMs / durationMs : 0;
+  const completed = completionRate >= 0.9;
 
-  await supabase.from('feed_events').insert({
-    user_id: userId,
-    content_type: 'reel',
-    content_id: reelId,
-    signal_type: 'reel_watch',
-    value: watchTimeMs,
-  });
-
-  if (completionRate >= 0.9) {
+  // Use new ranking-engine RPC for structured watch tracking
+  try {
+    await supabase.rpc('record_reel_watch', {
+      p_user_id: userId,
+      p_reel_id: reelId,
+      p_watch_ms: Math.round(watchTimeMs),
+      p_completed: completed,
+    });
+  } catch {
+    // Fallback to feed_events
     await supabase.from('feed_events').insert({
       user_id: userId,
       content_type: 'reel',
       content_id: reelId,
-      signal_type: 'reel_complete',
-      value: completionRate,
+      signal_type: 'reel_watch',
+      value: watchTimeMs,
     });
   }
 }

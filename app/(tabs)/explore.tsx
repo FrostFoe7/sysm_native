@@ -3,7 +3,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { FlatList, TextInput, Pressable, Platform, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useFocusEffect } from '@react-navigation/native';
 import { ScreenLayout } from '@/components/ScreenLayout';
 import { ThreadCard } from '@/components/ThreadCard';
 import { ShareSheet } from '@/components/ShareSheet';
@@ -24,8 +23,10 @@ import { Search, X, BadgeCheck } from 'lucide-react-native';
 import { ExploreSkeleton } from '@/components/skeletons';
 import type { User, ThreadWithAuthor } from '@/types/types';
 import { useInteractionStore } from '@/store/useInteractionStore';
+import { useExploreFeed } from '@/hooks/use-explore';
+import type { ExploreItem as RankedExploreItem } from '@/services/ranking.service';
 
-type ExploreItem =
+type ExploreListItem =
   | { type: 'section-header'; title: string }
   | { type: 'user'; user: User; isFollowed: boolean }
   | { type: 'thread'; thread: ThreadWithAuthor; isLiked: boolean; isReposted: boolean };
@@ -46,33 +47,38 @@ export default function ExploreScreen() {
 
   const [shareThreadId, setShareThreadId] = useState<string | null>(null);
   const [overflowThread, setOverflowThread] = useState<ThreadWithAuthor | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
 
-  const [exploreData, setExploreData] = useState<ExploreItem[]>([]);
+  // Ranked explore feed via rpc_explore_feed (non-search default view)
+  const {
+    data: exploreFeed,
+    isLoading: exploreLoading,
+    refresh: refreshExplore,
+    handleLike: exploreLike,
+  } = useExploreFeed();
 
-  useFocusEffect(
-    useCallback(() => {
-      loadExploreData();
-    }, []),
-  );
+  // Search results (only when query is non-empty)
+  const [searchData, setSearchData] = useState<ExploreListItem[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
 
-  // Reset loading when query changes
   const handleQueryChange = useCallback((text: string) => {
     setQuery(text);
-    setIsLoading(false);
   }, []);
 
-  // Reload data when query or refreshKey changes
+  // Search when query changes
   useEffect(() => {
-    loadExploreData();
-  }, [query, refreshKey]);
+    if (!query.trim()) {
+      setSearchData([]);
+      setIsSearching(false);
+      return;
+    }
+    let cancelled = false;
+    setIsSearching(true);
 
-  const loadExploreData = useCallback(async () => {
-    try {
-      const items: ExploreItem[] = [];
-
-      if (query.trim()) {
+    (async () => {
+      try {
         const results = await UserService.searchAll(query.trim());
+        if (cancelled) return;
+        const items: ExploreListItem[] = [];
         if (results.users.length > 0) {
           items.push({ type: 'section-header', title: 'People' });
           for (const u of results.users) {
@@ -94,43 +100,35 @@ export default function ExploreScreen() {
             });
           }
         }
-      } else {
-        const [suggestedUsers, trendingThreads] = await Promise.all([
-          UserService.getExploreUsers(),
-          UserService.getTrendingThreads(),
-        ]);
-
-        if (suggestedUsers.length > 0) {
-          items.push({ type: 'section-header', title: 'Suggested' });
-          for (const u of suggestedUsers) {
-            items.push({
-              type: 'user',
-              user: u,
-              isFollowed: followMap[u.id] ?? false,
-            });
-          }
-        }
-
-        if (trendingThreads.length > 0) {
-          items.push({ type: 'section-header', title: 'Trending' });
-          for (const t of trendingThreads) {
-            items.push({
-              type: 'thread',
-              thread: t,
-              isLiked: likedMap[t.id] ?? false,
-              isReposted: repostMap[t.id] ?? false,
-            });
-          }
-        }
+        setSearchData(items);
+      } catch (error) {
+        console.error('Search failed:', error);
+      } finally {
+        if (!cancelled) setIsSearching(false);
       }
+    })();
 
-      setExploreData(items);
-    } catch (error) {
-      console.error('Failed to load explore data:', error);
-    } finally {
-      setIsLoading(false);
-    }
+    return () => { cancelled = true; };
   }, [query, refreshKey, likedMap, repostMap, followMap]);
+
+  // Build explore list from server-ranked feed (non-search)
+  const exploreListData: ExploreListItem[] = query.trim()
+    ? searchData
+    : exploreFeed.length > 0
+      ? [
+          { type: 'section-header' as const, title: 'Discover' },
+          ...exploreFeed
+            .filter((item: RankedExploreItem) => item.content_type === 'thread' && item.thread)
+            .map((item: RankedExploreItem) => ({
+              type: 'thread' as const,
+              thread: item.thread!,
+              isLiked: item.is_liked ?? likedMap[item.content_id] ?? false,
+              isReposted: repostMap[item.content_id] ?? false,
+            })),
+        ]
+      : [];
+
+  const isLoading = query.trim() ? isSearching : exploreLoading;
 
   const handleLike = useCallback(async (threadId: string) => {
     const wasLiked = !!likedMap[threadId];
@@ -176,12 +174,12 @@ export default function ExploreScreen() {
 
   const handleMore = useCallback(
     (threadId: string) => {
-      const allThreads = exploreData
-        .filter((d): d is ExploreItem & { type: 'thread' } => d.type === 'thread')
+      const allThreads = exploreListData
+        .filter((d): d is ExploreListItem & { type: 'thread' } => d.type === 'thread')
         .map((d) => d.thread);
       setOverflowThread(allThreads.find((t) => t.id === threadId) ?? null);
     },
-    [exploreData],
+    [exploreListData],
   );
 
   const handleThreadDeleted = useCallback((threadId: string) => {
@@ -197,7 +195,7 @@ export default function ExploreScreen() {
   }, []);
 
   const renderItem = useCallback(
-    ({ item, index }: { item: ExploreItem; index: number }) => {
+    ({ item, index }: { item: ExploreListItem; index: number }) => {
       if (item.type === 'section-header') {
         return (
           <AnimatedListItem index={index}>
@@ -308,7 +306,6 @@ export default function ExploreScreen() {
             {query.length > 0 && (
               <Pressable onPress={() => {
                 setQuery('');
-                setIsLoading(false);
               }} hitSlop={8}>
                 <X size={16} color="brand-muted" />
               </Pressable>
@@ -317,7 +314,7 @@ export default function ExploreScreen() {
         </View>
 
         <FlatList
-          data={exploreData}
+          data={exploreListData}
           renderItem={renderItem}
           keyExtractor={(item, index) => {
             if (item.type === 'section-header') return `header-${item.title}`;

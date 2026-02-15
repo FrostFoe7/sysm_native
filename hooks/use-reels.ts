@@ -1,57 +1,96 @@
 import { useState, useCallback, useRef } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useFocusEffect } from '@react-navigation/native';
 import { ReelService } from '@/services/reel.service';
+import { RankingService } from '@/services/ranking.service';
 import type { ReelWithAuthor } from '@/types/types';
 
 /**
  * Hook for managing the Reels feed.
+ * Uses rpc_rank_reels for velocity-based, decay-aware ranking.
  * Handles vertical paging state, muting, and interactions.
+ * Watch time is tracked via record_reel_watch RPC.
  */
 export function useReels() {
-  const [data, setData] = useState<ReelWithAuthor[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isMuted, setIsMuted] = useState(true);
+  const watchStartRef = useRef<Record<string, number>>({});
 
-  const loadReels = useCallback(async () => {
-    try {
-      const reels = await ReelService.getFeed();
-      setData(reels);
-    } catch (error) {
-      console.error('Failed to load reels:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useFocusEffect(
-    useCallback(() => {
-      loadReels();
-    }, [loadReels])
-  );
+  // Server-ranked reels via React Query
+  const {
+    data = [],
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ['reels-feed'],
+    queryFn: () => ReelService.getFeed(),
+    staleTime: 1000 * 60,
+  });
 
   const toggleMute = useCallback(() => {
     setIsMuted(prev => !prev);
   }, []);
 
-  const handleLike = useCallback(async (reelId: string) => {
-    // Optimistic update
-    setData(prev => prev.map(r => 
-      r.id === reelId ? { ...r, isLiked: !r.isLiked, likeCount: r.isLiked ? r.likeCount - 1 : r.likeCount + 1 } : r
-    ));
+  // Optimistic like with rollback
+  const likeMutation = useMutation({
+    mutationFn: (reelId: string) => ReelService.toggleLike(reelId),
+    onMutate: async (reelId) => {
+      await queryClient.cancelQueries({ queryKey: ['reels-feed'] });
+      const previous = queryClient.getQueryData<ReelWithAuthor[]>(['reels-feed']);
 
-    try {
-      await ReelService.toggleLike(reelId);
-    } catch (error) {
-      // Rollback
-      const reel = data.find(r => r.id === reelId);
-      if (reel) {
-        setData(prev => prev.map(r => 
-          r.id === reelId ? { ...r, isLiked: reel.isLiked, likeCount: reel.likeCount } : r
-        ));
+      queryClient.setQueryData<ReelWithAuthor[]>(['reels-feed'], (old) =>
+        old?.map((r) =>
+          r.id === reelId
+            ? { ...r, isLiked: !r.isLiked, likeCount: r.isLiked ? r.likeCount - 1 : r.likeCount + 1 }
+            : r,
+        ),
+      );
+
+      return { previous };
+    },
+    onError: (_err, _reelId, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(['reels-feed'], context.previous);
       }
-    }
-  }, [data]);
+    },
+    onSuccess: (result, reelId) => {
+      queryClient.setQueryData<ReelWithAuthor[]>(['reels-feed'], (old) =>
+        old?.map((r) => (r.id === reelId ? { ...r, likeCount: result.count, isLiked: result.liked } : r)),
+      );
+    },
+  });
+
+  const handleLike = useCallback(
+    (reelId: string) => {
+      likeMutation.mutate(reelId);
+    },
+    [likeMutation],
+  );
+
+  // Track when a reel becomes visible (start watch timer)
+  const onReelVisible = useCallback((reelId: string) => {
+    watchStartRef.current[reelId] = Date.now();
+    ReelService.trackReelView(reelId).catch(() => {});
+  }, []);
+
+  // Track when a reel leaves view (report watch time)
+  const onReelHidden = useCallback(
+    (reelId: string) => {
+      const start = watchStartRef.current[reelId];
+      if (!start) return;
+
+      const watchMs = Date.now() - start;
+      delete watchStartRef.current[reelId];
+
+      const reel = data.find((r) => r.id === reelId);
+      const durationMs = (reel?.duration ?? 0) * 1000;
+      const completed = durationMs > 0 && watchMs >= durationMs * 0.9;
+
+      RankingService.recordReelWatch(reelId, watchMs, completed).catch(() => {});
+    },
+    [data],
+  );
 
   return {
     data,
@@ -61,6 +100,8 @@ export function useReels() {
     isMuted,
     toggleMute,
     handleLike,
-    refresh: loadReels
+    onReelVisible,
+    onReelHidden,
+    refresh: refetch,
   };
 }

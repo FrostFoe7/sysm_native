@@ -8,7 +8,10 @@ import { useInteractionStore } from '@/store/useInteractionStore';
 
 /**
  * Hook for managing the threads feed data and interactions using React Query.
- * Supports both "For You" (algorithmic) and "Following" (recency) feeds.
+ * Supports both "For You" (velocity-ranked via rpc_rank_threads) and "Following" (recency).
+ * 
+ * Server returns is_liked/is_reposted/is_bookmarked flags per thread —
+ * NO client-side per-thread interaction checks needed.
  */
 export function useThreadsFeed(feedType: 'foryou' | 'following' = 'foryou') {
   const queryClient = useQueryClient();
@@ -20,7 +23,7 @@ export function useThreadsFeed(feedType: 'foryou' | 'following' = 'foryou') {
     syncInteractions
   } = useInteractionStore();
 
-  // Fetch feed with React Query
+  // Fetch feed with React Query — server-ranked, no client sorting
   const { 
     data, 
     isLoading, 
@@ -33,23 +36,18 @@ export function useThreadsFeed(feedType: 'foryou' | 'following' = 'foryou') {
         ? await ThreadService.getFollowingFeed()
         : await ThreadService.getForYouFeed();
       
-      // Sync interaction maps from server data
+      // Sync interaction maps from server-returned flags (no N+1 queries)
       const newLiked: Record<string, boolean> = {};
       const newReposted: Record<string, boolean> = {};
-      const checks = feed.map(async (t) => {
-        const [liked, reposted] = await Promise.all([
-          ThreadService.isLikedByCurrentUser(t.id),
-          ThreadService.isRepostedByCurrentUser(t.id),
-        ]);
-        newLiked[t.id] = liked;
-        newReposted[t.id] = reposted;
-      });
-      await Promise.all(checks);
+      for (const t of feed) {
+        // The RPC returns these as part of the row
+        newLiked[t.id] = (t as any).is_liked ?? false;
+        newReposted[t.id] = (t as any).is_reposted ?? false;
+      }
       syncInteractions({ liked: newLiked, reposted: newReposted });
       
       return feed;
     },
-    // Keep data fresh for 1 minute
     staleTime: 1000 * 60,
   });
 
