@@ -1,17 +1,3 @@
-// Critical: Polyfill import.meta before any imports
-if (typeof globalThis !== 'undefined' && !Object.getOwnPropertyDescriptor(globalThis, 'import')) {
-  Object.defineProperty(globalThis, 'import', {
-    value: {
-      meta: {
-        url: typeof window !== 'undefined' ? window.location.href : 'https://example.com/'
-      }
-    },
-    writable: true,
-    configurable: true,
-    enumerable: false
-  });
-}
-
 import { createClient } from '@supabase/supabase-js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
