@@ -319,7 +319,7 @@ export function MessageBubble({
                       ? '✓'
                       : message.status === 'delivered'
                         ? '✓✓'
-                        : '✓✓'}
+                        : '✓'}
                 </Text>
               )}
               {isMe && message.status === 'seen' && (

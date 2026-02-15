@@ -12,6 +12,7 @@ import type { MessageWithSender } from '@/types/types';
 interface ChatComposerProps {
   onSend: (text: string) => void;
   onSendImage?: () => void;
+  onTyping?: () => void;
   replyingTo: MessageWithSender | null;
   onCancelReply: () => void;
   disabled?: boolean;
@@ -20,6 +21,7 @@ interface ChatComposerProps {
 export function ChatComposer({
   onSend,
   onSendImage,
+  onTyping,
   replyingTo,
   onCancelReply,
   disabled,
@@ -35,6 +37,27 @@ export function ChatComposer({
     setText('');
     setShowEmojiPicker(false);
   }, [text, onSend]);
+
+  const handleChangeText = useCallback(
+    (value: string) => {
+      setText(value);
+      onTyping?.();
+    },
+    [onTyping],
+  );
+
+  // Desktop: Enter sends, Shift+Enter inserts newline
+  const handleKeyPress = useCallback(
+    (e: any) => {
+      if (Platform.OS !== 'web') return;
+      const nativeEvent = e.nativeEvent;
+      if (nativeEvent.key === 'Enter' && !nativeEvent.shiftKey) {
+        e.preventDefault();
+        handleSend();
+      }
+    },
+    [handleSend],
+  );
 
   const handleEmojiSelect = useCallback(
     (emoji: string) => {
@@ -109,7 +132,7 @@ export function ChatComposer({
           <TextInput
             ref={inputRef}
             value={text}
-            onChangeText={setText}
+            onChangeText={handleChangeText}
             placeholder="Message..."
             placeholderTextColor="brand-muted"
             multiline
@@ -120,8 +143,8 @@ export function ChatComposer({
               paddingBottom: Platform.OS === 'ios' ? 8 : 4,
             }}
             editable={!disabled}
-            onSubmitEditing={Platform.OS === 'web' ? handleSend : undefined}
-            blurOnSubmit={Platform.OS === 'web'}
+            onKeyPress={Platform.OS === 'web' ? handleKeyPress : undefined}
+            blurOnSubmit={false}
           />
           <Pressable
             className="ml-2 p-1 active:opacity-60"

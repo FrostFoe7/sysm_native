@@ -34,8 +34,12 @@ export default function ChatScreen() {
     chatItems,
     details: conversationDetails,
     isLoading,
+    typingUsers,
     sendMessage: triggerSendMessage,
     toggleReaction,
+    onTextChange,
+    loadMore,
+    hasMore,
   } = useChat(id ?? '');
 
   const isGroup = conversationDetails?.conversation.type === 'group';
@@ -168,8 +172,10 @@ export default function ChatScreen() {
                   <Text className="text-[12px] text-brand-muted">
                     {memberCount} members
                   </Text>
+                ) : typingUsers.length > 0 ? (
+                  <Text className="text-[12px] italic text-brand-blue">typing...</Text>
                 ) : (
-                  <Text className="text-[12px] text-[#00c853]">Active now</Text>
+                  <Text className="text-[12px] text-brand-muted">Online</Text>
                 )}
               </VStack>
             </Pressable>
@@ -208,23 +214,39 @@ export default function ChatScreen() {
           onContentSizeChange={() => {
             flatListRef.current?.scrollToEnd({ animated: false });
           }}
+          onStartReached={() => {
+            if (hasMore) loadMore();
+          }}
+          onStartReachedThreshold={0.3}
           inverted={false}
         />
+      )}
+
+      {/* Typing indicator */}
+      {typingUsers.length > 0 && (
+        <View className="px-4 py-1">
+          <Text className="text-[12px] italic text-brand-muted">
+            {isGroup
+              ? `${typingUsers.map((u) => u.display_name.split(' ')[0]).join(', ')} typing...`
+              : 'typing...'}
+          </Text>
+        </View>
       )}
 
       {/* Composer */}
       <ChatComposer
         onSend={handleSendMessage}
+        onTyping={onTextChange}
         replyingTo={replyingTo}
         onCancelReply={() => setReplyingTo(null)}
       />
     </View>
   );
 
-  if (Platform.OS === 'ios') {
+  if (Platform.OS === 'ios' || Platform.OS === 'android') {
     return (
       <KeyboardAvoidingView
-        behavior="padding"
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1"
         keyboardVerticalOffset={0}
       >

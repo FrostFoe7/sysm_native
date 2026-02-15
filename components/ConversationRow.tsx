@@ -9,6 +9,7 @@ import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Divider } from '@/components/ui/divider';
 import { BadgeCheck, BellOff, Pin, Volume2 } from 'lucide-react-native';
 import { formatRelativeTime, formatMessagePreview } from '@/services/format';
+import { useAuthStore } from '@/store/useAuthStore';
 import type { ConversationWithDetails } from '@/types/types';
 
 interface ConversationRowProps {
@@ -19,6 +20,7 @@ interface ConversationRowProps {
 
 export function ConversationRow({ conversation, onPress, onLongPress }: ConversationRowProps) {
   const { conversation: conv, otherUsers, lastMessage, unreadCount, typingUsers } = conversation;
+  const currentUserId = useAuthStore((s) => s.userId);
   const isGroup = conv.type === 'group';
   const hasUnread = unreadCount > 0;
   const isTyping = typingUsers.length > 0;
@@ -50,7 +52,7 @@ export function ConversationRow({ conversation, onPress, onLongPress }: Conversa
   // Last message preview
   const lastMessageText = lastMessage ? formatMessagePreview(lastMessage) : '';
   const lastMessageTime = lastMessage ? formatRelativeTime(lastMessage.created_at) : '';
-  const isLastMessageFromMe = lastMessage?.sender_id === 'u-000';
+  const isLastMessageFromMe = lastMessage?.sender_id === currentUserId;
 
   return (
     <Pressable

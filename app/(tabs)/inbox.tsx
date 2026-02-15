@@ -38,8 +38,11 @@ function InlineChatPanel({
     chatItems,
     details,
     messages,
+    typingUsers,
     sendMessage: triggerSendMessage,
     toggleReaction,
+    onTextChange,
+    loadMore,
   } = useChat(conversationId);
 
   const isGroup = details?.conversation.type === 'group';
@@ -91,8 +94,10 @@ function InlineChatPanel({
           </HStack>
           {isGroup ? (
             <Text className="text-[11px] text-brand-muted">{details.participants.length} members</Text>
+          ) : typingUsers.length > 0 ? (
+            <Text className="text-[11px] italic text-brand-blue">typing...</Text>
           ) : (
-            <Text className="text-[11px] text-[#00c853]">Active now</Text>
+            <Text className="text-[11px] text-brand-muted">Online</Text>
           )}
         </VStack>
         <HStack space="sm">
@@ -141,6 +146,7 @@ function InlineChatPanel({
       {/* Composer */}
       <ChatComposer
         onSend={handleSend}
+        onTyping={onTextChange}
         replyingTo={replyingTo}
         onCancelReply={() => setReplyingTo(null)}
       />
@@ -155,8 +161,7 @@ export default function InboxScreen() {
   const { width } = useWindowDimensions();
   const isDesktop = Platform.OS === 'web' && width >= DESKTOP_BREAKPOINT;
 
-  const { data: inbox, isLoading, isRefreshing, refresh } = useInbox();
-  const [searchQuery, setSearchQuery] = useState('');
+  const { data: inbox, isLoading, isRefreshing, searchQuery, setSearchQuery, refresh } = useInbox();
   const [activeConvId, setActiveConvId] = useState<string | null>(null);
 
   // Auto-select first conversation on desktop
