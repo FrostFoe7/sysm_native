@@ -36,6 +36,7 @@ export default function ChatScreen() {
     isLoading,
     typingUsers,
     sendMessage: triggerSendMessage,
+    sendVoice,
     toggleReaction,
     onTextChange,
     loadMore,
@@ -64,6 +65,17 @@ export default function ChatScreen() {
       }, 100);
     },
     [triggerSendMessage, replyingTo],
+  );
+
+  const handleSendVoice = useCallback(
+    (uri: string, durationMs: number) => {
+      sendVoice(uri, durationMs, replyingTo?.id);
+      setReplyingTo(null);
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 100);
+    },
+    [sendVoice, replyingTo],
   );
 
   const handleReply = useCallback(
@@ -236,6 +248,7 @@ export default function ChatScreen() {
       {/* Composer */}
       <ChatComposer
         onSend={handleSendMessage}
+        onSendVoice={handleSendVoice}
         onTyping={onTextChange}
         replyingTo={replyingTo}
         onCancelReply={() => setReplyingTo(null)}

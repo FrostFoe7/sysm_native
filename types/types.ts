@@ -168,6 +168,14 @@ export interface DirectMessage {
   status: MessageStatus;
   created_at: string;
   is_deleted: boolean;
+  // Voice note fields
+  audio_url: string | null;
+  audio_duration_ms: number | null;
+  // E2EE fields
+  encrypted_content: string | null;
+  encrypted_key: string | null;
+  key_version: number | null;
+  is_encrypted: boolean;
 }
 
 export interface MessageReaction {

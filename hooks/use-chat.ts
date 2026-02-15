@@ -6,6 +6,7 @@ import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { ChatService } from '@/services/chat.service';
+import { VoiceService } from '@/services/voice.service';
 import { useAuthStore } from '@/store/useAuthStore';
 import type { MessageWithSender, ConversationWithDetails, ChatItem, User } from '@/types/types';
 
@@ -133,6 +134,12 @@ export function useChat(conversationId: string) {
         status: raw.status ?? 'sent',
         created_at: raw.created_at,
         is_deleted: raw.is_deleted ?? false,
+        audio_url: raw.audio_url ?? null,
+        audio_duration_ms: raw.audio_duration_ms ?? null,
+        encrypted_content: raw.encrypted_content ?? null,
+        encrypted_key: raw.encrypted_key ?? null,
+        key_version: raw.key_version ?? null,
+        is_encrypted: raw.is_encrypted ?? false,
         sender: { id: raw.sender_id, username: '', display_name: '', avatar_url: '', bio: '', verified: false, followers_count: 0, following_count: 0, created_at: '' },
         replyTo: null,
         sharedThread: null,
@@ -288,6 +295,12 @@ export function useChat(conversationId: string) {
         status: 'sending',
         created_at: new Date().toISOString(),
         is_deleted: false,
+        audio_url: null,
+        audio_duration_ms: null,
+        encrypted_content: null,
+        encrypted_key: null,
+        key_version: null,
+        is_encrypted: false,
         replyTo: null,
         sharedThread: null,
         sharedReel: null,
@@ -429,6 +442,77 @@ export function useChat(conversationId: string) {
     [],
   );
 
+  // ─── Send voice note ─────────────────────────────────────────────────────
+
+  const sendVoice = useCallback(
+    async (uri: string, durationMs: number, replyToId?: string) => {
+      if (!conversationId || !user) return;
+
+      const tempId = `temp-voice-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      const tempMessage: MessageWithSender = {
+        id: tempId,
+        conversation_id: conversationId,
+        sender_id: user.id,
+        sender: user,
+        type: 'voice_note',
+        content: '',
+        media_url: null,
+        media_thumbnail: null,
+        reply_to_id: replyToId || null,
+        shared_thread_id: null,
+        shared_reel_id: null,
+        reactions: [],
+        status: 'sending',
+        created_at: new Date().toISOString(),
+        is_deleted: false,
+        audio_url: uri,
+        audio_duration_ms: durationMs,
+        encrypted_content: null,
+        encrypted_key: null,
+        key_version: null,
+        is_encrypted: false,
+        replyTo: null,
+        sharedThread: null,
+        sharedReel: null,
+      };
+
+      seenIds.current.add(tempId);
+      setMessages((prev) => [...prev, tempMessage]);
+
+      try {
+        // Upload audio to Supabase Storage
+        const uploadResult = await VoiceService.uploadVoiceNote(conversationId, {
+          uri,
+          durationMs,
+          fileSize: 0, // Size not needed for upload, only used for display
+        });
+
+        // Send the message with the uploaded URL
+        const sentMessage = await ChatService.sendVoiceMessage({
+          conversationId,
+          audioUrl: uploadResult.audioUrl,
+          audioDurationMs: durationMs,
+          replyToId,
+        });
+
+        seenIds.current.add(sentMessage.id);
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === tempId
+              ? { ...sentMessage, sender: user, replyTo: null, sharedThread: null, sharedReel: null }
+              : m,
+          ),
+        );
+      } catch (error) {
+        console.error('Failed to send voice note:', error);
+        setMessages((prev) =>
+          prev.map((m) => (m.id === tempId ? { ...m, status: 'error' as any } : m)),
+        );
+      }
+    },
+    [conversationId, user],
+  );
+
   return {
     messages,
     chatItems,
@@ -437,6 +521,7 @@ export function useChat(conversationId: string) {
     hasMore,
     typingUsers: activeTypingUsers,
     sendMessage,
+    sendVoice,
     retrySend,
     toggleReaction,
     deleteMessage,

@@ -11,6 +11,8 @@ import '@/global.css';
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 import { AppToastProvider } from '@/components/AppToast';
 import { useAuthStore } from '@/store/useAuthStore';
+import { PushService } from '@/services/push.service';
+import { CryptoService } from '@/services/crypto.service';
 import { Text } from '@/components/ui/text';
 
 // Create a client
@@ -79,6 +81,8 @@ function useProtectedRoute() {
 export default function RootLayout() {
   const initialize = useAuthStore((s) => s.initialize);
   const isInitialized = useAuthStore((s) => s.isInitialized);
+  const session = useAuthStore((s) => s.session);
+  const user = useAuthStore((s) => s.user);
 
   // Initialize auth on mount
   useEffect(() => {
@@ -86,6 +90,37 @@ export default function RootLayout() {
   }, []);
 
   useProtectedRoute();
+
+  // Push notifications + E2EE key registration after login/signup
+  useEffect(() => {
+    if (!session || !user?.is_onboarded) return;
+
+    // Register push token
+    PushService.registerForPushNotifications().catch((e) =>
+      console.warn('Push registration failed:', e),
+    );
+
+    // Setup notification response listener (tap → deep link)
+    const cleanupResponse = PushService.setupNotificationResponseListener();
+    const cleanupForeground = PushService.setupForegroundListener();
+
+    // Register E2EE keys if not present
+    CryptoService.hasLocalKeys().then((hasKeys) => {
+      if (!hasKeys) {
+        CryptoService.registerKeys().catch((e) =>
+          console.warn('E2EE key registration failed:', e),
+        );
+      }
+    });
+
+    // Handle cold-start deep link
+    PushService.getInitialNotification().catch(() => {});
+
+    return () => {
+      cleanupResponse();
+      cleanupForeground();
+    };
+  }, [session, user?.is_onboarded]);
 
   // Show splash while initializing
   if (!isInitialized) {

@@ -40,6 +40,7 @@ function InlineChatPanel({
     messages,
     typingUsers,
     sendMessage: triggerSendMessage,
+    sendVoice,
     toggleReaction,
     onTextChange,
     loadMore,
@@ -61,6 +62,15 @@ function InlineChatPanel({
       setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 100);
     },
     [triggerSendMessage, replyingTo],
+  );
+
+  const handleSendVoice = useCallback(
+    (uri: string, durationMs: number) => {
+      sendVoice(uri, durationMs, replyingTo?.id);
+      setReplyingTo(null);
+      setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 100);
+    },
+    [sendVoice, replyingTo],
   );
 
   const handleReply = useCallback(
@@ -146,6 +156,7 @@ function InlineChatPanel({
       {/* Composer */}
       <ChatComposer
         onSend={handleSend}
+        onSendVoice={handleSendVoice}
         onTyping={onTextChange}
         replyingTo={replyingTo}
         onCancelReply={() => setReplyingTo(null)}

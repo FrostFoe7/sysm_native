@@ -59,6 +59,12 @@ function rpcRowToMessage(row: any): MessageWithSender {
           status: 'sent' as const,
           created_at: '',
           is_deleted: false,
+          audio_url: null,
+          audio_duration_ms: null,
+          encrypted_content: null,
+          encrypted_key: null,
+          key_version: null,
+          is_encrypted: false,
           sender: {
             id: '',
             username: '',
@@ -91,6 +97,12 @@ function rpcRowToMessage(row: any): MessageWithSender {
     status: row.status as any,
     created_at: row.created_at,
     is_deleted: row.is_deleted ?? false,
+    audio_url: row.audio_url ?? null,
+    audio_duration_ms: row.audio_duration_ms ?? null,
+    encrypted_content: row.encrypted_content ?? null,
+    encrypted_key: row.encrypted_key ?? null,
+    key_version: row.key_version ?? null,
+    is_encrypted: row.is_encrypted ?? false,
     sender,
     replyTo,
     sharedThread: null,
@@ -153,6 +165,12 @@ async function getConversations(): Promise<ConversationWithDetails[]> {
           status: 'sent' as const,
           created_at: row.last_message_at ?? '',
           is_deleted: false,
+          audio_url: null,
+          audio_duration_ms: null,
+          encrypted_content: null,
+          encrypted_key: null,
+          key_version: null,
+          is_encrypted: false,
           sender: otherUsers[0] ?? ({} as User),
         }
       : null;
@@ -229,6 +247,12 @@ async function getConversation(conversationId: string): Promise<ConversationWith
         status: msg.status as any,
         created_at: msg.created_at,
         is_deleted: msg.is_deleted,
+        audio_url: msg.audio_url ?? null,
+        audio_duration_ms: msg.audio_duration_ms ?? null,
+        encrypted_content: msg.encrypted_content ?? null,
+        encrypted_key: msg.encrypted_key ?? null,
+        key_version: msg.key_version ?? null,
+        is_encrypted: msg.is_encrypted ?? false,
         sender: rowToUser(msg.users),
       };
     }
@@ -349,6 +373,12 @@ async function getMessagesFallback(conversationId: string, limit: number): Promi
     status: msg.status as any,
     created_at: msg.created_at,
     is_deleted: msg.is_deleted,
+    audio_url: msg.audio_url ?? null,
+    audio_duration_ms: msg.audio_duration_ms ?? null,
+    encrypted_content: msg.encrypted_content ?? null,
+    encrypted_key: msg.encrypted_key ?? null,
+    key_version: msg.key_version ?? null,
+    is_encrypted: msg.is_encrypted ?? false,
     sender: rowToUser(msg.users),
     replyTo: null,
     sharedThread: null,
@@ -365,6 +395,12 @@ async function sendMessage(params: {
   replyToId?: string;
   sharedThreadId?: string;
   sharedReelId?: string;
+  audioUrl?: string;
+  audioDurationMs?: number;
+  encryptedContent?: string;
+  encryptedKey?: string;
+  keyVersion?: number;
+  isEncrypted?: boolean;
 }): Promise<MessageWithSender> {
   const userId = await getCachedUserId();
 
@@ -380,6 +416,12 @@ async function sendMessage(params: {
       reply_to_id: params.replyToId ?? null,
       shared_thread_id: params.sharedThreadId ?? null,
       shared_reel_id: params.sharedReelId ?? null,
+      audio_url: params.audioUrl ?? null,
+      audio_duration_ms: params.audioDurationMs ?? null,
+      encrypted_content: params.encryptedContent ?? null,
+      encrypted_key: params.encryptedKey ?? null,
+      key_version: params.keyVersion ?? null,
+      is_encrypted: params.isEncrypted ?? false,
       status: 'sent',
     })
     .select('*, users!messages_sender_id_fkey(*)')
@@ -402,6 +444,12 @@ async function sendMessage(params: {
     status: data.status as any,
     created_at: data.created_at,
     is_deleted: data.is_deleted,
+    audio_url: data.audio_url ?? null,
+    audio_duration_ms: data.audio_duration_ms ?? null,
+    encrypted_content: data.encrypted_content ?? null,
+    encrypted_key: data.encrypted_key ?? null,
+    key_version: data.key_version ?? null,
+    is_encrypted: data.is_encrypted ?? false,
     sender: rowToUser(data.users),
     replyTo: null,
     sharedThread: null,
@@ -796,11 +844,57 @@ async function setTyping(conversationId: string, isTyping: boolean): Promise<voi
     .eq('user_id', userId);
 }
 
+// ─── Voice note helper ──────────────────────────────────────────────────────
+
+async function sendVoiceMessage(params: {
+  conversationId: string;
+  audioUrl: string;
+  audioDurationMs: number;
+  replyToId?: string;
+}): Promise<MessageWithSender> {
+  return sendMessage({
+    conversationId: params.conversationId,
+    content: '',
+    type: 'voice_note',
+    audioUrl: params.audioUrl,
+    audioDurationMs: params.audioDurationMs,
+    replyToId: params.replyToId,
+  });
+}
+
+// ─── E2EE encrypted message helper ─────────────────────────────────────────
+
+async function sendEncryptedMessage(params: {
+  conversationId: string;
+  encryptedContent: string;
+  encryptedKey: string;
+  keyVersion: number;
+  type?: MessageType;
+  audioUrl?: string;
+  audioDurationMs?: number;
+  replyToId?: string;
+}): Promise<MessageWithSender> {
+  return sendMessage({
+    conversationId: params.conversationId,
+    content: '[Encrypted message]',
+    type: params.type ?? 'text',
+    encryptedContent: params.encryptedContent,
+    encryptedKey: params.encryptedKey,
+    keyVersion: params.keyVersion,
+    isEncrypted: true,
+    audioUrl: params.audioUrl,
+    audioDurationMs: params.audioDurationMs,
+    replyToId: params.replyToId,
+  });
+}
+
 export const ChatService = {
   getConversations,
   getConversation,
   getMessages,
   sendMessage,
+  sendVoiceMessage,
+  sendEncryptedMessage,
   markAsRead,
   toggleReaction,
   createDirectConversation,

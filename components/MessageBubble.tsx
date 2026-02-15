@@ -1,14 +1,15 @@
 // components/MessageBubble.tsx
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { Pressable, View, Image } from 'react-native';
 import { HStack } from '@/components/ui/hstack';
 import { VStack } from '@/components/ui/vstack';
 import { Text } from '@/components/ui/text';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
-import { BadgeCheck, Reply, CornerUpLeft } from 'lucide-react-native';
+import { BadgeCheck, Reply, CornerUpLeft, Lock } from 'lucide-react-native';
 import { formatRelativeTime } from '@/services/format';
 import { REACTION_EMOJIS } from '@/constants/app';
+import { VoiceService, type PlaybackState } from '@/services/voice.service';
 import { useAuthStore } from '@/store/useAuthStore';
 import type { MessageWithSender } from '@/types/types';
 
@@ -265,15 +266,18 @@ export function MessageBubble({
 
             {/* Voice note */}
             {message.type === 'voice_note' && (
-              <HStack className="items-center" space="sm">
-                <View className="size-8 items-center justify-center rounded-full bg-white/20">
-                  <Text className="text-[14px]">▶</Text>
-                </View>
-                <View className="h-[4px] flex-1 rounded-full bg-white/30">
-                  <View className="h-full w-[60%] rounded-full bg-white/70" />
-                </View>
-                <Text className={`text-[11px] ${isMe ? 'text-white/60' : 'text-[#777]'}`}>
-                  0:12
+              <VoiceNotePlayer
+                message={message}
+                isMe={isMe}
+              />
+            )}
+
+            {/* E2EE indicator */}
+            {(message as any).is_encrypted && (
+              <HStack className="mt-1 items-center" space="xs">
+                <Lock size={10} color={isMe ? 'rgba(255,255,255,0.5)' : '#555'} />
+                <Text className={`text-[10px] ${isMe ? 'text-white/50' : 'text-[#555]'}`}>
+                  End-to-end encrypted
                 </Text>
               </HStack>
             )}
@@ -340,6 +344,56 @@ export function MessageBubble({
         )}
       </View>
     </View>
+  );
+}
+
+// ─── Voice Note Player ──────────────────────────────────────────────────────────
+
+function VoiceNotePlayer({ message, isMe }: { message: MessageWithSender; isMe: boolean }) {
+  const [playback, setPlayback] = useState<PlaybackState | null>(null);
+  const isPlaying = playback?.messageId === message.id && playback?.status === 'playing';
+  const progress =
+    playback?.messageId === message.id && playback?.durationMs
+      ? Math.min(playback.positionMs / playback.durationMs, 1)
+      : 0;
+
+  useEffect(() => {
+    const unsub = VoiceService.addPlaybackListener((state) => {
+      setPlayback(state);
+    });
+    return unsub;
+  }, []);
+
+  const handlePlayPause = useCallback(() => {
+    const url = (message as any).audio_url;
+    if (!url) return;
+    VoiceService.playAudio(message.id, url);
+  }, [message.id, (message as any).audio_url]);
+
+  const durationMs = (message as any).audio_duration_ms || 0;
+  const displayDuration =
+    isPlaying && playback?.durationMs
+      ? VoiceService.formatDuration(playback.positionMs)
+      : VoiceService.formatDuration(durationMs);
+
+  return (
+    <HStack className="min-w-[180px] items-center" space="sm">
+      <Pressable
+        onPress={handlePlayPause}
+        className="size-8 items-center justify-center rounded-full bg-white/20"
+      >
+        <Text className="text-[14px]">{isPlaying ? '⏸' : '▶'}</Text>
+      </Pressable>
+      <View className="h-[4px] flex-1 rounded-full bg-white/30">
+        <View
+          className="h-full rounded-full bg-white/70"
+          style={{ width: `${(progress * 100).toFixed(1)}%` as any }}
+        />
+      </View>
+      <Text className={`text-[11px] ${isMe ? 'text-white/60' : 'text-[#777]'}`}>
+        {displayDuration}
+      </Text>
+    </HStack>
   );
 }
 
