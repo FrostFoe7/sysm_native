@@ -23,7 +23,7 @@ function ProgressBar() {
   const progress = currentIdx >= 0 ? currentIdx + 1 : 1;
 
   return (
-    <View className="px-6 pt-2 pb-4">
+    <View className="px-6 pb-4 pt-2">
       {/* Step indicator */}
       <View className="flex-row gap-1.5">
         {STEPS.map((step, i) => (
@@ -37,7 +37,7 @@ function ProgressBar() {
       </View>
 
       {/* Step label */}
-      <Text className="text-[12px] text-brand-muted mt-2">
+      <Text className="mt-2 text-[12px] text-brand-muted">
         Step {progress} of {STEPS.length}
       </Text>
     </View>
@@ -50,15 +50,15 @@ function DesktopStepper() {
   const currentIdx = STEPS.findIndex((s) => s.route === currentRoute);
 
   return (
-    <View className="w-[200px] pt-8 pr-8">
+    <View className="w-[200px] pr-8 pt-8">
       {STEPS.map((step, i) => (
-        <View key={step.route} className="flex-row items-center mb-4">
+        <View key={step.route} className="mb-4 flex-row items-center">
           <View
-            className={`w-8 h-8 rounded-full items-center justify-center mr-3 ${
+            className={`mr-3 size-8 items-center justify-center rounded-full ${
               i < currentIdx
                 ? 'bg-brand-blue'
                 : i === currentIdx
-                  ? 'bg-brand-blue/20 border-2 border-brand-blue'
+                  ? 'border-2 border-brand-blue bg-brand-blue/20'
                   : 'bg-brand-border'
             }`}
           >
@@ -72,7 +72,7 @@ function DesktopStepper() {
           </View>
           <Text
             className={`text-[14px] ${
-              i === currentIdx ? 'text-brand-light font-semibold' : 'text-brand-muted'
+              i === currentIdx ? 'font-semibold text-brand-light' : 'text-brand-muted'
             }`}
           >
             {step.label}
@@ -95,7 +95,7 @@ export default function OnboardingLayout() {
           backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(0,149,246,0.06) 0%, transparent 50%), radial-gradient(circle at 80% 50%, rgba(138,43,226,0.04) 0%, transparent 50%)',
         } as any}
       >
-        <View className="flex-row w-[680px] rounded-2xl border border-brand-border bg-brand-elevated overflow-hidden">
+        <View className="w-[680px] flex-row overflow-hidden rounded-2xl border border-brand-border bg-brand-elevated">
           <DesktopStepper />
           <View className="flex-1 p-10">
             <Stack

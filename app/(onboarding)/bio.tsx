@@ -68,14 +68,14 @@ export default function BioStep() {
         <VStack className="w-full" space="lg">
           <VStack space="xs">
             <Heading size="xl" className="text-brand-light">About you</Heading>
-            <Text className="text-[14px] text-brand-muted leading-[20px]">
+            <Text className="text-[14px] leading-[20px] text-brand-muted">
               Tell people a little about yourself.
             </Text>
           </VStack>
 
           {error && (
             <View className="rounded-xl bg-red-500/10 px-4 py-3">
-              <Text className="text-[13px] text-brand-red text-center">{error}</Text>
+              <Text className="text-center text-[13px] text-brand-red">{error}</Text>
             </View>
           )}
 
@@ -89,7 +89,7 @@ export default function BioStep() {
               autoCapitalize="words"
               returnKeyType="next"
             />
-            <Text className="text-[11px] text-brand-muted mt-1 ml-1">
+            <Text className="ml-1 mt-1 text-[11px] text-brand-muted">
               {displayName.length}/{MAX_NAME_LENGTH}
             </Text>
           </View>
@@ -104,7 +104,7 @@ export default function BioStep() {
               autoCapitalize="sentences"
               returnKeyType="next"
             />
-            <Text className="text-[11px] text-brand-muted mt-1 ml-1">
+            <Text className="ml-1 mt-1 text-[11px] text-brand-muted">
               {bio.length}/{MAX_BIO_LENGTH}
             </Text>
           </View>

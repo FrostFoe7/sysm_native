@@ -1,6 +1,6 @@
 // app/(tabs)/explore.tsx
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { FlatList, TextInput, Pressable, Platform, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ScreenLayout } from '@/components/ScreenLayout';
@@ -52,8 +52,6 @@ export default function ExploreScreen() {
   const {
     data: exploreFeed,
     isLoading: exploreLoading,
-    refresh: refreshExplore,
-    handleLike: exploreLike,
   } = useExploreFeed();
 
   // Search results (only when query is non-empty)
@@ -101,8 +99,8 @@ export default function ExploreScreen() {
           }
         }
         setSearchData(items);
-      } catch (error) {
-        console.error('Search failed:', error);
+      } catch {
+        console.error('Search failed');
       } finally {
         if (!cancelled) setIsSearching(false);
       }
@@ -112,21 +110,25 @@ export default function ExploreScreen() {
   }, [query, refreshKey, likedMap, repostMap, followMap]);
 
   // Build explore list from server-ranked feed (non-search)
-  const exploreListData: ExploreListItem[] = query.trim()
-    ? searchData
-    : exploreFeed.length > 0
-      ? [
-          { type: 'section-header' as const, title: 'Discover' },
-          ...exploreFeed
-            .filter((item: RankedExploreItem) => item.content_type === 'thread' && item.thread)
-            .map((item: RankedExploreItem) => ({
-              type: 'thread' as const,
-              thread: item.thread!,
-              isLiked: item.is_liked ?? likedMap[item.content_id] ?? false,
-              isReposted: repostMap[item.content_id] ?? false,
-            })),
-        ]
-      : [];
+  const exploreListData: ExploreListItem[] = useMemo(() => {
+    if (query.trim()) {
+      return searchData;
+    }
+    if (exploreFeed.length > 0) {
+      return [
+        { type: 'section-header' as const, title: 'Discover' },
+        ...exploreFeed
+          .filter((item: RankedExploreItem) => item.content_type === 'thread' && item.thread)
+          .map((item: RankedExploreItem) => ({
+            type: 'thread' as const,
+            thread: item.thread!,
+            isLiked: item.is_liked ?? likedMap[item.content_id] ?? false,
+            isReposted: repostMap[item.content_id] ?? false,
+          })),
+      ];
+    }
+    return [];
+  }, [query, searchData, exploreFeed, likedMap, repostMap]);
 
   const isLoading = query.trim() ? isSearching : exploreLoading;
 
@@ -135,7 +137,7 @@ export default function ExploreScreen() {
     setLiked(threadId, !wasLiked);
     try {
       await ThreadService.toggleLike(threadId);
-    } catch (error) {
+    } catch {
       setLiked(threadId, wasLiked);
     }
   }, [likedMap, setLiked]);
@@ -145,7 +147,7 @@ export default function ExploreScreen() {
     setReposted(threadId, !wasReposted);
     try {
       await ThreadService.toggleRepost(threadId);
-    } catch (error) {
+    } catch {
       setReposted(threadId, wasReposted);
     }
   }, [repostMap, setReposted]);
@@ -156,7 +158,7 @@ export default function ExploreScreen() {
     try {
       const result = await UserService.toggleFollow(userId);
       setFollowing(userId, result.following);
-    } catch (error) {
+    } catch {
       setFollowing(userId, wasFollowing);
     }
   }, [followMap, setFollowing]);
@@ -179,7 +181,8 @@ export default function ExploreScreen() {
         .map((d) => d.thread);
       setOverflowThread(allThreads.find((t) => t.id === threadId) ?? null);
     },
-    [exploreListData],
+    [exploreListData]
+    // Note: dependencies needed for stability
   );
 
   const handleThreadDeleted = useCallback((threadId: string) => {

@@ -83,14 +83,14 @@ export default function InterestsStep() {
       <VStack className="w-full" space="lg">
         <VStack space="xs">
           <Heading size="xl" className="text-brand-light">What are you into?</Heading>
-          <Text className="text-[14px] text-brand-muted leading-[20px]">
+          <Text className="text-[14px] leading-[20px] text-brand-muted">
             Pick at least {MIN_INTERESTS} topics to personalize your feed.
           </Text>
         </VStack>
 
         {error && (
           <View className="rounded-xl bg-red-500/10 px-4 py-3">
-            <Text className="text-[13px] text-brand-red text-center">{error}</Text>
+            <Text className="text-center text-[13px] text-brand-red">{error}</Text>
           </View>
         )}
 
@@ -102,16 +102,16 @@ export default function InterestsStep() {
               <Pressable
                 key={option.id}
                 onPress={() => toggle(option.id)}
-                className={`flex-row items-center gap-1.5 px-4 py-2.5 rounded-full border ${
+                className={`flex-row items-center gap-1.5 rounded-full border px-4 py-2.5 ${
                   isSelected
-                    ? 'bg-brand-blue/15 border-brand-blue'
-                    : 'bg-[#1a1a1a] border-brand-border'
+                    ? 'border-brand-blue bg-brand-blue/15'
+                    : 'border-brand-border bg-[#1a1a1a]'
                 }`}
               >
                 <Text className="text-[15px]">{option.emoji}</Text>
                 <Text
                   className={`text-[14px] ${
-                    isSelected ? 'text-brand-blue font-semibold' : 'text-brand-light'
+                    isSelected ? 'font-semibold text-brand-blue' : 'text-brand-light'
                   }`}
                 >
                   {option.label}
@@ -123,7 +123,7 @@ export default function InterestsStep() {
         </View>
 
         {/* Selection count */}
-        <Text className="text-[13px] text-brand-muted text-center">
+        <Text className="text-center text-[13px] text-brand-muted">
           {selected.length} selected{selected.length < MIN_INTERESTS ? ` (${MIN_INTERESTS - selected.length} more)` : ''}
         </Text>
 

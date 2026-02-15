@@ -52,7 +52,7 @@ export default function AvatarStep() {
       <VStack className="w-full" space="lg">
         <VStack space="xs">
           <Heading size="xl" className="text-brand-light">Add a profile photo</Heading>
-          <Text className="text-[14px] text-brand-muted leading-[20px]">
+          <Text className="text-[14px] leading-[20px] text-brand-muted">
             Choose a photo so people can recognize you.
           </Text>
         </VStack>
@@ -62,11 +62,11 @@ export default function AvatarStep() {
           {selectedUrl ? (
             <Image
               source={{ uri: selectedUrl }}
-              className="w-28 h-28 rounded-full"
+              className="size-28 rounded-full"
               style={{ backgroundColor: '#1a1a1a' }}
             />
           ) : (
-            <View className="w-28 h-28 rounded-full bg-[#1a1a1a] items-center justify-center border-2 border-dashed border-brand-border">
+            <View className="size-28 items-center justify-center rounded-full border-2 border-dashed border-brand-border bg-[#1a1a1a]">
               <Camera size={32} color="#666" />
             </View>
           )}
@@ -74,14 +74,14 @@ export default function AvatarStep() {
 
         {error && (
           <View className="rounded-xl bg-red-500/10 px-4 py-3">
-            <Text className="text-[13px] text-brand-red text-center">{error}</Text>
+            <Text className="text-center text-[13px] text-brand-red">{error}</Text>
           </View>
         )}
 
         {/* Avatar options grid */}
         <View>
-          <Text className="text-[13px] text-brand-muted mb-3">Choose an avatar</Text>
-          <View className="flex-row flex-wrap gap-3 justify-center">
+          <Text className="mb-3 text-[13px] text-brand-muted">Choose an avatar</Text>
+          <View className="flex-row flex-wrap justify-center gap-3">
             {AVATAR_OPTIONS.map((url) => (
               <Pressable
                 key={url}
@@ -90,13 +90,13 @@ export default function AvatarStep() {
               >
                 <Image
                   source={{ uri: url }}
-                  className={`w-16 h-16 rounded-full ${
+                  className={`size-16 rounded-full ${
                     selectedUrl === url ? 'border-2 border-brand-blue' : 'border border-brand-border'
                   }`}
                   style={{ backgroundColor: '#1a1a1a' }}
                 />
                 {selectedUrl === url && (
-                  <View className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-brand-blue items-center justify-center">
+                  <View className="absolute -bottom-0.5 -right-0.5 size-5 items-center justify-center rounded-full bg-brand-blue">
                     <Check size={12} color="#fff" />
                   </View>
                 )}

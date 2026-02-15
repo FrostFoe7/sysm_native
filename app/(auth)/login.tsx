@@ -62,7 +62,7 @@ export default function LoginScreen() {
         <View className="items-center gap-3">
           <Pressable onPress={() => router.push('/(auth)/signup')}>
             <HStack className="items-center" space="xs">
-              <Text className="text-[14px] text-brand-muted">Don't have an account?</Text>
+              <Text className="text-[14px] text-brand-muted">Don&apos;t have an account?</Text>
               <Text className="text-[14px] font-semibold text-brand-blue">Sign up</Text>
             </HStack>
           </Pressable>
@@ -72,7 +72,7 @@ export default function LoginScreen() {
       {/* Error banner */}
       {errors.general && (
         <View className="rounded-xl bg-red-500/10 px-4 py-3">
-          <Text className="text-[13px] text-brand-red text-center">{errors.general}</Text>
+          <Text className="text-center text-[13px] text-brand-red">{errors.general}</Text>
         </View>
       )}
 
@@ -120,7 +120,7 @@ export default function LoginScreen() {
       {/* Divider */}
       <HStack className="items-center" space="md">
         <Divider className="flex-1 bg-brand-border" />
-        <Text className="text-[12px] text-brand-muted uppercase tracking-wider">or</Text>
+        <Text className="text-[12px] uppercase tracking-wider text-brand-muted">or</Text>
         <Divider className="flex-1 bg-brand-border" />
       </HStack>
 

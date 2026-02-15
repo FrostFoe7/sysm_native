@@ -1,9 +1,8 @@
 // app/conversation/[id].tsx
 
-import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { FlatList, View, Pressable, Platform, KeyboardAvoidingView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from '@/components/ui/safe-area-view';
 import { Text } from '@/components/ui/text';
 import { HStack } from '@/components/ui/hstack';
@@ -12,7 +11,6 @@ import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { MessageBubble, DateSeparator } from '@/components/MessageBubble';
 import { ChatComposer } from '@/components/ChatComposer';
 import { ChatSkeleton } from '@/components/skeletons';
-import { formatRelativeTime } from '@/services/format';
 import {
   ArrowLeft,
   Phone,
@@ -168,7 +166,7 @@ export default function ChatScreen() {
               }}
               className="flex-1 flex-row items-center active:opacity-80"
             >
-              <Avatar size="sm" className="h-[36px] w-[36px]">
+              <Avatar size="sm" className="size-[36px]">
                 <AvatarImage source={{ uri: displayAvatar }} />
               </Avatar>
               <VStack className="ml-2.5 flex-1">

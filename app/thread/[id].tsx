@@ -1,6 +1,6 @@
 // app/thread/[id].tsx
 
-import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import {
   FlatList,
   TextInput,

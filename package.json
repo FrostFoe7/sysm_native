@@ -9,7 +9,9 @@
     "build": "expo export --platform web",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "typecheck": "exec tsc --noEmit",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@expo/html-elements": "^0.12.5",

@@ -9,7 +9,7 @@ import { HStack } from '@/components/ui/hstack';
 import { Text } from '@/components/ui/text';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Divider } from '@/components/ui/divider';
-import { BadgeCheck, TrendingUp, UserPlus } from 'lucide-react-native';
+import { BadgeCheck, TrendingUp } from 'lucide-react-native';
 import { UserService } from '@/services/user.service';
 import { ThreadService } from '@/services/thread.service';
 import { analytics } from '@/services/analytics.service';
@@ -21,7 +21,7 @@ function RightColumnSkeleton() {
   return (
     <VStack space="lg" className="p-4">
       <HStack className="items-center" space="md">
-        <Skeleton variant="circular" className={`h-11 w-11 ${BONE_COLOR}`} />
+        <Skeleton variant="circular" className={`size-11 ${BONE_COLOR}`} />
         <VStack space="xs" className="flex-1">
           <Skeleton variant="rounded" className={`h-3 w-24 ${BONE_COLOR}`} />
           <Skeleton variant="rounded" className={`h-2.5 w-16 ${BONE_COLOR}`} />
@@ -31,7 +31,7 @@ function RightColumnSkeleton() {
       <Skeleton variant="rounded" className={`h-3 w-32 ${BONE_COLOR}`} />
       {[1, 2, 3].map((i) => (
         <HStack key={i} className="items-center" space="md">
-          <Skeleton variant="circular" className={`h-9 w-9 ${BONE_COLOR}`} />
+          <Skeleton variant="circular" className={`size-9 ${BONE_COLOR}`} />
           <VStack space="xs" className="flex-1">
             <Skeleton variant="rounded" className={`h-3 w-20 ${BONE_COLOR}`} />
             <Skeleton variant="rounded" className={`h-2.5 w-14 ${BONE_COLOR}`} />
@@ -110,7 +110,7 @@ export function DesktopRightColumn() {
               className="active:opacity-80"
             >
               <HStack className="items-center px-2" space="md">
-                <Avatar size="md" className="h-11 w-11">
+                <Avatar size="md" className="size-11">
                   <AvatarImage source={{ uri: currentUser.avatar_url }} />
                 </Avatar>
                 <VStack className="flex-1">
@@ -142,11 +142,11 @@ export function DesktopRightColumn() {
             {suggestions.slice(0, 5).map((user) => (
               <HStack key={user.id} className="items-center" space="sm">
                 <Pressable onPress={() => handleProfilePress(user.id)}>
-                  <Avatar size="sm" className="h-9 w-9">
+                  <Avatar size="sm" className="size-9">
                     <AvatarImage source={{ uri: user.avatar_url }} />
                   </Avatar>
                 </Pressable>
-                <VStack className="flex-1 min-w-0">
+                <VStack className="min-w-0 flex-1">
                   <Pressable onPress={() => handleProfilePress(user.id)}>
                     <HStack className="items-center" space="xs">
                       <Text className="text-[13px] font-semibold text-brand-light" numberOfLines={1} style={{ flexShrink: 1 }}>
@@ -191,7 +191,7 @@ export function DesktopRightColumn() {
                   >
                     <HStack className="items-start" space="sm">
                       <Text className="text-xs font-bold text-brand-muted">{idx + 1}</Text>
-                      <VStack className="flex-1 min-w-0" space="xs">
+                      <VStack className="min-w-0 flex-1" space="xs">
                         <Text className="text-[13px] text-brand-light" numberOfLines={2}>
                           {item.content.slice(0, 80)}
                           {item.content.length > 80 ? '...' : ''}
@@ -220,10 +220,10 @@ export function DesktopRightColumn() {
 
           {/* Footer */}
           <VStack className="px-2 pt-2" space="xs">
-            <Text className="text-[10px] text-brand-muted/50">
+            <Text className="text-2xs text-brand-muted/50">
               About · Help · Press · API · Jobs · Privacy · Terms
             </Text>
-            <Text className="text-[10px] text-brand-muted/50">
+            <Text className="text-2xs text-brand-muted/50">
               © 2026 Sysm from Meta
             </Text>
           </VStack>

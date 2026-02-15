@@ -3,7 +3,6 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { FlatList, Pressable, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useFocusEffect } from '@react-navigation/native';
 import { ScreenLayout } from '@/components/ScreenLayout';
 import { AnimatedListItem } from '@/components/AnimatedListItem';
 import { AnimatedPressable } from '@/components/AnimatedPressable';
@@ -51,7 +50,7 @@ export default function ActivityScreen() {
     try {
       const result = await UserService.toggleFollow(userId);
       setFollowing(userId, result.following);
-    } catch (error) {
+    } catch {
       setFollowing(userId, wasFollowing);
     }
   }, [followMap, setFollowing]);

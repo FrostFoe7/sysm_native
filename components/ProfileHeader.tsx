@@ -40,9 +40,9 @@ export function ProfileHeader({
   onFollowingPress,
 }: ProfileHeaderProps) {
   return (
-    <VStack className="w-full flex-shrink-0 px-4 pt-4 pb-4" space="md">
+    <VStack className="w-full shrink-0 p-4" space="md">
       {/* Top row: name + avatar */}
-      <HStack className="items-start justify-between w-full gap-3">
+      <HStack className="w-full items-start justify-between gap-3">
         <VStack className="flex-1 gap-1">
           <Heading
             size="xl"
@@ -51,7 +51,7 @@ export function ProfileHeader({
           >
             {user.display_name}
           </Heading>
-          <HStack className="items-center gap-1 flex-wrap">
+          <HStack className="flex-wrap items-center gap-1">
             <Text className="text-[15px] text-brand-light" numberOfLines={1}>
               @{user.username}
             </Text>

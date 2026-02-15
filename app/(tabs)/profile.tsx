@@ -3,7 +3,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { FlatList, Pressable, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useFocusEffect } from '@react-navigation/native';
 import { ScreenLayout } from '@/components/ScreenLayout';
 import { ProfileHeader } from '@/components/ProfileHeader';
 import { ThreadCard } from '@/components/ThreadCard';

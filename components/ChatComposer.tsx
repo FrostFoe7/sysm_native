@@ -5,7 +5,7 @@ import { Pressable, TextInput, View, Platform, Animated } from 'react-native';
 import { HStack } from '@/components/ui/hstack';
 import { VStack } from '@/components/ui/vstack';
 import { Text } from '@/components/ui/text';
-import { Send, Image as ImageIcon, Mic, Smile, X, Camera, Square, Trash2 } from 'lucide-react-native';
+import { Send, Mic, Smile, X, Camera, Trash2 } from 'lucide-react-native';
 import { MAX_MESSAGE_LENGTH, REACTION_EMOJIS } from '@/constants/app';
 import { VoiceService } from '@/services/voice.service';
 import type { MessageWithSender } from '@/types/types';
@@ -145,7 +145,7 @@ export function ChatComposer({
   if (isRecording) {
     return (
       <View className="border-t border-brand-border bg-brand-dark">
-        <HStack className="items-center px-3 py-3" space="sm">
+        <HStack className="items-center p-3" space="sm">
           {/* Cancel button */}
           <Pressable
             onPress={cancelVoiceRecording}
@@ -164,7 +164,7 @@ export function ChatComposer({
               {waveformLevels.map((level, i) => (
                 <View
                   key={i}
-                  className="mx-[1px] rounded-full bg-brand-blue"
+                  className="mx-px rounded-full bg-brand-blue"
                   style={{
                     width: 3,
                     height: Math.max(4, level * 24),

@@ -55,7 +55,7 @@ export function FloatingInput({
     <View>
       <Pressable
         onPress={() => inputRef.current?.focus()}
-        className={`relative rounded-xl border ${borderColor} bg-[#1a1a1a] px-4 pt-5 pb-2`}
+        className={`relative rounded-xl border ${borderColor} bg-[#1a1a1a] px-4 pb-2 pt-5`}
       >
         {/* Floating label */}
         <Text
@@ -90,7 +90,7 @@ export function FloatingInput({
 
         {/* Right element: password toggle or custom */}
         {(secureTextEntry || rightElement) && (
-          <View className="absolute right-3 top-0 bottom-0 justify-center">
+          <View className="absolute inset-y-0 right-3 justify-center">
             {secureTextEntry ? (
               <Pressable onPress={() => setShowPassword((v) => !v)} hitSlop={12}>
                 {showPassword ? (
@@ -108,7 +108,7 @@ export function FloatingInput({
 
       {/* Error message */}
       {error && (
-        <Text className="mt-1 ml-1 text-[12px] text-brand-red">{error}</Text>
+        <Text className="ml-1 mt-1 text-[12px] text-brand-red">{error}</Text>
       )}
     </View>
   );

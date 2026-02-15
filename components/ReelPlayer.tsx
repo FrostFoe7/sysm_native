@@ -140,12 +140,6 @@ export function ReelPlayer({ reel, isActive, isMuted, onMuteToggle }: ReelPlayer
     setIsPaused(true);
   }, [player]);
 
-  const handlePressOut = useCallback(() => {
-    if (isPaused && player && isActive) {
-      // Resume on release if we were long-pressing
-    }
-  }, [isPaused, player, isActive]);
-
   const handleCommentOpen = useCallback(() => {
     setCommentSheetOpen(true);
   }, []);

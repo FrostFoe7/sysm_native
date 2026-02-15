@@ -3,7 +3,6 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { FlatList, RefreshControl, Platform, View, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useFocusEffect } from '@react-navigation/native';
 import { ScreenLayout } from '@/components/ScreenLayout';
 import { ThreadCard } from '@/components/ThreadCard';
 import { AnimatedListItem } from '@/components/AnimatedListItem';
@@ -16,7 +15,6 @@ import { Fab, FabIcon } from '@/components/ui/fab';
 import { SquarePen } from 'lucide-react-native';
 import { FeedSkeleton } from '@/components/skeletons';
 import { FEED_TABS } from '@/constants/app';
-import { DESKTOP_BREAKPOINT } from '@/constants/ui';
 import { useThreadsFeed } from '@/hooks/use-threads';
 import { useInteractionStore } from '@/store/useInteractionStore';
 import type { ThreadWithAuthor } from '@/types/types';
@@ -120,7 +118,7 @@ export default function HomeScreen() {
         />
       </View>
     ),
-    [activeTab],
+    [activeTab, handleTabSwitch],
   );
 
   const renderEmpty = useCallback(

@@ -73,7 +73,7 @@ function useProtectedRoute() {
     if (inAuth || inOnboarding) {
       router.replace('/(tabs)');
     }
-  }, [isInitialized, session, user, segments]);
+  }, [isInitialized, session, user, segments, router]);
 }
 
 // ─── Root layout ────────────────────────────────────────────────────────────────
@@ -87,7 +87,7 @@ export default function RootLayout() {
   // Initialize auth on mount
   useEffect(() => {
     initialize();
-  }, []);
+  }, [initialize]);
 
   useProtectedRoute();
 
@@ -127,7 +127,7 @@ export default function RootLayout() {
     return (
       <GluestackUIProvider mode="dark">
         <View className="flex-1 items-center justify-center bg-brand-dark">
-          <Text className="text-[36px] font-extrabold tracking-tighter text-brand-light mb-4">
+          <Text className="mb-4 text-[36px] font-extrabold tracking-tighter text-brand-light">
             sysm
           </Text>
           <ActivityIndicator color="#0095f6" size="small" />

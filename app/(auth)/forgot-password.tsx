@@ -53,7 +53,7 @@ export default function ForgotPasswordScreen() {
         footer={
           <View className="items-center gap-3">
             <Pressable onPress={() => setSent(false)}>
-              <Text className="text-[14px] text-brand-blue font-semibold">Use a different email</Text>
+              <Text className="text-[14px] font-semibold text-brand-blue">Use a different email</Text>
             </Pressable>
             <Pressable onPress={() => router.push('/(auth)/login')}>
               <Text className="text-[14px] text-brand-muted">Back to sign in</Text>
@@ -62,10 +62,10 @@ export default function ForgotPasswordScreen() {
         }
       >
         <View className="items-center py-6">
-          <View className="w-16 h-16 rounded-full bg-brand-blue/10 items-center justify-center mb-4">
+          <View className="mb-4 size-16 items-center justify-center rounded-full bg-brand-blue/10">
             <Mail size={28} color="#0095f6" />
           </View>
-          <Text className="text-[14px] text-brand-muted text-center leading-[20px] max-w-[280px]">
+          <Text className="max-w-[280px] text-center text-[14px] leading-[20px] text-brand-muted">
             Click the link in your email to reset your password. The link expires in 1 hour.
           </Text>
         </View>
@@ -98,7 +98,7 @@ export default function ForgotPasswordScreen() {
     >
       {error ? (
         <View className="rounded-xl bg-red-500/10 px-4 py-3">
-          <Text className="text-[13px] text-brand-red text-center">{error}</Text>
+          <Text className="text-center text-[13px] text-brand-red">{error}</Text>
         </View>
       ) : null}
 

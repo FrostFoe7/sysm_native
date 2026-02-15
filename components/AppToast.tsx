@@ -14,8 +14,6 @@ import { Text } from '@/components/ui/text';
 import {
   Check,
 } from 'lucide-react-native';
-import type { LucideIcon } from 'lucide-react-native';
-import { TOAST_ICONS } from '@/constants/icons';
 
 interface ToastItem {
   id: number;

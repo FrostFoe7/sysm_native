@@ -1,4 +1,4 @@
-import { StyleSheet, type TextProps } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { SafeText } from '@/utils/animatedWebSafe';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import type { ThemedTextProps } from '@/types/types';

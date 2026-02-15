@@ -34,8 +34,8 @@ interface FollowersModalProps {
 
 function UserRowSkeleton() {
   return (
-    <HStack className="px-4 py-3 items-center" space="md">
-      <Skeleton variant="circular" className={`h-11 w-11 ${BONE_COLOR}`} />
+    <HStack className="items-center px-4 py-3" space="md">
+      <Skeleton variant="circular" className={`size-11 ${BONE_COLOR}`} />
       <VStack className="flex-1" space="xs">
         <Skeleton variant="rounded" className={`h-3.5 w-24 ${BONE_COLOR}`} />
         <Skeleton variant="rounded" className={`h-3 w-16 ${BONE_COLOR}`} />
@@ -52,12 +52,6 @@ export function FollowersModal({ isOpen, onClose, userId, initialTab = 'follower
   const [followers, setFollowers] = useState<(User & { isFollowedByMe: boolean })[]>([]);
   const [following, setFollowing] = useState<(User & { isFollowedByMe: boolean })[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    setActiveTab(initialTab);
-    loadData();
-  }, [isOpen, userId, initialTab]);
 
   const loadData = useCallback(async () => {
     setIsLoading(true);
@@ -89,6 +83,12 @@ export function FollowersModal({ isOpen, onClose, userId, initialTab = 'follower
     }
   }, [userId, currentUserId]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    setActiveTab(initialTab);
+    loadData();
+  }, [isOpen, userId, initialTab, loadData]);
+
   const handleFollowToggle = useCallback(async (targetUserId: string) => {
     const result = await UserService.toggleFollow(targetUserId);
     analytics.track(result.following ? 'follow' : 'unfollow', { contentId: targetUserId });
@@ -115,11 +115,11 @@ export function FollowersModal({ isOpen, onClose, userId, initialTab = 'follower
         onPress={() => handleProfilePress(item.id)}
         className="active:bg-white/5"
       >
-        <HStack className="px-4 py-3 items-center" space="md">
-          <Avatar size="md" className="h-11 w-11">
+        <HStack className="items-center px-4 py-3" space="md">
+          <Avatar size="md" className="size-11">
             <AvatarImage source={{ uri: item.avatar_url }} />
           </Avatar>
-          <VStack className="flex-1 min-w-0">
+          <VStack className="min-w-0 flex-1">
             <HStack className="items-center" space="xs">
               <Text className="text-[14px] font-semibold text-brand-light" numberOfLines={1} style={{ flexShrink: 1 }}>
                 {item.username}
@@ -146,7 +146,7 @@ export function FollowersModal({ isOpen, onClose, userId, initialTab = 'follower
         </HStack>
       </Pressable>
     );
-  }, [handleFollowToggle, handleProfilePress]);
+  }, [handleFollowToggle, handleProfilePress, currentUserId]);
 
   if (!isOpen) return null;
 

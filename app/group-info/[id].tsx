@@ -1,7 +1,7 @@
 // app/group-info/[id].tsx
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { FlatList, Pressable, View, TextInput, Alert, Platform, ScrollView } from 'react-native';
+import { Pressable, View, TextInput, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from '@/components/ui/safe-area-view';
 import { Text } from '@/components/ui/text';
@@ -19,15 +19,13 @@ import {
   Pin,
   UserPlus,
   LogOut,
-  Shield,
   Trash2,
   Image as ImageIcon,
-  Users,
   MoreHorizontal,
 } from 'lucide-react-native';
 import { ChatService } from '@/services/chat.service';
 import { useAuthStore } from '@/store/useAuthStore';
-import type { ConversationWithDetails, User, ConversationParticipant } from '@/types/types';
+import type { ConversationWithDetails } from '@/types/types';
 
 export default function GroupInfoScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -127,7 +125,7 @@ export default function GroupInfoScreen() {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
         {/* Group avatar + name */}
         <VStack className="items-center px-4 pb-4 pt-6">
-          <Avatar size="xl" className="mb-3 h-[80px] w-[80px]">
+          <Avatar size="xl" className="mb-3 size-[80px]">
             <AvatarImage
               source={{ uri: conv.avatar_url ?? 'https://i.pravatar.cc/150?u=group' }}
             />
@@ -167,7 +165,7 @@ export default function GroupInfoScreen() {
         <Divider className="bg-brand-border" />
 
         {/* Action buttons */}
-        <HStack className="justify-center gap-4 px-4 py-4">
+        <HStack className="justify-center gap-4 p-4">
           <Pressable onPress={handleToggleMute} className="items-center" style={{ width: 72 }}>
             <View className="mb-1.5 size-[44px] items-center justify-center rounded-full bg-[#262626]">
               {conv.is_muted ? (
@@ -226,7 +224,7 @@ export default function GroupInfoScreen() {
               className="active:bg-white/5"
             >
               <HStack className="items-center py-2.5" space="md">
-                <Avatar size="sm" className="h-[40px] w-[40px]">
+                <Avatar size="sm" className="size-[40px]">
                   <AvatarImage source={{ uri: p.user.avatar_url }} />
                 </Avatar>
                 <VStack className="flex-1">
@@ -245,7 +243,7 @@ export default function GroupInfoScreen() {
                 </VStack>
                 {p.role === 'admin' && (
                   <View className="rounded-full bg-brand-blue/15 px-2 py-0.5">
-                    <Text className="text-[10px] font-semibold text-brand-blue">Admin</Text>
+                    <Text className="text-2xs font-semibold text-brand-blue">Admin</Text>
                   </View>
                 )}
                 {isAdmin && p.user_id !== currentUserId && (
@@ -274,7 +272,7 @@ export default function GroupInfoScreen() {
         {/* Leave group */}
         <Pressable
           onPress={handleLeave}
-          className="flex-row items-center px-4 py-4 active:bg-white/5"
+          className="flex-row items-center p-4 active:bg-white/5"
         >
           <LogOut size={20} color="brand-red" />
           <Text className="ml-3 text-[15px] font-medium text-brand-red">
@@ -286,7 +284,7 @@ export default function GroupInfoScreen() {
 
         {/* Delete group (admin only) */}
         {isAdmin && (
-          <Pressable className="flex-row items-center px-4 py-4 active:bg-white/5">
+          <Pressable className="flex-row items-center p-4 active:bg-white/5">
             <Trash2 size={20} color="brand-red" />
             <Text className="ml-3 text-[15px] font-medium text-brand-red">
               Delete Group

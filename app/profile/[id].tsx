@@ -1,13 +1,8 @@
 // app/profile/[id].tsx
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { FlatList, View, Platform } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useFocusEffect } from '@react-navigation/native';
-import {
-  useSharedValue,
-  withSpring,
-} from '@/utils/animatedWebSafe';
 import { ScreenLayout } from '@/components/ScreenLayout';
 import { ProfileHeader } from '@/components/ProfileHeader';
 import { ThreadCard } from '@/components/ThreadCard';
@@ -20,7 +15,6 @@ import { ThreadService } from '@/services/thread.service';
 import type { ThreadWithAuthor } from '@/types/types';
 import { ProfileHeaderSkeleton, FeedSkeleton, TabBarSkeleton } from '@/components/skeletons';
 import { PROFILE_TABS } from '@/constants/app';
-import { SPRING_CONFIG } from '@/constants/ui';
 import { useUserProfile } from '@/hooks/use-user';
 import { useInteractionStore } from '@/store/useInteractionStore';
 

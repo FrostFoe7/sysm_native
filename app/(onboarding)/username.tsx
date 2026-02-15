@@ -2,7 +2,7 @@
 // Step 1: Choose a unique username
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { View, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { Text } from '@/components/ui/text';
 import { Heading } from '@/components/ui/heading';
@@ -120,7 +120,7 @@ export default function UsernameStep() {
         <VStack className="w-full" space="lg">
           <VStack space="xs">
             <Heading size="xl" className="text-brand-light">Pick a username</Heading>
-            <Text className="text-[14px] text-brand-muted leading-[20px]">
+            <Text className="text-[14px] leading-[20px] text-brand-muted">
               This is how people will find and mention you on sysm.
             </Text>
           </VStack>
@@ -140,7 +140,7 @@ export default function UsernameStep() {
 
           {username.length > 0 && !error && (
             <Text className="text-[13px] text-brand-muted">
-              sysm.com/<Text className="text-brand-light font-medium">{username}</Text>
+              sysm.com/<Text className="font-medium text-brand-light">{username}</Text>
             </Text>
           )}
 

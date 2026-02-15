@@ -89,7 +89,7 @@ export default function FollowSuggestionsStep() {
       <VStack className="w-full" space="lg">
         <VStack space="xs">
           <Heading size="xl" className="text-brand-light">Suggested for you</Heading>
-          <Text className="text-[14px] text-brand-muted leading-[20px]">
+          <Text className="text-[14px] leading-[20px] text-brand-muted">
             Follow accounts to build your feed. You can always change this later.
           </Text>
         </VStack>
@@ -109,16 +109,16 @@ export default function FollowSuggestionsStep() {
               return (
                 <HStack
                   key={user.id}
-                  className="items-center py-3 px-4 rounded-xl bg-[#1a1a1a] border border-brand-border"
+                  className="items-center rounded-xl border border-brand-border bg-[#1a1a1a] px-4 py-3"
                   space="md"
                 >
                   <Image
                     source={{ uri: user.avatar_url || 'https://i.pravatar.cc/100' }}
-                    className="w-12 h-12 rounded-full"
+                    className="size-12 rounded-full"
                     style={{ backgroundColor: '#2a2a2a' }}
                   />
 
-                  <View className="flex-1 min-w-0">
+                  <View className="min-w-0 flex-1">
                     <Text className="text-[14px] font-semibold text-brand-light" numberOfLines={1}>
                       {user.display_name || user.username}
                     </Text>
@@ -126,7 +126,7 @@ export default function FollowSuggestionsStep() {
                       @{user.username}
                     </Text>
                     {user.bio ? (
-                      <Text className="text-[12px] text-brand-muted mt-0.5" numberOfLines={1}>
+                      <Text className="mt-0.5 text-[12px] text-brand-muted" numberOfLines={1}>
                         {user.bio}
                       </Text>
                     ) : null}
@@ -134,7 +134,7 @@ export default function FollowSuggestionsStep() {
 
                   <Pressable
                     onPress={() => toggleFollow(user.id)}
-                    className={`px-4 py-2 rounded-lg ${
+                    className={`rounded-lg px-4 py-2 ${
                       isFollowed
                         ? 'bg-brand-border'
                         : 'bg-brand-blue'
@@ -175,7 +175,7 @@ export default function FollowSuggestionsStep() {
           </Button>
 
           {followed.size === 0 && (
-            <Text className="text-[12px] text-brand-muted text-center">
+            <Text className="text-center text-[12px] text-brand-muted">
               You can follow people later from your feed
             </Text>
           )}

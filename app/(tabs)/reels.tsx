@@ -1,7 +1,7 @@
 // app/(tabs)/reels.tsx
 // Instagram Reels: fullscreen vertical paging feed
 
-import React, { useCallback, useRef, useState, useMemo, useLayoutEffect, useEffect } from 'react';
+import React, { useCallback, useRef, useLayoutEffect, useEffect } from 'react';
 import {
   View,
   FlatList,
@@ -15,7 +15,6 @@ import { useRouter } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { Text } from '@/components/ui/text';
 import { ReelPlayer } from '@/components/ReelPlayer';
-import { ReelSkeleton } from '@/components/ReelSkeleton';
 import { DESKTOP_BREAKPOINT } from '@/constants/ui';
 import { ArrowLeft } from 'lucide-react-native';
 import type { ReelWithAuthor } from '@/types/types';
@@ -29,7 +28,6 @@ export default function ReelsScreen() {
 
   const {
     data: reels,
-    isLoading,
     activeIndex,
     setActiveIndex,
     isMuted,

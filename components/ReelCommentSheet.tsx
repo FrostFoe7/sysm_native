@@ -55,7 +55,7 @@ function CommentItem({ comment }: { comment: ReelCommentWithAuthor }) {
             {formatRelativeTime(comment.createdAt)}
           </Text>
         </HStack>
-        <Text className="text-[14px] text-[#d0d0d0] leading-[20px]">
+        <Text className="text-[14px] leading-[20px] text-[#d0d0d0]">
           {comment.content}
         </Text>
         <HStack space="md" style={{ alignItems: 'center', marginTop: 2 }}>
@@ -75,7 +75,7 @@ function CommentItem({ comment }: { comment: ReelCommentWithAuthor }) {
             </HStack>
           </Pressable>
           <Pressable hitSlop={8}>
-            <Text className="text-[12px] text-brand-muted-alt font-medium">Reply</Text>
+            <Text className="text-[12px] font-medium text-brand-muted-alt">Reply</Text>
           </Pressable>
         </HStack>
       </VStack>
@@ -194,7 +194,7 @@ export function ReelCommentSheet({
               ListEmptyComponent={
                 <View style={{ padding: 40, alignItems: 'center' }}>
                   <Text className="text-[15px] text-brand-muted">No comments yet</Text>
-                  <Text className="text-[13px] text-[#444444] mt-1">
+                  <Text className="mt-1 text-[13px] text-[#444444]">
                     Start the conversation.
                   </Text>
                 </View>

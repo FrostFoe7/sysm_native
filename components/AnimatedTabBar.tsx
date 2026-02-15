@@ -58,7 +58,7 @@ export function AnimatedTabBar({ tabs, activeKey, onTabPress }: AnimatedTabBarPr
   }));
 
   return (
-    <View className="border-b border-brand-border z-10 bg-brand-dark" style={{ position: 'relative' }} onLayout={handleLayout}>
+    <View className="z-10 border-b border-brand-border bg-brand-dark" style={{ position: 'relative' }} onLayout={handleLayout}>
       <HStack style={{ paddingBottom: 2 }}>
         {tabs.map((tab) => (
           <Pressable

@@ -23,7 +23,7 @@ export function AuthCard({ title, subtitle, children, footer }: AuthCardProps) {
   const content = (
     <VStack className="w-full" space="lg">
       {/* Logo */}
-      <View className="items-center mb-2">
+      <View className="mb-2 items-center">
         <Text className="text-[36px] font-extrabold tracking-tighter text-brand-light">
           sysm
         </Text>
@@ -35,7 +35,7 @@ export function AuthCard({ title, subtitle, children, footer }: AuthCardProps) {
           {title}
         </Heading>
         {subtitle && (
-          <Text className="text-center text-[14px] text-brand-muted leading-[20px] max-w-[280px]">
+          <Text className="max-w-[280px] text-center text-[14px] leading-[20px] text-brand-muted">
             {subtitle}
           </Text>
         )}

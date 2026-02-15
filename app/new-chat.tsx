@@ -1,7 +1,7 @@
 // app/new-chat.tsx
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { FlatList, Pressable, View, TextInput, Platform } from 'react-native';
+import { FlatList, Pressable, View, TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from '@/components/ui/safe-area-view';
 import { Text } from '@/components/ui/text';
@@ -132,7 +132,7 @@ export default function NewChatScreen() {
           </Button>
         </HStack>
 
-        <View className="px-4 py-4">
+        <View className="p-4">
           {/* Group avatar placeholder */}
           <View className="mb-4 items-center">
             <View className="mb-2 size-[80px] items-center justify-center rounded-full bg-[#262626]">
@@ -243,9 +243,9 @@ export default function NewChatScreen() {
               <Pressable
                 key={user.id}
                 onPress={() => handleRemoveSelected(user.id)}
-                className="mb-1 flex-row items-center rounded-full bg-brand-blue/20 pl-1 pr-2 py-1"
+                className="mb-1 flex-row items-center rounded-full bg-brand-blue/20 py-1 pl-1 pr-2"
               >
-                <Avatar size="xs" className="mr-1 h-[20px] w-[20px]">
+                <Avatar size="xs" className="mr-1 size-[20px]">
                   <AvatarImage source={{ uri: user.avatar_url }} />
                 </Avatar>
                 <Text className="text-[12px] font-medium text-brand-blue">
@@ -278,7 +278,7 @@ export default function NewChatScreen() {
               className="active:bg-white/5"
             >
               <HStack className="items-center px-4 py-2.5" space="md">
-                <Avatar size="sm" className="h-[44px] w-[44px]">
+                <Avatar size="sm" className="size-[44px]">
                   <AvatarImage source={{ uri: item.avatar_url }} />
                 </Avatar>
                 <VStack className="flex-1">

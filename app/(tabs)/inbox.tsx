@@ -1,21 +1,18 @@
 // app/(tabs)/inbox.tsx
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback } from 'react';
 import { FlatList, Pressable, View, TextInput, Platform, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useFocusEffect } from '@react-navigation/native';
 import { ScreenLayout } from '@/components/ScreenLayout';
 import { ConversationRow } from '@/components/ConversationRow';
 import { Text } from '@/components/ui/text';
 import { Heading } from '@/components/ui/heading';
 import { HStack } from '@/components/ui/hstack';
 import { VStack } from '@/components/ui/vstack';
-import { Box } from '@/components/ui/box';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
-import { Divider } from '@/components/ui/divider';
 import { SafeAreaView } from '@/components/ui/safe-area-view';
-import { SquarePen, Search, ArrowLeft, Phone, Video, Info, BadgeCheck } from 'lucide-react-native';
-import { InboxSkeleton, ChatSkeleton } from '@/components/skeletons';
+import { SquarePen, Search, Phone, Video, Info, BadgeCheck } from 'lucide-react-native';
+import { InboxSkeleton } from '@/components/skeletons';
 import { DESKTOP_BREAKPOINT } from '@/constants/ui';
 import { MessageBubble, DateSeparator } from '@/components/MessageBubble';
 import { ChatComposer } from '@/components/ChatComposer';
@@ -43,7 +40,6 @@ function InlineChatPanel({
     sendVoice,
     toggleReaction,
     onTextChange,
-    loadMore,
   } = useChat(conversationId);
 
   const isGroup = details?.conversation.type === 'group';
@@ -94,7 +90,7 @@ function InlineChatPanel({
     <View className="flex-1 border-l border-brand-border bg-brand-dark">
       {/* Header */}
       <HStack className="items-center border-b border-brand-border px-4 py-3" space="sm">
-        <Avatar size="sm" className="h-[36px] w-[36px]">
+        <Avatar size="sm" className="size-[36px]">
           <AvatarImage source={{ uri: displayAvatar }} />
         </Avatar>
         <VStack className="flex-1">

@@ -54,10 +54,10 @@ export default function ResetPasswordScreen() {
         subtitle="Your password has been successfully changed"
       >
         <View className="items-center py-6">
-          <View className="w-16 h-16 rounded-full bg-green-500/10 items-center justify-center mb-4">
+          <View className="mb-4 size-16 items-center justify-center rounded-full bg-green-500/10">
             <CheckCircle size={28} color="#22c55e" />
           </View>
-          <Text className="text-[14px] text-brand-muted text-center leading-[20px]">
+          <Text className="text-center text-[14px] leading-[20px] text-brand-muted">
             You can now sign in with your new password.
           </Text>
         </View>
@@ -86,7 +86,7 @@ export default function ResetPasswordScreen() {
     >
       {errors.general && (
         <View className="rounded-xl bg-red-500/10 px-4 py-3">
-          <Text className="text-[13px] text-brand-red text-center">{errors.general}</Text>
+          <Text className="text-center text-[13px] text-brand-red">{errors.general}</Text>
         </View>
       )}
 

@@ -7,7 +7,7 @@ import { VStack } from '@/components/ui/vstack';
 import { Text } from '@/components/ui/text';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Divider } from '@/components/ui/divider';
-import { BadgeCheck, BellOff, Pin, Volume2 } from 'lucide-react-native';
+import { BadgeCheck, BellOff, Pin } from 'lucide-react-native';
 import { formatRelativeTime, formatMessagePreview } from '@/services/format';
 import { useAuthStore } from '@/store/useAuthStore';
 import type { ConversationWithDetails } from '@/types/types';
@@ -63,7 +63,7 @@ export function ConversationRow({ conversation, onPress, onLongPress }: Conversa
       <HStack className="px-4 py-3" space="md">
         {/* Avatar */}
         <View className="relative">
-          <Avatar size="md" className="h-[52px] w-[52px]">
+          <Avatar size="md" className="size-[52px]">
             <AvatarImage source={{ uri: displayAvatar }} />
           </Avatar>
           {/* Online indicator for 1:1 */}

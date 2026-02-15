@@ -6,7 +6,6 @@ import { View, Pressable, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Text } from '@/components/ui/text';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
-import { VStack } from '@/components/ui/vstack';
 import { HStack } from '@/components/ui/hstack';
 import {
   Heart,
@@ -167,7 +166,7 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
             fill={liked ? 'brand-red' : 'transparent'}
             strokeWidth={liked ? 0 : 2}
           />
-          <Text className="text-[12px] text-white font-medium mt-1">
+          <Text className="mt-1 text-[12px] font-medium text-white">
             {formatCount(likeCount)}
           </Text>
         </Pressable>
@@ -179,7 +178,7 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
           hitSlop={6}
         >
           <MessageCircle size={28} color="#ffffff" strokeWidth={2} />
-          <Text className="text-[12px] text-white font-medium mt-1">
+          <Text className="mt-1 text-[12px] font-medium text-white">
             {formatCount(commentCount)}
           </Text>
         </Pressable>
@@ -194,7 +193,7 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
           hitSlop={6}
         >
           <Send size={26} color="#ffffff" strokeWidth={2} />
-          <Text className="text-[12px] text-white font-medium mt-1">
+          <Text className="mt-1 text-[12px] font-medium text-white">
             {formatCount(shareCount)}
           </Text>
         </Pressable>
@@ -338,13 +337,13 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
         {/* Caption (expandable) */}
         <Pressable onPress={() => setCaptionExpanded(!captionExpanded)}>
           <Text
-            className="text-[14px] text-white leading-[20px]"
+            className="text-[14px] leading-[20px] text-white"
             numberOfLines={captionExpanded ? undefined : 2}
           >
             {captionTruncated}
           </Text>
           {!captionExpanded && reel.caption.length > 80 && (
-            <Text className="text-[13px] text-[#aaaaaa] mt-1">more</Text>
+            <Text className="mt-1 text-[13px] text-[#aaaaaa]">more</Text>
           )}
         </Pressable>
 

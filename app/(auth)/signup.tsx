@@ -76,7 +76,7 @@ export default function SignupScreen() {
       {/* Error banner */}
       {errors.general && (
         <View className="rounded-xl bg-red-500/10 px-4 py-3">
-          <Text className="text-[13px] text-brand-red text-center">{errors.general}</Text>
+          <Text className="text-center text-[13px] text-brand-red">{errors.general}</Text>
         </View>
       )}
 
@@ -130,7 +130,7 @@ export default function SignupScreen() {
       {/* Divider */}
       <HStack className="items-center" space="md">
         <Divider className="flex-1 bg-brand-border" />
-        <Text className="text-[12px] text-brand-muted uppercase tracking-wider">or</Text>
+        <Text className="text-[12px] uppercase tracking-wider text-brand-muted">or</Text>
         <Divider className="flex-1 bg-brand-border" />
       </HStack>
 

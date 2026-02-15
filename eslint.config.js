@@ -9,7 +9,7 @@ module.exports = defineConfig([
   {
     ignores: ['dist/*'],
     rules: {
-      'tailwindcss/no-custom-classname': 'off', // NativeWind often uses custom classes
-    },
+      'tailwindcss/no-custom-classname': 'off',
+   },
   },
 ]);
