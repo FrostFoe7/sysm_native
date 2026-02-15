@@ -13,34 +13,11 @@ ALTER TABLE public.users
 CREATE INDEX IF NOT EXISTS idx_users_onboarding ON public.users (is_onboarded) WHERE is_onboarded = FALSE;
 
 -- ═══════════════════════════════════════════════════════════════════════════════
--- Storage bucket for user-uploaded avatars
--- ═══════════════════════════════════════════════════════════════════════════════
-
--- The 'avatars' bucket should already exist from 003_storage.sql.
--- Ensure the policy allows authenticated uploads:
-DO $$
-BEGIN
-  -- Insert-if-not-exists: allow authenticated users to upload to their own folder
-  IF NOT EXISTS (
-    SELECT 1 FROM storage.policies
-    WHERE name = 'avatar_upload_policy' AND bucket_id = 'avatars'
-  ) THEN
-    INSERT INTO storage.policies (name, bucket_id, operation, definition)
-    VALUES (
-      'avatar_upload_policy',
-      'avatars',
-      'INSERT',
-      '(auth.role() = ''authenticated'' AND (storage.foldername(name))[1] = auth.uid()::text)'
-    );
-  END IF;
-END $$;
-
--- ═══════════════════════════════════════════════════════════════════════════════
 -- RLS for onboarding columns
 -- ═══════════════════════════════════════════════════════════════════════════════
 
 -- Users can update their own onboarding state (existing UPDATE policy covers this)
--- No additional policy needed — the existing "owner can update" policy applies.
+-- Storage policies (avatars bucket) should be configured through Supabase dashboard
 
 -- ═══════════════════════════════════════════════════════════════════════════════
 -- Function: Auto-create profile on auth signup (trigger)

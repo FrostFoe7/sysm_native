@@ -274,6 +274,8 @@ $$;
 -- 9) Improved get_conversations RPC — per-user mute/pin, unread via timestamp
 -- ═══════════════════════════════════════════════════════════════════════════════
 
+DROP FUNCTION IF EXISTS public.get_conversations(UUID);
+
 CREATE OR REPLACE FUNCTION public.get_conversations(p_user_id UUID)
 RETURNS TABLE (
   id UUID,

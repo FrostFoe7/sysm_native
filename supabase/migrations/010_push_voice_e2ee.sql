@@ -7,7 +7,7 @@
 
 CREATE TABLE IF NOT EXISTS public.user_devices (
   id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id        TEXT NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  user_id        UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
   expo_push_token TEXT NOT NULL,
   platform       TEXT NOT NULL CHECK (platform IN ('ios', 'android', 'web')),
   is_active      BOOLEAN NOT NULL DEFAULT TRUE,
@@ -74,7 +74,7 @@ CREATE POLICY "chat_audio_select_participant" ON storage.objects
     bucket_id = 'chat-audio'
     AND EXISTS (
       SELECT 1 FROM public.conversation_participants cp
-      WHERE cp.conversation_id = (storage.foldername(name))[1]
+      WHERE cp.conversation_id = ((storage.foldername(name))[1])::uuid
         AND cp.user_id = (SELECT id FROM public.users WHERE auth_id = auth.uid())
     )
   );
@@ -84,7 +84,7 @@ CREATE POLICY "chat_audio_insert_participant" ON storage.objects
     bucket_id = 'chat-audio'
     AND EXISTS (
       SELECT 1 FROM public.conversation_participants cp
-      WHERE cp.conversation_id = (storage.foldername(name))[1]
+      WHERE cp.conversation_id = ((storage.foldername(name))[1])::uuid
         AND cp.user_id = (SELECT id FROM public.users WHERE auth_id = auth.uid())
     )
   );
@@ -101,7 +101,7 @@ CREATE POLICY "chat_audio_delete_own" ON storage.objects
 
 CREATE TABLE IF NOT EXISTS public.user_keys (
   id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id        TEXT NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  user_id        UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
   public_key     TEXT NOT NULL,          -- base64-encoded public key (X25519 or RSA-OAEP)
   key_version    INTEGER NOT NULL DEFAULT 1,
   is_active      BOOLEAN NOT NULL DEFAULT TRUE,
@@ -132,8 +132,8 @@ CREATE POLICY "user_keys_update_own" ON public.user_keys
 -- Conversation-level encryption keys (for group chats)
 CREATE TABLE IF NOT EXISTS public.conversation_keys (
   id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  conversation_id   TEXT NOT NULL REFERENCES public.conversations(id) ON DELETE CASCADE,
-  user_id           TEXT NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  conversation_id   UUID NOT NULL REFERENCES public.conversations(id) ON DELETE CASCADE,
+  user_id           UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
   encrypted_key     TEXT NOT NULL,       -- symmetric key encrypted with user's public key
   key_version       INTEGER NOT NULL DEFAULT 1,
   created_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -185,11 +185,11 @@ ALTER TABLE public.messages
 
 -- RPC to get push targets for a message (all participants except sender, not muted)
 CREATE OR REPLACE FUNCTION public.get_push_targets(
-  p_conversation_id TEXT,
-  p_sender_id TEXT
+  p_conversation_id UUID,
+  p_sender_id UUID
 )
 RETURNS TABLE (
-  user_id TEXT,
+  user_id UUID,
   expo_push_token TEXT,
   platform TEXT,
   display_name TEXT
@@ -213,7 +213,7 @@ AS $$
 $$;
 
 -- RPC to get sender info for push payload
-CREATE OR REPLACE FUNCTION public.get_sender_info(p_user_id TEXT)
+CREATE OR REPLACE FUNCTION public.get_sender_info(p_user_id UUID)
 RETURNS TABLE (display_name TEXT, avatar_url TEXT, username TEXT)
 LANGUAGE sql
 STABLE
@@ -228,7 +228,7 @@ $$;
 -- ═══════════════════════════════════════════════════════════════════════════════
 
 CREATE OR REPLACE FUNCTION public.upsert_device_token(
-  p_user_id TEXT,
+  p_user_id UUID,
   p_expo_push_token TEXT,
   p_platform TEXT
 )
@@ -256,7 +256,7 @@ $$;
 -- ═══════════════════════════════════════════════════════════════════════════════
 
 CREATE OR REPLACE FUNCTION public.deactivate_device(
-  p_user_id TEXT,
+  p_user_id UUID,
   p_expo_push_token TEXT
 )
 RETURNS VOID
