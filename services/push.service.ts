@@ -12,16 +12,18 @@ import { supabase, getCachedUserId } from './supabase';
 
 // ─── Configuration ──────────────────────────────────────────────────────────────
 
-// Foreground notification behavior
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldShowBanner: true,
-    shouldShowList: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-  }),
-});
+// Foreground notification behavior — guard for SSR (static rendering)
+if (typeof window !== 'undefined') {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldShowBanner: true,
+      shouldShowList: true,
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+    }),
+  });
+}
 
 // ─── Types ──────────────────────────────────────────────────────────────────────
 

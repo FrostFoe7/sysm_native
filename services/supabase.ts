@@ -4,11 +4,20 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL ?? 'http://localhost:54321';
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? '';
 
+// SSR-safe no-op storage — AsyncStorage accesses `window` which doesn't exist
+// during Expo's static rendering / server-side export.
+const _isSSR = typeof window === 'undefined';
+const _ssrStorage = {
+  getItem: (_key: string) => Promise.resolve(null),
+  setItem: (_key: string, _value: string) => Promise.resolve(),
+  removeItem: (_key: string) => Promise.resolve(),
+};
+
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
-    storage: AsyncStorage,
+    storage: _isSSR ? _ssrStorage : AsyncStorage,
     autoRefreshToken: true,
-    persistSession: true,
+    persistSession: !_isSSR,
     detectSessionInUrl: false,
   },
   realtime: {
