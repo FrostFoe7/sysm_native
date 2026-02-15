@@ -1,6 +1,7 @@
 {
   "name": "sysm_native",
   "main": "expo-router/entry",
+  "type"="module",
   "version": "1.0.0",
   "scripts": {
     "start": "expo start",
