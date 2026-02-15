@@ -1,27 +1,72 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { supabase } from '@/services/supabase';
+import { supabase, clearUserIdCache } from '@/services/supabase';
 import type { User } from '@/types/types';
 import type { Session, AuthError } from '@supabase/supabase-js';
+
+// ─── Types ──────────────────────────────────────────────────────────────────────
+
+export interface AuthProfile extends User {
+  is_onboarded: boolean;
+  onboarding_step: number;
+  interests: string[];
+  website: string;
+}
 
 interface AuthState {
   session: Session | null;
   userId: string | null;
-  user: User | null;
+  user: AuthProfile | null;
   isLoading: boolean;
   isInitialized: boolean;
 
+  // Lifecycle
   initialize: () => Promise<void>;
-  signUpWithEmail: (email: string, password: string, username: string, displayName: string) => Promise<{ error: AuthError | null }>;
+
+  // Auth methods
+  signUpWithEmail: (email: string, password: string) => Promise<{ error: AuthError | null }>;
   signInWithEmail: (email: string, password: string) => Promise<{ error: AuthError | null }>;
   signInWithMagicLink: (email: string) => Promise<{ error: AuthError | null }>;
   signInWithOAuth: (provider: 'google' | 'apple') => Promise<{ error: AuthError | null }>;
+  sendPasswordReset: (email: string) => Promise<{ error: AuthError | null }>;
+  updatePassword: (newPassword: string) => Promise<{ error: AuthError | null }>;
+
+  // Profile
   setSession: (session: Session | null) => void;
-  updateUser: (updates: Partial<User>) => void;
-  fetchProfile: (authId: string) => Promise<User | null>;
+  updateUser: (updates: Partial<AuthProfile>) => void;
+  fetchProfile: (authId: string) => Promise<AuthProfile | null>;
+  refreshProfile: () => Promise<void>;
+
+  // Onboarding
+  updateOnboardingStep: (step: number) => Promise<void>;
+  completeOnboarding: () => Promise<void>;
+
+  // Session
   logout: () => Promise<void>;
 }
+
+// ─── Helpers ────────────────────────────────────────────────────────────────────
+
+function rowToProfile(data: any): AuthProfile {
+  return {
+    id: data.id,
+    username: data.username,
+    display_name: data.display_name ?? '',
+    avatar_url: data.avatar_url ?? '',
+    bio: data.bio ?? '',
+    verified: data.verified ?? false,
+    followers_count: data.followers_count ?? 0,
+    following_count: data.following_count ?? 0,
+    created_at: data.created_at,
+    is_onboarded: data.is_onboarded ?? false,
+    onboarding_step: data.onboarding_step ?? 0,
+    interests: data.interests ?? [],
+    website: data.website ?? '',
+  };
+}
+
+// ─── Store ──────────────────────────────────────────────────────────────────────
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -31,6 +76,8 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       isLoading: true,
       isInitialized: false,
+
+      // ─── Initialize ─────────────────────────────────────────────────────────
 
       initialize: async () => {
         try {
@@ -49,6 +96,7 @@ export const useAuthStore = create<AuthState>()(
             set({ session: null, userId: null, user: null, isLoading: false, isInitialized: true });
           }
 
+          // Listen for auth state changes (token refresh, sign in/out, etc.)
           supabase.auth.onAuthStateChange(async (event, newSession) => {
             if (event === 'SIGNED_IN' && newSession?.user) {
               const profile = await get().fetchProfile(newSession.user.id);
@@ -59,8 +107,11 @@ export const useAuthStore = create<AuthState>()(
                 isLoading: false,
               });
             } else if (event === 'SIGNED_OUT') {
+              clearUserIdCache();
               set({ session: null, userId: null, user: null, isLoading: false });
             } else if (event === 'TOKEN_REFRESHED' && newSession) {
+              set({ session: newSession });
+            } else if (event === 'PASSWORD_RECOVERY' && newSession) {
               set({ session: newSession });
             }
           });
@@ -69,24 +120,14 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      signUpWithEmail: async (email, password, username, displayName) => {
+      // ─── Sign Up ────────────────────────────────────────────────────────────
+
+      signUpWithEmail: async (email, password) => {
         set({ isLoading: true });
-
-        const { data: existing } = await supabase
-          .from('users')
-          .select('id')
-          .eq('username', username)
-          .maybeSingle();
-
-        if (existing) {
-          set({ isLoading: false });
-          return { error: { message: 'Username already taken', status: 422, name: 'AuthError' } as AuthError };
-        }
 
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
-          options: { data: { username, display_name: displayName } },
         });
 
         if (error) {
@@ -95,19 +136,9 @@ export const useAuthStore = create<AuthState>()(
         }
 
         if (data.user) {
-          const { error: profileError } = await supabase.from('users').insert({
-            auth_id: data.user.id,
-            username,
-            display_name: displayName,
-            avatar_url: '',
-            bio: '',
-          });
-
-          if (profileError) {
-            set({ isLoading: false });
-            return { error: { message: profileError.message, status: 500, name: 'AuthError' } as AuthError };
-          }
-
+          // The DB trigger handle_new_user() auto-creates the profile row.
+          // Wait a moment for the trigger to fire, then fetch.
+          await new Promise((r) => setTimeout(r, 500));
           const profile = await get().fetchProfile(data.user.id);
           set({
             session: data.session,
@@ -120,9 +151,12 @@ export const useAuthStore = create<AuthState>()(
         return { error: null };
       },
 
+      // ─── Sign In ────────────────────────────────────────────────────────────
+
       signInWithEmail: async (email, password) => {
         set({ isLoading: true });
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
         if (error) {
           set({ isLoading: false });
           return { error };
@@ -137,13 +171,21 @@ export const useAuthStore = create<AuthState>()(
             isLoading: false,
           });
         }
+
         return { error: null };
       },
 
+      // ─── Magic Link ─────────────────────────────────────────────────────────
+
       signInWithMagicLink: async (email) => {
-        const { error } = await supabase.auth.signInWithOtp({ email });
+        const { error } = await supabase.auth.signInWithOtp({
+          email,
+          options: { shouldCreateUser: true },
+        });
         return { error };
       },
+
+      // ─── OAuth ──────────────────────────────────────────────────────────────
 
       signInWithOAuth: async (provider) => {
         const { error } = await supabase.auth.signInWithOAuth({
@@ -153,6 +195,22 @@ export const useAuthStore = create<AuthState>()(
         return { error };
       },
 
+      // ─── Password Reset ─────────────────────────────────────────────────────
+
+      sendPasswordReset: async (email) => {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: 'sysm://auth/reset-password',
+        });
+        return { error };
+      },
+
+      updatePassword: async (newPassword) => {
+        const { error } = await supabase.auth.updateUser({ password: newPassword });
+        return { error };
+      },
+
+      // ─── Session / Profile ──────────────────────────────────────────────────
+
       setSession: (session) => set({ session }),
 
       updateUser: (updates) =>
@@ -160,7 +218,7 @@ export const useAuthStore = create<AuthState>()(
           user: state.user ? { ...state.user, ...updates } : null,
         })),
 
-      fetchProfile: async (authId: string): Promise<User | null> => {
+      fetchProfile: async (authId: string): Promise<AuthProfile | null> => {
         const { data, error } = await supabase
           .from('users')
           .select('*')
@@ -168,21 +226,48 @@ export const useAuthStore = create<AuthState>()(
           .maybeSingle();
 
         if (error || !data) return null;
-
-        return {
-          id: data.id,
-          username: data.username,
-          display_name: data.display_name,
-          avatar_url: data.avatar_url,
-          bio: data.bio,
-          verified: data.verified,
-          followers_count: data.followers_count,
-          following_count: data.following_count,
-          created_at: data.created_at,
-        };
+        return rowToProfile(data);
       },
 
+      refreshProfile: async () => {
+        const session = get().session;
+        if (!session?.user) return;
+        const profile = await get().fetchProfile(session.user.id);
+        if (profile) {
+          set({ user: profile, userId: profile.id });
+        }
+      },
+
+      // ─── Onboarding ─────────────────────────────────────────────────────────
+
+      updateOnboardingStep: async (step: number) => {
+        const userId = get().userId;
+        if (!userId) return;
+
+        await supabase.from('users').update({ onboarding_step: step }).eq('id', userId);
+        set((state) => ({
+          user: state.user ? { ...state.user, onboarding_step: step } : null,
+        }));
+      },
+
+      completeOnboarding: async () => {
+        const userId = get().userId;
+        if (!userId) return;
+
+        await supabase.from('users').update({
+          is_onboarded: true,
+          onboarding_step: 5,
+        }).eq('id', userId);
+
+        set((state) => ({
+          user: state.user ? { ...state.user, is_onboarded: true, onboarding_step: 5 } : null,
+        }));
+      },
+
+      // ─── Logout ─────────────────────────────────────────────────────────────
+
       logout: async () => {
+        clearUserIdCache();
         await supabase.auth.signOut();
         set({ session: null, userId: null, user: null });
       },
