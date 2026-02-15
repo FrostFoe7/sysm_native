@@ -13,6 +13,7 @@ import { HStack } from '@/components/ui/hstack';
 import { Text } from '@/components/ui/text';
 import {
   Check,
+  LucideIcon,
 } from 'lucide-react-native';
 
 interface ToastItem {

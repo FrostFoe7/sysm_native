@@ -6,7 +6,7 @@ import React, {
   forwardRef,
 } from 'react';
 import type { VariantProps } from '@gluestack-ui/utils/nativewind-utils';
-import { View, Dimensions, Platform, ViewProps } from 'react-native';
+import { View, Dimensions, Platform, ViewProps, LayoutChangeEvent } from 'react-native';
 import { SafeView } from '@/utils/animatedWebSafe';
 import { gridStyle, gridItemStyle } from './styles';
 import { cssInterop } from 'nativewind';
@@ -162,7 +162,7 @@ const Grid = forwardRef<React.ComponentRef<typeof View>, IGridProps>(
           className={gridStyle({
             class: className + ' ' + gridClassMerged,
           })}
-          onLayout={(event) => {
+          onLayout={(event: LayoutChangeEvent) => {
             const paddingLeftToSubtract =
               props?.paddingStart || props?.paddingLeft || props?.padding || 0;
             const paddingRightToSubtract =

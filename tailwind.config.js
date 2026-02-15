@@ -1,5 +1,7 @@
+import nativewind from 'nativewind/preset';
+
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   darkMode: process.env.DARK_MODE ? process.env.DARK_MODE : 'class',
   content: [
     './app/**/*.{html,js,jsx,ts,tsx,mdx}',
@@ -8,7 +10,7 @@ module.exports = {
     './*.{html,js,jsx,ts,tsx,mdx}',
     './src/**/*.{html,js,jsx,ts,tsx,mdx}',
   ],
-  presets: [require('nativewind/preset')],
+  presets: [nativewind],
   important: 'html',
   safelist: [
     {
