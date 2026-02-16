@@ -1,11 +1,12 @@
 // app/(tabs)/_layout.tsx
 
 import { Tabs } from 'expo-router';
-import React from 'react';
-import { Platform, View } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Platform, View, useWindowDimensions } from 'react-native';
 import { Home, Search, Heart, User, Film, Send } from 'lucide-react-native';
 import { HapticTab } from '@/components/haptic-tab';
 import { DesktopSidebar } from '@/components/DesktopSidebar';
+import { BREAKPOINTS } from '@/constants/ui';
 
 function TabsNavigator({ hideTabBar }: { hideTabBar: boolean }) {
   return (
@@ -122,20 +123,24 @@ function TabsNavigator({ hideTabBar }: { hideTabBar: boolean }) {
 }
 
 export default function TabLayout() {
-  return (
-    <>
-      {/* Desktop Layout (lg: breakpoint) */}
-      <View className="hidden flex-1 flex-row bg-brand-dark lg:flex">
+  const { width } = useWindowDimensions();
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  // We must use JS to conditionally render to avoid mounting multiple navigators
+  useEffect(() => {
+    setIsDesktop(Platform.OS === 'web' && width >= BREAKPOINTS.lg);
+  }, [width]);
+
+  if (isDesktop) {
+    return (
+      <View className="flex-1 flex-row bg-brand-dark">
         <DesktopSidebar />
         <View className="flex-1">
           <TabsNavigator hideTabBar={true} />
         </View>
       </View>
+    );
+  }
 
-      {/* Mobile/Tablet Layout (up to lg breakpoint) */}
-      <View className="flex-1 lg:hidden">
-        <TabsNavigator hideTabBar={false} />
-      </View>
-    </>
-  );
+  return <TabsNavigator hideTabBar={false} />;
 }

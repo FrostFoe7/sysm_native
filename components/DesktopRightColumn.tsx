@@ -13,6 +13,7 @@ import { BadgeCheck, TrendingUp } from 'lucide-react-native';
 import { UserService } from '@/services/user.service';
 import { ThreadService } from '@/services/thread.service';
 import { analytics } from '@/services/analytics.service';
+import { useAuthStore } from '@/store/useAuthStore';
 import type { User } from '@/types/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BONE_COLOR } from '@/constants/ui';
@@ -45,12 +46,19 @@ function RightColumnSkeleton() {
 
 export function DesktopRightColumn() {
   const router = useRouter();
+  const { userId } = useAuthStore();
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [suggestions, setSuggestions] = useState<(User & { isFollowing: boolean })[]>([]);
   const [trending, setTrending] = useState<{ id: string; content: string; author_username: string; category?: string }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Only fetch if we have a valid userId
+    if (!userId) {
+      setIsLoading(false);
+      return;
+    }
+
     (async () => {
       try {
         const [user, suggestedUsers, trendingThreads] = await Promise.all([
@@ -72,22 +80,7 @@ export function DesktopRightColumn() {
         setIsLoading(false);
       }
     })();
-  }, []);
-
-  const handleFollow = async (userId: string) => {
-    const result = await UserService.toggleFollow(userId);
-    setSuggestions((prev) =>
-      prev.map((u) =>
-        u.id === userId ? { ...u, isFollowing: result.following, followers_count: result.followersCount } : u,
-      ),
-    );
-    analytics.track(result.following ? 'follow' : 'unfollow', { contentId: userId });
-  };
-
-  const handleProfilePress = (userId: string) => {
-    analytics.track('profile_visit', { profileId: userId });
-    router.push(`/profile/${userId}`);
-  };
+  }, [userId]);
 
   if (isLoading) {
     return (
@@ -97,6 +90,11 @@ export function DesktopRightColumn() {
         </View>
       </View>
     );
+  }
+
+  // If not logged in, don't show the column or show a simplified version
+  if (!userId) {
+    return null;
   }
 
   return (
@@ -231,4 +229,20 @@ export function DesktopRightColumn() {
       </View>
     </View>
   );
+
+  function handleFollow(userId: string) {
+    UserService.toggleFollow(userId).then((result) => {
+      setSuggestions((prev) =>
+        prev.map((u) =>
+          u.id === userId ? { ...u, isFollowing: result.following, followers_count: result.followersCount } : u,
+        ),
+      );
+      analytics.track(result.following ? 'follow' : 'unfollow', { contentId: userId });
+    });
+  }
+
+  function handleProfilePress(userId: string) {
+    analytics.track('profile_visit', { profileId: userId });
+    router.push(`/profile/${userId}`);
+  }
 }
