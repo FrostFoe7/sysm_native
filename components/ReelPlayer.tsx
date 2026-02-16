@@ -38,7 +38,6 @@ export function ReelPlayer({
   onMuteToggle,
 }: ReelPlayerProps) {
   const { width: windowW, height: windowH } = useWindowDimensions();
-  const [isLoaded, setIsLoaded] = useState(false);
   const [commentSheetOpen, setCommentSheetOpen] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [showDoubleTapHeart, setShowDoubleTapHeart] = useState(false);
@@ -89,20 +88,6 @@ export function ReelPlayer({
       }
     } catch {}
   }, [isActive, player, commentSheetOpen, isPaused, reel.id, reel.duration]);
-
-  // Loading listener
-  useEffect(() => {
-    if (!player) return;
-    const sub = player.addListener(
-      "statusChange",
-      (event: { status: string }) => {
-        if (event.status === "readyToPlay") {
-          setIsLoaded(true);
-        }
-      },
-    );
-    return () => sub.remove();
-  }, [player]);
 
   // Double-tap to like
   const handleTap = useCallback(() => {

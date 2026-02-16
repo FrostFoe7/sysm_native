@@ -8,6 +8,7 @@ import { ProfileHeader } from "@/components/ProfileHeader";
 import { ThreadCard } from "@/components/ThreadCard";
 import { ShareSheet } from "@/components/ShareSheet";
 import { ThreadOverflowMenu } from "@/components/ThreadOverflowMenu";
+import { EditThreadModal } from "@/components/EditThreadModal";
 import { AnimatedListItem } from "@/components/AnimatedListItem";
 import { AnimatedTabBar } from "@/components/AnimatedTabBar";
 import { Text } from "@/components/ui/text";
@@ -41,6 +42,9 @@ export default function UserProfileScreen() {
 
   const [shareThreadId, setShareThreadId] = useState<string | null>(null);
   const [overflowThread, setOverflowThread] = useState<ThreadWithAuthor | null>(
+    null,
+  );
+  const [editingThread, setEditingThread] = useState<ThreadWithAuthor | null>(
     null,
   );
 
@@ -100,12 +104,20 @@ export default function UserProfileScreen() {
     [profile],
   );
 
+  const handleEdit = useCallback((thread: ThreadWithAuthor) => {
+    setEditingThread(thread);
+  }, []);
+
   const handleThreadDeleted = useCallback(() => {
     // Re-fetch via hook if needed
   }, []);
 
   const handleThreadHidden = useCallback(() => {}, []);
   const handleUserMuted = useCallback(() => {}, []);
+
+  const handleThreadUpdated = useCallback(() => {
+    // Re-fetch or update local state if hook provides it
+  }, []);
 
   const handleMessagePress = useCallback(async () => {
     if (!profile) return;
@@ -185,7 +197,14 @@ export default function UserProfileScreen() {
         thread={overflowThread}
         onThreadDeleted={handleThreadDeleted}
         onThreadHidden={handleThreadHidden}
+        onThreadEdited={handleEdit}
         onUserMuted={handleUserMuted}
+      />
+      <EditThreadModal
+        isOpen={editingThread !== null}
+        onClose={() => setEditingThread(null)}
+        thread={editingThread}
+        onThreadUpdated={handleThreadUpdated}
       />
     </ScreenLayout>
   );

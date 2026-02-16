@@ -43,6 +43,10 @@ interface ComposerProps {
   placeholder?: string;
   replyToUsername?: string;
   autoFocus?: boolean;
+  initialContent?: string;
+  initialMedia?: MediaItem[];
+  submitLabel?: string;
+  headerTitle?: string;
 }
 
 export function Composer({
@@ -50,9 +54,15 @@ export function Composer({
   placeholder = "What's new?",
   replyToUsername,
   autoFocus = true,
+  initialContent = "",
+  initialMedia = [],
+  submitLabel = "Post",
+  headerTitle = "New thread",
 }: ComposerProps) {
-  const [content, setContent] = useState("");
-  const [media, setMedia] = useState<ComposerMedia[]>([]);
+  const [content, setContent] = useState(initialContent);
+  const [media, setMedia] = useState<ComposerMedia[]>(
+    initialMedia.map((m) => ({ ...m, loading: false })),
+  );
   const inputRef = useRef<TextInput>(null);
   const router = useRouter();
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -199,7 +209,7 @@ export function Composer({
               <ArrowLeftIcon size={24} color="#f5f5f5" />
             </Pressable>
             <Text className="text-[18px] font-bold text-brand-light">
-              New thread
+              {headerTitle}
             </Text>
           </HStack>
 
@@ -385,7 +395,7 @@ export function Composer({
                   isValid ? "text-brand-dark" : "#555555"
                 }`}
               >
-                Post
+                {submitLabel}
               </ButtonText>
             </Button>
           </HStack>

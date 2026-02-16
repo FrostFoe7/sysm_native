@@ -20,6 +20,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { ThreadCard } from "@/components/ThreadCard";
 import { ShareSheet } from "@/components/ShareSheet";
 import { ThreadOverflowMenu } from "@/components/ThreadOverflowMenu";
+import { EditThreadModal } from "@/components/EditThreadModal";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Text } from "@/components/ui/text";
 import { HStack } from "@/components/ui/hstack";
@@ -59,6 +60,9 @@ export default function ThreadDetailScreen() {
 
   const [shareThreadId, setShareThreadId] = useState<string | null>(null);
   const [overflowThread, setOverflowThread] = useState<ThreadWithAuthor | null>(
+    null,
+  );
+  const [editingThread, setEditingThread] = useState<ThreadWithAuthor | null>(
     null,
   );
   const [currentUser, setCurrentUser] = useState<any>(null);
@@ -207,6 +211,10 @@ export default function ThreadDetailScreen() {
     [detail, ancestors],
   );
 
+  const handleEdit = useCallback((thread: ThreadWithAuthor) => {
+    setEditingThread(thread);
+  }, []);
+
   const handleThreadDeleted = useCallback(
     (threadId: string) => {
       if (threadId === id) {
@@ -240,6 +248,25 @@ export default function ThreadDetailScreen() {
       }
     },
     [id, router],
+  );
+
+  const handleThreadUpdated = useCallback(
+    (updated: ThreadWithAuthor) => {
+      if (updated.id === id) {
+        setDetail((prev) => (prev ? { ...prev, ...updated } : null));
+      } else {
+        setDetail((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            replies: prev.replies.map((r) =>
+              r.id === updated.id ? { ...r, ...updated } : r,
+            ),
+          };
+        });
+      }
+    },
+    [id],
   );
 
   const handleSubmitReply = useCallback(async () => {
@@ -451,6 +478,13 @@ export default function ThreadDetailScreen() {
         thread={overflowThread}
         onThreadDeleted={handleThreadDeleted}
         onThreadHidden={handleThreadHidden}
+        onThreadEdited={handleEdit}
+      />
+      <EditThreadModal
+        isOpen={editingThread !== null}
+        onClose={() => setEditingThread(null)}
+        thread={editingThread}
+        onThreadUpdated={handleThreadUpdated}
       />
     </KeyboardAvoidingView>
   );

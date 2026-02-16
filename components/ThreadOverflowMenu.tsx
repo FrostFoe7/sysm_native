@@ -29,6 +29,7 @@ import {
   Flag,
   Trash2,
   Link2,
+  Edit2,
 } from "lucide-react-native";
 
 interface ThreadOverflowMenuProps {
@@ -37,6 +38,7 @@ interface ThreadOverflowMenuProps {
   thread: ThreadWithAuthor | null;
   onThreadDeleted?: (threadId: string) => void;
   onThreadHidden?: (threadId: string) => void;
+  onThreadEdited?: (thread: ThreadWithAuthor) => void;
   onUserMuted?: (userId: string) => void;
 }
 
@@ -46,6 +48,7 @@ export function ThreadOverflowMenu({
   thread,
   onThreadDeleted,
   onThreadHidden,
+  onThreadEdited,
   onUserMuted,
 }: ThreadOverflowMenuProps) {
   const currentUserId = useAuthStore((s) => s.userId);
@@ -218,6 +221,22 @@ export function ThreadOverflowMenu({
           {isOwnThread && (
             <>
               <Divider className="my-1 bg-brand-border-secondary" />
+
+              {/* Edit thread */}
+              <ActionsheetItem
+                className="rounded-xl px-5 py-4 active:bg-white/5"
+                onPress={() => {
+                  if (thread) onThreadEdited?.(thread);
+                  onClose();
+                }}
+              >
+                <HStack className="flex-1 items-center" space="lg">
+                  <Edit2 size={22} color="brand-light" strokeWidth={1.8} />
+                  <ActionsheetItemText className="text-[16px] text-brand-light">
+                    Edit
+                  </ActionsheetItemText>
+                </HStack>
+              </ActionsheetItem>
 
               {/* Delete thread */}
               <ActionsheetItem

@@ -1,12 +1,11 @@
 // app/modal.tsx
 
 import React, { useCallback } from "react";
-import { View, Pressable } from "react-native";
-import { useRouter, Stack } from "expo-router";
+import { View } from "react-native";
+import { useRouter } from "expo-router";
 import { SafeAnimatedView, FadeInDown, isWeb } from "@/utils/animatedWebSafe";
 import { Composer } from "@/components/Composer";
 import { Box } from "@/components/ui/box";
-import { Text } from "@/components/ui/text";
 import { ThreadService } from "@/services/thread.service";
 import type { MediaItem } from "@/types/types";
 

@@ -9,6 +9,7 @@ import { AnimatedListItem } from "@/components/AnimatedListItem";
 import { AnimatedTabBar } from "@/components/AnimatedTabBar";
 import { ShareSheet } from "@/components/ShareSheet";
 import { ThreadOverflowMenu } from "@/components/ThreadOverflowMenu";
+import { EditThreadModal } from "@/components/EditThreadModal";
 import { DesktopRightColumn } from "@/components/DesktopRightColumn";
 import { Text } from "@/components/ui/text";
 import { Fab, FabIcon } from "@/components/ui/fab";
@@ -29,6 +30,8 @@ export default function HomeScreen() {
     refresh,
     handleLike,
     handleRepost,
+    handleDelete: triggerDelete,
+    handleEdit: triggerEdit,
   } = useThreadsFeed(activeTab);
 
   const { likedThreads: likedMap, repostedThreads: repostMap } =
@@ -36,6 +39,9 @@ export default function HomeScreen() {
 
   const [shareThreadId, setShareThreadId] = useState<string | null>(null);
   const [overflowThread, setOverflowThread] = useState<ThreadWithAuthor | null>(
+    null,
+  );
+  const [editingThread, setEditingThread] = useState<ThreadWithAuthor | null>(
     null,
   );
   const flatListRef = useRef<FlatList>(null);
@@ -68,11 +74,15 @@ export default function HomeScreen() {
     [feed],
   );
 
+  const handleEditPress = useCallback((thread: ThreadWithAuthor) => {
+    setEditingThread(thread);
+  }, []);
+
   const handleThreadDeleted = useCallback(
-    (_threadId: string) => {
-      refresh();
+    (threadId: string) => {
+      triggerDelete(threadId);
     },
-    [refresh],
+    [triggerDelete],
   );
 
   const handleThreadHidden = useCallback(
@@ -80,6 +90,13 @@ export default function HomeScreen() {
       refresh();
     },
     [refresh],
+  );
+
+  const handleThreadUpdated = useCallback(
+    (updated: ThreadWithAuthor) => {
+      triggerEdit(updated.id, updated.content, updated.media);
+    },
+    [triggerEdit],
   );
 
   const handleUserMuted = useCallback(
@@ -191,7 +208,14 @@ export default function HomeScreen() {
         thread={overflowThread}
         onThreadDeleted={handleThreadDeleted}
         onThreadHidden={handleThreadHidden}
+        onThreadEdited={handleEditPress}
         onUserMuted={handleUserMuted}
+      />
+      <EditThreadModal
+        isOpen={editingThread !== null}
+        onClose={() => setEditingThread(null)}
+        thread={editingThread}
+        onThreadUpdated={handleThreadUpdated}
       />
 
       {/* Mobile FAB (Hidden on Desktop) */}

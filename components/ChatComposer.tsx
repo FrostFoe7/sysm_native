@@ -265,7 +265,7 @@ export function ChatComposer({
         </Pressable>
 
         {/* Text input */}
-        <View className="min-h-[36px] flex-1 flex-row items-center rounded-full border border-[#333] bg-brand-border px-4 py-1">
+        <View className="mb-1 min-h-[34px] flex-1 flex-row items-center rounded-full border border-[#333] bg-brand-border px-4 py-0">
           <TextInput
             ref={inputRef}
             value={text}
@@ -276,8 +276,8 @@ export function ChatComposer({
             maxLength={MAX_MESSAGE_LENGTH}
             className="max-h-[100px] flex-1 text-[15px] text-brand-light"
             style={{
-              paddingTop: Platform.OS === "ios" ? 4 : 2,
-              paddingBottom: Platform.OS === "ios" ? 4 : 2,
+              paddingTop: 0,
+              paddingBottom: 0,
               ...(Platform.OS === "web" ? { outlineStyle: "none" as any } : {}),
             }}
             editable={!disabled}

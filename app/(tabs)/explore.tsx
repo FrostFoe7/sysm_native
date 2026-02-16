@@ -7,6 +7,7 @@ import { ScreenLayout } from "@/components/ScreenLayout";
 import { ThreadCard } from "@/components/ThreadCard";
 import { ShareSheet } from "@/components/ShareSheet";
 import { ThreadOverflowMenu } from "@/components/ThreadOverflowMenu";
+import { EditThreadModal } from "@/components/EditThreadModal";
 import { AnimatedListItem } from "@/components/AnimatedListItem";
 import { AnimatedPressable } from "@/components/AnimatedPressable";
 import { DesktopRightColumn } from "@/components/DesktopRightColumn";
@@ -53,6 +54,9 @@ export default function ExploreScreen() {
 
   const [shareThreadId, setShareThreadId] = useState<string | null>(null);
   const [overflowThread, setOverflowThread] = useState<ThreadWithAuthor | null>(
+    null,
+  );
+  const [editingThread, setEditingThread] = useState<ThreadWithAuthor | null>(
     null,
   );
 
@@ -205,11 +209,19 @@ export default function ExploreScreen() {
     [exploreListData],
   );
 
+  const handleEdit = useCallback((thread: ThreadWithAuthor) => {
+    setEditingThread(thread);
+  }, []);
+
   const handleThreadDeleted = useCallback((_threadId: string) => {
     setRefreshKey((k) => k + 1);
   }, []);
 
   const handleThreadHidden = useCallback((_threadId: string) => {
+    setRefreshKey((k) => k + 1);
+  }, []);
+
+  const handleThreadUpdated = useCallback(() => {
     setRefreshKey((k) => k + 1);
   }, []);
 
@@ -406,7 +418,14 @@ export default function ExploreScreen() {
         thread={overflowThread}
         onThreadDeleted={handleThreadDeleted}
         onThreadHidden={handleThreadHidden}
+        onThreadEdited={handleEdit}
         onUserMuted={handleUserMuted}
+      />
+      <EditThreadModal
+        isOpen={editingThread !== null}
+        onClose={() => setEditingThread(null)}
+        thread={editingThread}
+        onThreadUpdated={handleThreadUpdated}
       />
     </ScreenLayout>
   );

@@ -8,6 +8,7 @@ import { ProfileHeader } from "@/components/ProfileHeader";
 import { ThreadCard } from "@/components/ThreadCard";
 import { ShareSheet } from "@/components/ShareSheet";
 import { ThreadOverflowMenu } from "@/components/ThreadOverflowMenu";
+import { EditThreadModal } from "@/components/EditThreadModal";
 import { FollowersModal } from "@/components/FollowersModal";
 import { AnimatedListItem } from "@/components/AnimatedListItem";
 import { AnimatedTabBar } from "@/components/AnimatedTabBar";
@@ -39,6 +40,9 @@ export default function ProfileScreen() {
 
   const [shareThreadId, setShareThreadId] = useState<string | null>(null);
   const [overflowThread, setOverflowThread] = useState<ThreadWithAuthor | null>(
+    null,
+  );
+  const [editingThread, setEditingThread] = useState<ThreadWithAuthor | null>(
     null,
   );
   const [followersModalOpen, setFollowersModalOpen] = useState(false);
@@ -110,6 +114,10 @@ export default function ProfileScreen() {
     [profile],
   );
 
+  const handleEdit = useCallback((thread: ThreadWithAuthor) => {
+    setEditingThread(thread);
+  }, []);
+
   const handleThreadDeleted = useCallback(
     (_threadId: string) => {
       refetch();
@@ -123,6 +131,10 @@ export default function ProfileScreen() {
     },
     [refetch],
   );
+
+  const handleThreadUpdated = useCallback(() => {
+    refetch();
+  }, [refetch]);
 
   const handleUserMuted = useCallback(
     (_userId: string) => {
@@ -229,7 +241,14 @@ export default function ProfileScreen() {
         thread={overflowThread}
         onThreadDeleted={handleThreadDeleted}
         onThreadHidden={handleThreadHidden}
+        onThreadEdited={handleEdit}
         onUserMuted={handleUserMuted}
+      />
+      <EditThreadModal
+        isOpen={editingThread !== null}
+        onClose={() => setEditingThread(null)}
+        thread={editingThread}
+        onThreadUpdated={handleThreadUpdated}
       />
       <FollowersModal
         isOpen={followersModalOpen}

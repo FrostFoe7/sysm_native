@@ -29,7 +29,6 @@ import type { User } from "@/types/types";
 type FlowStep = "select-user" | "group-setup";
 
 export default function NewChatScreen() {
-  const router = useRouter();
   return <NewChatContent />;
 }
 

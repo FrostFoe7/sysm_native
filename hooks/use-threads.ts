@@ -262,6 +262,132 @@ export function useThreadsFeed(feedType: "foryou" | "following" = "foryou") {
     [bookmarkMutation],
   );
 
+  // Delete Mutation
+  const deleteMutation = useMutation({
+    mutationFn: (threadId: string) => ThreadService.deleteThread(threadId),
+    onMutate: async (threadId) => {
+      await queryClient.cancelQueries({ queryKey: ["threads-feed"] });
+
+      const previousForYou = queryClient.getQueryData<ThreadWithAuthor[]>([
+        "threads-feed",
+        "foryou",
+      ]);
+      const previousFollowing = queryClient.getQueryData<ThreadWithAuthor[]>([
+        "threads-feed",
+        "following",
+      ]);
+
+      const updater = (old: ThreadWithAuthor[] | undefined) =>
+        old?.filter((t) => t.id !== threadId);
+
+      queryClient.setQueryData<ThreadWithAuthor[]>(
+        ["threads-feed", "foryou"],
+        updater,
+      );
+      queryClient.setQueryData<ThreadWithAuthor[]>(
+        ["threads-feed", "following"],
+        updater,
+      );
+
+      return { previousForYou, previousFollowing };
+    },
+    onError: (err, threadId, context) => {
+      if (context?.previousForYou) {
+        queryClient.setQueryData(
+          ["threads-feed", "foryou"],
+          context.previousForYou,
+        );
+      }
+      if (context?.previousFollowing) {
+        queryClient.setQueryData(
+          ["threads-feed", "following"],
+          context.previousFollowing,
+        );
+      }
+    },
+  });
+
+  const handleDelete = useCallback(
+    (threadId: string) => {
+      deleteMutation.mutate(threadId);
+    },
+    [deleteMutation],
+  );
+
+  // Edit Mutation
+  const editMutation = useMutation({
+    mutationFn: ({
+      threadId,
+      content,
+      media,
+    }: {
+      threadId: string;
+      content: string;
+      media?: any;
+    }) => ThreadService.editThread(threadId, content, media),
+    onMutate: async ({ threadId, content }) => {
+      await queryClient.cancelQueries({ queryKey: ["threads-feed"] });
+
+      const previousForYou = queryClient.getQueryData<ThreadWithAuthor[]>([
+        "threads-feed",
+        "foryou",
+      ]);
+      const previousFollowing = queryClient.getQueryData<ThreadWithAuthor[]>([
+        "threads-feed",
+        "following",
+      ]);
+
+      const updater = (old: ThreadWithAuthor[] | undefined) =>
+        old?.map((t) => (t.id === threadId ? { ...t, content } : t));
+
+      queryClient.setQueryData<ThreadWithAuthor[]>(
+        ["threads-feed", "foryou"],
+        updater,
+      );
+      queryClient.setQueryData<ThreadWithAuthor[]>(
+        ["threads-feed", "following"],
+        updater,
+      );
+
+      return { previousForYou, previousFollowing };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousForYou) {
+        queryClient.setQueryData(
+          ["threads-feed", "foryou"],
+          context.previousForYou,
+        );
+      }
+      if (context?.previousFollowing) {
+        queryClient.setQueryData(
+          ["threads-feed", "following"],
+          context.previousFollowing,
+        );
+      }
+    },
+    onSuccess: (updatedThread) => {
+      // Success: replace with final server state
+      const updater = (old: ThreadWithAuthor[] | undefined) =>
+        old?.map((t) => (t.id === updatedThread.id ? updatedThread : t));
+
+      queryClient.setQueryData<ThreadWithAuthor[]>(
+        ["threads-feed", "foryou"],
+        updater,
+      );
+      queryClient.setQueryData<ThreadWithAuthor[]>(
+        ["threads-feed", "following"],
+        updater,
+      );
+    },
+  });
+
+  const handleEdit = useCallback(
+    (threadId: string, content: string, media?: any) => {
+      editMutation.mutate({ threadId, content, media });
+    },
+    [editMutation],
+  );
+
   return {
     data: data ?? [],
     isLoading,
@@ -273,5 +399,7 @@ export function useThreadsFeed(feedType: "foryou" | "following" = "foryou") {
     handleLike,
     handleRepost,
     handleBookmark,
+    handleDelete,
+    handleEdit,
   };
 }
