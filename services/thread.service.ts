@@ -433,25 +433,17 @@ async function reportThread(
 async function deleteThread(threadId: string): Promise<boolean> {
   const userId = await getCachedUserId();
 
-  const { data, error } = await supabase
-    .from("threads")
-    .update({ is_deleted: true })
-    .eq("id", threadId)
-    .eq("user_id", userId) // Explicitly check ownership for RLS
-    .select("id");
+  const { data, error } = await supabase.rpc("delete_thread", {
+    p_user_id: userId,
+    p_thread_id: threadId,
+  });
 
   if (error) {
     console.error("Failed to delete thread:", error);
-    // Fallback: try hiding it if the soft-delete update failed
-    try {
-      await hideThread(threadId);
-      return true;
-    } catch {
-      return false;
-    }
+    return false;
   }
 
-  return data && data.length > 0;
+  return !!data;
 }
 
 async function isLikedByCurrentUser(threadId: string): Promise<boolean> {

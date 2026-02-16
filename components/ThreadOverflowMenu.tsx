@@ -131,130 +131,132 @@ export function ThreadOverflowMenu({
     showToast("Link copied", TOAST_ICONS.copied);
   }, [thread, onClose, showToast]);
 
-  if (!thread) return null;
+  if (!thread && !showDeleteConfirm) return null;
 
   return (
-    <Actionsheet isOpen={isOpen} onClose={onClose}>
-      <ActionsheetBackdrop className="bg-black/60" />
-      <ActionsheetContent className="rounded-t-3xl border-t border-brand-border-secondary bg-brand-elevated pb-8">
-        <ActionsheetDragIndicatorWrapper>
-          <ActionsheetDragIndicator className="bg-brand-muted" />
-        </ActionsheetDragIndicatorWrapper>
+    <>
+      <Actionsheet isOpen={isOpen} onClose={onClose}>
+        <ActionsheetBackdrop className="bg-black/60" />
+        <ActionsheetContent className="rounded-t-3xl border-t border-brand-border-secondary bg-brand-elevated pb-8">
+          <ActionsheetDragIndicatorWrapper>
+            <ActionsheetDragIndicator className="bg-brand-muted" />
+          </ActionsheetDragIndicatorWrapper>
 
-        <VStack className="mt-2 w-full">
-          {/* Thread info header */}
-          <Text
-            className="mb-3 px-6 text-center text-[13px] text-brand-muted-alt"
-            numberOfLines={1}
-            style={{ overflow: "hidden" }}
-          >
-            @{thread.author.username}&apos;s thread
-          </Text>
-          <Divider className="mb-1 bg-brand-border-secondary" />
+          <VStack className="mt-2 w-full">
+            {/* Thread info header */}
+            <Text
+              className="mb-3 px-6 text-center text-[13px] text-brand-muted-alt"
+              numberOfLines={1}
+              style={{ overflow: "hidden" }}
+            >
+              @{thread?.author.username}&apos;s thread
+            </Text>
+            <Divider className="mb-1 bg-brand-border-secondary" />
 
-          {/* Copy link */}
-          <ActionsheetItem
-            className="rounded-xl px-5 py-4 active:bg-white/5"
-            onPress={handleCopyLink}
-          >
-            <HStack className="flex-1 items-center" space="lg">
-              <Link2 size={22} color="brand-light" strokeWidth={1.8} />
-              <ActionsheetItemText className="text-[16px] text-brand-light">
-                Copy link
-              </ActionsheetItemText>
-            </HStack>
-          </ActionsheetItem>
+            {/* Copy link */}
+            <ActionsheetItem
+              className="rounded-xl px-5 py-4 active:bg-white/5"
+              onPress={handleCopyLink}
+            >
+              <HStack className="flex-1 items-center" space="lg">
+                <Link2 size={22} color="brand-light" strokeWidth={1.8} />
+                <ActionsheetItemText className="text-[16px] text-brand-light">
+                  Copy link
+                </ActionsheetItemText>
+              </HStack>
+            </ActionsheetItem>
 
-          {/* Hide thread */}
-          <ActionsheetItem
-            className="rounded-xl px-5 py-4 active:bg-white/5"
-            onPress={handleHide}
-          >
-            <HStack className="flex-1 items-center" space="lg">
-              <EyeOff size={22} color="brand-light" strokeWidth={1.8} />
-              <ActionsheetItemText className="text-[16px] text-brand-light">
-                Hide
-              </ActionsheetItemText>
-            </HStack>
-          </ActionsheetItem>
+            {/* Hide thread */}
+            <ActionsheetItem
+              className="rounded-xl px-5 py-4 active:bg-white/5"
+              onPress={handleHide}
+            >
+              <HStack className="flex-1 items-center" space="lg">
+                <EyeOff size={22} color="brand-light" strokeWidth={1.8} />
+                <ActionsheetItemText className="text-[16px] text-brand-light">
+                  Hide
+                </ActionsheetItemText>
+              </HStack>
+            </ActionsheetItem>
 
-          {!isOwnThread && (
-            <>
-              {/* Mute/Unmute user */}
-              <ActionsheetItem
-                className="rounded-xl px-5 py-4 active:bg-white/5"
-                onPress={handleMuteToggle}
-              >
-                <HStack className="flex-1 items-center" space="lg">
-                  {muted ? (
-                    <Volume2 size={22} color="brand-light" strokeWidth={1.8} />
-                  ) : (
-                    <VolumeX size={22} color="brand-light" strokeWidth={1.8} />
-                  )}
-                  <ActionsheetItemText
-                    className="text-[16px] text-brand-light"
-                    numberOfLines={1}
-                  >
-                    {muted
-                      ? `Unmute @${thread.author.username}`
-                      : `Mute @${thread.author.username}`}
-                  </ActionsheetItemText>
-                </HStack>
-              </ActionsheetItem>
+            {!isOwnThread && (
+              <>
+                {/* Mute/Unmute user */}
+                <ActionsheetItem
+                  className="rounded-xl px-5 py-4 active:bg-white/5"
+                  onPress={handleMuteToggle}
+                >
+                  <HStack className="flex-1 items-center" space="lg">
+                    {muted ? (
+                      <Volume2 size={22} color="brand-light" strokeWidth={1.8} />
+                    ) : (
+                      <VolumeX size={22} color="brand-light" strokeWidth={1.8} />
+                    )}
+                    <ActionsheetItemText
+                      className="text-[16px] text-brand-light"
+                      numberOfLines={1}
+                    >
+                      {muted
+                        ? `Unmute @${thread?.author.username}`
+                        : `Mute @${thread?.author.username}`}
+                    </ActionsheetItemText>
+                  </HStack>
+                </ActionsheetItem>
 
-              <Divider className="my-1 bg-brand-border-secondary" />
+                <Divider className="my-1 bg-brand-border-secondary" />
 
-              {/* Report */}
-              <ActionsheetItem
-                className="rounded-xl px-5 py-4 active:bg-white/5"
-                onPress={handleReport}
-              >
-                <HStack className="flex-1 items-center" space="lg">
-                  <Flag size={22} color="brand-red" strokeWidth={1.8} />
-                  <ActionsheetItemText className="text-[16px] text-brand-red">
-                    Report
-                  </ActionsheetItemText>
-                </HStack>
-              </ActionsheetItem>
-            </>
-          )}
+                {/* Report */}
+                <ActionsheetItem
+                  className="rounded-xl px-5 py-4 active:bg-white/5"
+                  onPress={handleReport}
+                >
+                  <HStack className="flex-1 items-center" space="lg">
+                    <Flag size={22} color="brand-red" strokeWidth={1.8} />
+                    <ActionsheetItemText className="text-[16px] text-brand-red">
+                      Report
+                    </ActionsheetItemText>
+                  </HStack>
+                </ActionsheetItem>
+              </>
+            )}
 
-          {isOwnThread && (
-            <>
-              <Divider className="my-1 bg-brand-border-secondary" />
+            {isOwnThread && (
+              <>
+                <Divider className="my-1 bg-brand-border-secondary" />
 
-              {/* Edit thread */}
-              <ActionsheetItem
-                className="rounded-xl px-5 py-4 active:bg-white/5"
-                onPress={() => {
-                  if (thread) onThreadEdited?.(thread);
-                  onClose();
-                }}
-              >
-                <HStack className="flex-1 items-center" space="lg">
-                  <Edit2 size={22} color="brand-light" strokeWidth={1.8} />
-                  <ActionsheetItemText className="text-[16px] text-brand-light">
-                    Edit
-                  </ActionsheetItemText>
-                </HStack>
-              </ActionsheetItem>
+                {/* Edit thread */}
+                <ActionsheetItem
+                  className="rounded-xl px-5 py-4 active:bg-white/5"
+                  onPress={() => {
+                    if (thread) onThreadEdited?.(thread);
+                    onClose();
+                  }}
+                >
+                  <HStack className="flex-1 items-center" space="lg">
+                    <Edit2 size={22} color="brand-light" strokeWidth={1.8} />
+                    <ActionsheetItemText className="text-[16px] text-brand-light">
+                      Edit
+                    </ActionsheetItemText>
+                  </HStack>
+                </ActionsheetItem>
 
-              {/* Delete thread */}
-              <ActionsheetItem
-                className="rounded-xl px-5 py-4 active:bg-white/5"
-                onPress={handleDelete}
-              >
-                <HStack className="flex-1 items-center" space="lg">
-                  <Trash2 size={22} color="brand-red" strokeWidth={1.8} />
-                  <ActionsheetItemText className="text-[16px] text-brand-red">
-                    Delete
-                  </ActionsheetItemText>
-                </HStack>
-              </ActionsheetItem>
-            </>
-          )}
-        </VStack>
-      </ActionsheetContent>
+                {/* Delete thread */}
+                <ActionsheetItem
+                  className="rounded-xl px-5 py-4 active:bg-white/5"
+                  onPress={handleDelete}
+                >
+                  <HStack className="flex-1 items-center" space="lg">
+                    <Trash2 size={22} color="brand-red" strokeWidth={1.8} />
+                    <ActionsheetItemText className="text-[16px] text-brand-red">
+                      Delete
+                    </ActionsheetItemText>
+                  </HStack>
+                </ActionsheetItem>
+              </>
+            )}
+          </VStack>
+        </ActionsheetContent>
+      </Actionsheet>
 
       <ConfirmationDialog
         isOpen={showDeleteConfirm}
@@ -265,6 +267,6 @@ export function ThreadOverflowMenu({
         confirmLabel="Delete"
         isDestructive
       />
-    </Actionsheet>
+    </>
   );
 }

@@ -160,6 +160,9 @@ BEGIN
     AND t.user_id NOT IN (
       SELECT muted_user_id FROM public.muted_users WHERE muted_users.user_id = p_user_id
     )
+    AND t.id NOT IN (
+      SELECT thread_id FROM public.hidden_threads WHERE hidden_threads.user_id = p_user_id
+    )
   ORDER BY t.created_at DESC
   LIMIT p_limit OFFSET p_offset;
 END;
@@ -300,7 +303,9 @@ BEGIN
     0 AS depth
   FROM public.threads t
   INNER JOIN public.users u ON u.id = t.user_id
-  WHERE t.id = p_thread_id AND t.is_deleted = FALSE
+  WHERE t.id = p_thread_id 
+    AND t.is_deleted = FALSE
+    AND t.id NOT IN (SELECT thread_id FROM public.hidden_threads WHERE user_id = p_user_id)
 
   UNION ALL
 
@@ -314,7 +319,9 @@ BEGIN
     1 AS depth
   FROM public.threads t
   INNER JOIN public.users u ON u.id = t.user_id
-  WHERE t.parent_id = p_thread_id AND t.is_deleted = FALSE
+  WHERE t.parent_id = p_thread_id 
+    AND t.is_deleted = FALSE
+    AND t.id NOT IN (SELECT thread_id FROM public.hidden_threads WHERE user_id = p_user_id)
   ORDER BY like_count DESC, created_at ASC;
 END;
 $$ LANGUAGE plpgsql STABLE SECURITY DEFINER;

@@ -326,10 +326,30 @@ BEGIN
     AND t.user_id NOT IN (
       SELECT muted_user_id FROM public.muted_users WHERE muted_users.user_id = p_user_id
     )
+    AND t.id NOT IN (
+      SELECT thread_id FROM public.hidden_threads WHERE hidden_threads.user_id = p_user_id
+    )
   ORDER BY t.created_at DESC
   LIMIT p_limit OFFSET p_offset;
 END;
 $$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION public.delete_thread(
+  p_user_id   UUID,
+  p_thread_id UUID
+)
+RETURNS BOOLEAN
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public
+AS $$
+BEGIN
+  UPDATE public.threads
+  SET is_deleted = TRUE,
+      updated_at = NOW()
+  WHERE id = p_thread_id AND user_id = p_user_id;
+
+  RETURN FOUND;
+END;
+$$;
 
 -- ═══════════════════════════════════════════════════════════════════════════════
 -- 8. ADD conversations INSERT policy for creator to add self as first participant
