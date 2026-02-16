@@ -133,7 +133,7 @@ export default function UsernameStep() {
               Pick a username
             </Heading>
             <Text className="text-[14px] leading-[20px] text-brand-muted">
-              This is how people will find and mention you on sysm.
+              This is how people will find and mention you on Sysm.
             </Text>
           </VStack>
 
@@ -152,7 +152,7 @@ export default function UsernameStep() {
 
           {username.length > 0 && !error && (
             <Text className="text-[13px] text-brand-muted">
-              sysm.com/
+              Sysm.com/
               <Text className="font-medium text-brand-light">{username}</Text>
             </Text>
           )}

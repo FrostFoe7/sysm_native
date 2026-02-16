@@ -68,11 +68,10 @@ export default function SignupScreen() {
   );
 
   return (
-    <AuthCard
-      title="Create account"
-      subtitle="Join sysm and start sharing"
-      footer={
-        <View className="items-center gap-3">
+          <AuthCard
+            title="Create account"
+            subtitle="Join Sysm and start sharing"
+            footer={        <View className="items-center gap-3">
           <Pressable onPress={() => router.push("/(auth)/login")}>
             <HStack className="items-center" space="xs">
               <Text className="text-[14px] text-brand-muted">

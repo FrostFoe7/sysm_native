@@ -134,7 +134,7 @@ export default function OnboardingLayout() {
           >
             <View className="mb-16">
               <Text className="text-[36px] font-extrabold tracking-tighter text-brand-light">
-                sysm
+                Sysm
               </Text>
               <Text className="mt-2 text-[16px] leading-[24px] text-brand-muted">
                 You&rsquo;re almost there!{"\n"}Complete these steps to join the

@@ -1,14 +1,14 @@
 {
-  "name": "sysm_native",
+  "name": "sysm",
   "version": "1.0.0",
   "type": "module",
   "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
-    "android": "expo start --android",
+    "android": "expo run:android",
     "build": "expo export --platform web && cp -r public/* dist/ 2>/dev/null || true",
-    "ios": "expo start --ios",
+    "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "expo lint",
     "typecheck": "exec tsc --noEmit",
@@ -30,6 +30,7 @@
     "expo": "~54.0.33",
     "expo-audio": "~1.0.16",
     "expo-av": "^16.0.8",
+    "expo-build-properties": "^1.0.10",
     "expo-constants": "~18.0.13",
     "expo-device": "~7.0.3",
     "expo-font": "~14.0.11",
@@ -71,6 +72,7 @@
     "eslint-config-expo": "~10.0.0",
     "eslint-plugin-tailwindcss": "^3.18.2",
     "prettier-plugin-tailwindcss": "^0.5.14",
+    "sharp": "^0.34.5",
     "tailwindcss": "^3.4.19",
     "typescript": "~5.9.3"
   },

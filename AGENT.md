@@ -1,8 +1,8 @@
-# Project Progress - sysm_native
+# Project Progress - Sysm
 
 ## Overview
 
-This document tracks the setup and configuration of the `sysm_native` project.
+This document tracks the setup and configuration of the `Sysm` project.
 
 ## Completed Tasks
 

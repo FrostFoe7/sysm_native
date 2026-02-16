@@ -5,8 +5,10 @@ import React from "react";
 import { View, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "@/components/ui/safe-area-view";
 import { VStack } from "@/components/ui/vstack";
+import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import { Heading } from "@/components/ui/heading";
+import { Image } from "@/components/ui/image";
 
 interface AuthCardProps {
   title: string;
@@ -19,11 +21,16 @@ export function AuthCard({ title, subtitle, children, footer }: AuthCardProps) {
   const content = (
     <VStack className="w-full" space="lg">
       {/* Logo */}
-      <View className="mb-2 items-center">
+      <HStack className="mb-2 items-center justify-center" space="md">
+        <Image
+          source={require("@/assets/images/icon.png")}
+          size="xs"
+          alt="Sysm Logo"
+        />
         <Text className="text-[36px] font-extrabold tracking-tighter text-brand-light">
-          sysm
+          Sysm
         </Text>
-      </View>
+      </HStack>
 
       {/* Title + subtitle */}
       <VStack className="items-center" space="xs">

@@ -12,10 +12,14 @@ export default function NewThreadScreen() {
 
   const handleSubmit = useCallback(
     async (content: string) => {
-      await ThreadService.createThread(content);
-      // Reset composer and navigate to home
+      const newThread = await ThreadService.createThread(content);
+      // Reset composer and navigate to the new thread
       setKey((k) => k + 1);
-      router.navigate("/(tabs)");
+      if (newThread?.id) {
+        router.push(`/thread/${newThread.id}`);
+      } else {
+        router.navigate("/(tabs)");
+      }
     },
     [router],
   );

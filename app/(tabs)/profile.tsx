@@ -157,14 +157,43 @@ export default function ProfileScreen() {
 
   if (isLoading) return null;
 
-  const data = activeTab === "threads" ? profile!.threads : profile!.replies;
+  const renderHeader = useCallback(
+    () => (
+      <View>
+        <ProfileHeader
+          user={profile!.user}
+          threadCount={profile!.threads.length}
+          followerCount={profile!.followersCount}
+          followingCount={profile!.followingCount}
+          isCurrentUser
+          onEditProfile={() => router.push("/profile/edit")}
+          onFollowersPress={handleFollowersPress}
+          onFollowingPress={handleFollowingPress}
+        />
+
+        <AnimatedTabBar
+          tabs={PROFILE_TABS}
+          activeKey={activeTab}
+          onTabPress={setActiveTab}
+        />
+      </View>
+    ),
+    [
+      profile,
+      activeTab,
+      handleFollowersPress,
+      handleFollowingPress,
+      router,
+      setActiveTab,
+    ],
+  );
 
   return (
     <ScreenLayout>
       <View className="flex-1 lg:flex-row lg:justify-center">
         <View className="flex-1 lg:max-w-[600px]">
-          {/* Toolbar */}
-          <HStack className="h-[44px] items-center justify-between px-4">
+          {/* Sticky Toolbar */}
+          <HStack className="h-[44px] items-center justify-between bg-brand-dark px-4">
             <Pressable hitSlop={8} className="p-1 active:opacity-60">
               <CommunityIcon size={24} color="#f3f5f7" />
             </Pressable>
@@ -173,25 +202,9 @@ export default function ProfileScreen() {
             </Pressable>
           </HStack>
 
-          <ProfileHeader
-            user={profile!.user}
-            threadCount={profile!.threads.length}
-            followerCount={profile!.followersCount}
-            followingCount={profile!.followingCount}
-            isCurrentUser
-            onEditProfile={() => router.push("/profile/edit")}
-            onFollowersPress={handleFollowersPress}
-            onFollowingPress={handleFollowingPress}
-          />
-
-          <AnimatedTabBar
-            tabs={PROFILE_TABS}
-            activeKey={activeTab}
-            onTabPress={setActiveTab}
-          />
-
           <FlatList
             data={data}
+            ListHeaderComponent={renderHeader}
             renderItem={({ item, index }) => (
               <AnimatedListItem index={index}>
                 <ThreadCard
@@ -210,8 +223,6 @@ export default function ProfileScreen() {
             keyExtractor={(item) => item.id}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 24 }}
-            scrollEnabled
-            nestedScrollEnabled
             ListEmptyComponent={
               <View className="items-center justify-center py-16">
                 <Text className="text-[15px] text-brand-muted">

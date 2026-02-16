@@ -5,6 +5,7 @@ import { Pressable, View } from "react-native";
 import { useRouter, usePathname } from "expo-router";
 import { VStack } from "@/components/ui/vstack";
 import { Text } from "@/components/ui/text";
+import { Image } from "@/components/ui/image";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Divider } from "@/components/ui/divider";
 import { UserService } from "@/services/user.service";
@@ -42,8 +43,8 @@ const NAV_ITEMS: NavItem[] = [
   {
     icon: EditIcon,
     label: "New Thread",
-    path: "/modal",
-    matchPaths: ["/modal", "/(tabs)/new"],
+    path: "/create",
+    matchPaths: ["/create", "/(tabs)/new"],
   },
   {
     icon: ReelsIcon,
@@ -123,8 +124,8 @@ export function DesktopSidebar() {
 
   const handleNav = useCallback(
     (item: NavItem) => {
-      if (item.path === "/modal") {
-        router.push("/modal");
+      if (item.path === "/create") {
+        router.push("/create");
       } else {
         router.replace(item.path as any);
       }
@@ -137,11 +138,17 @@ export function DesktopSidebar() {
       <VStack className="flex-1">
         {/* Logo / Brand */}
         <Pressable
-          className="mb-2 px-5 py-4"
+          className="mb-2 flex-row items-center px-5 py-4"
           onPress={() => router.replace("/(tabs)" as any)}
+          style={{ gap: 12 }}
         >
+          <Image
+            source={require("@/assets/images/icon.png")}
+            size="xs"
+            alt="Sysm Logo"
+          />
           <Text className="text-[22px] font-bold tracking-tight text-brand-light">
-            𝕋𝕙𝕣𝕖𝕒𝕕𝕤
+            Sysm
           </Text>
         </Pressable>
 

@@ -12,6 +12,7 @@ import { ThreadOverflowMenu } from "@/components/ThreadOverflowMenu";
 import { EditThreadModal } from "@/components/EditThreadModal";
 import { DesktopRightColumn } from "@/components/DesktopRightColumn";
 import { Text } from "@/components/ui/text";
+import { Image } from "@/components/ui/image";
 import { Fab, FabIcon } from "@/components/ui/fab";
 import { EditIcon } from "@/constants/icons";
 import { FEED_TABS } from "@/constants/app";
@@ -140,9 +141,12 @@ export default function HomeScreen() {
     () => (
       <View>
         <View className="items-center pb-2 pt-3">
-          <Text className="mb-2 text-[28px] font-bold tracking-tight text-brand-light">
-            𝕋
-          </Text>
+          <Image
+            source={require("@/assets/images/icon.png")}
+            size="xs"
+            className="mb-2"
+            alt="Sysm Logo"
+          />
         </View>
         <AnimatedTabBar
           tabs={FEED_TABS}
@@ -223,10 +227,10 @@ export default function HomeScreen() {
         <Fab
           size="lg"
           placement="bottom right"
-          onPress={() => router.push("/modal")}
+          onPress={() => router.push("/create")}
           className="mb-[16px] mr-4 size-[56px] bg-brand-light"
         >
-          <FabIcon as={EditIcon} size={"md" as any} color="#101010" />
+          <FabIcon as={EditIcon} size={"md" as any} color="#1e1e1e" />
         </Fab>
       </View>
     </ScreenLayout>

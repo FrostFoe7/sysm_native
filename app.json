@@ -1,17 +1,18 @@
 {
   "expo": {
-    "name": "sysm_native",
+    "name": "Sysm",
     "slug": "sysm_native",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "sysmnative",
+    "scheme": "sysm",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
     },
     "android": {
+      "package": "com.frostfoe.sysm",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -26,7 +27,9 @@
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "plugins": [
       "expo-router",
       [
@@ -49,11 +52,26 @@
           "color": "#0095f6",
           "defaultChannel": "messages"
         }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "enableProguardInReleaseBuilds": true
+          }
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "4f14f5a0-59f7-46f0-8fdd-163f96050e33"
+      }
+    },
+    "owner": "frostfoe"
   }
 }

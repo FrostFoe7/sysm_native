@@ -65,7 +65,7 @@ export default function LoginScreen() {
   return (
     <AuthCard
       title="Sign in"
-      subtitle="Welcome back to sysm"
+      subtitle="Welcome back to Sysm"
       footer={
         <View className="items-center gap-3">
           <Pressable onPress={() => router.push("/(auth)/signup")}>

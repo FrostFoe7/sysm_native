@@ -14,6 +14,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { PushService } from "@/services/push.service";
 import { CryptoService } from "@/services/crypto.service";
 import { Text } from "@/components/ui/text";
+import { Image } from "@/components/ui/image";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -133,9 +134,12 @@ export default function RootLayout() {
     return (
       <GluestackUIProvider mode="dark">
         <View className="flex-1 items-center justify-center bg-brand-dark">
-          <Text className="mb-4 text-[36px] font-extrabold tracking-tighter text-brand-light">
-            sysm
-          </Text>
+          <Image
+            source={require("@/assets/images/icon.png")}
+            size="sm"
+            className="mb-6"
+            alt="Sysm Logo"
+          />
           <ActivityIndicator color="#0095f6" size="small" />
         </View>
       </GluestackUIProvider>
@@ -209,7 +213,7 @@ export default function RootLayout() {
                 }}
               />
               <Stack.Screen
-                name="modal"
+                name="create"
                 options={{
                   presentation: "modal",
                   headerShown: false,
