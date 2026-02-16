@@ -81,9 +81,13 @@ export const useAuthStore = create<AuthState>()(
 
       initialize: async () => {
         try {
-          const { data: { session } } = await supabase.auth.getSession();
+          // 1. Get initial session
+          const { data: { session }, error } = await supabase.auth.getSession();
 
-          if (session?.user) {
+          // If session is invalid or refresh token is missing/expired, Supabase returns error or null
+          if (error || !session?.user) {
+            set({ session: null, userId: null, user: null, isLoading: false, isInitialized: true });
+          } else {
             const profile = await get().fetchProfile(session.user.id);
             set({
               session,
@@ -92,30 +96,34 @@ export const useAuthStore = create<AuthState>()(
               isLoading: false,
               isInitialized: true,
             });
-          } else {
-            set({ session: null, userId: null, user: null, isLoading: false, isInitialized: true });
           }
 
-          // Listen for auth state changes (token refresh, sign in/out, etc.)
+          // 2. Setup subscription
           supabase.auth.onAuthStateChange(async (event, newSession) => {
-            if (event === 'SIGNED_IN' && newSession?.user) {
+            console.log('Auth event:', event);
+            
+            if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && newSession?.user) {
               const profile = await get().fetchProfile(newSession.user.id);
               set({
                 session: newSession,
                 userId: profile?.id ?? null,
                 user: profile,
                 isLoading: false,
+                isInitialized: true,
               });
             } else if (event === 'SIGNED_OUT') {
               clearUserIdCache();
-              set({ session: null, userId: null, user: null, isLoading: false });
+              set({ session: null, userId: null, user: null, isLoading: false, isInitialized: true });
             } else if (event === 'TOKEN_REFRESHED' && newSession) {
               set({ session: newSession });
             } else if (event === 'PASSWORD_RECOVERY' && newSession) {
               set({ session: newSession });
+            } else if (event === 'USER_UPDATED' && newSession) {
+              set({ session: newSession });
             }
           });
-        } catch {
+        } catch (err) {
+          console.error('Auth initialization error:', err);
           set({ isLoading: false, isInitialized: true });
         }
       },
