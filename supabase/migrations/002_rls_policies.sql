@@ -210,7 +210,8 @@ CREATE POLICY "reports_insert_own" ON public.reports
 
 CREATE POLICY "conversations_select_participant" ON public.conversations
   FOR SELECT USING (
-    id IN (
+    created_by = public.current_user_id()
+    OR id IN (
       SELECT conversation_id FROM public.conversation_participants
       WHERE user_id = public.current_user_id()
     )
@@ -241,12 +242,18 @@ CREATE POLICY "participants_select_member" ON public.conversation_participants
 
 CREATE POLICY "participants_insert_admin" ON public.conversation_participants
   FOR INSERT WITH CHECK (
-    -- Allow initial creation by conversation creator or admin adding members
+    -- Allow initial creation by conversation creator
     conversation_id IN (
+      SELECT id FROM public.conversations
+      WHERE created_by = public.current_user_id()
+    )
+    -- Allow admin adding members
+    OR conversation_id IN (
       SELECT conversation_id FROM public.conversation_participants
       WHERE user_id = public.current_user_id() AND role = 'admin'
     )
-    OR user_id = public.current_user_id()  -- user joining themselves
+    -- Allow user adding themselves
+    OR user_id = public.current_user_id()
   );
 
 CREATE POLICY "participants_update_own" ON public.conversation_participants
