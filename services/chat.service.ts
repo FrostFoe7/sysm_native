@@ -551,6 +551,10 @@ async function toggleReaction(
 async function createDirectConversation(
   otherUserId: string,
 ): Promise<ConversationWithDetails> {
+  if (!otherUserId || otherUserId === "undefined") {
+    throw new Error("Invalid user ID");
+  }
+
   const userId = await getCachedUserId();
 
   // O(1) lookup via RPC instead of N+1 loop
@@ -608,10 +612,19 @@ async function createDirectConversation(
   if (error || !newConv)
     throw error ?? new Error("Failed to create conversation");
 
-  await supabase.from("conversation_participants").insert([
+  // Dedup participants (handle self-chat)
+  const participantRows = [
     { conversation_id: newConv.id, user_id: userId, role: "admin" },
-    { conversation_id: newConv.id, user_id: otherUserId, role: "member" },
-  ]);
+  ];
+  if (otherUserId !== userId) {
+    participantRows.push({
+      conversation_id: newConv.id,
+      user_id: otherUserId,
+      role: "member",
+    });
+  }
+
+  await supabase.from("conversation_participants").insert(participantRows);
 
   const created = await getConversation(newConv.id);
   if (!created) throw new Error("Failed to retrieve created conversation");
@@ -638,7 +651,9 @@ async function createGroupConversation(params: {
 
   if (error || !newConv) throw error ?? new Error("Failed to create group");
 
-  const participantRows = [userId, ...params.memberIds].map((uid) => ({
+  const uniqueMembers = Array.from(new Set([userId, ...params.memberIds]));
+
+  const participantRows = uniqueMembers.map((uid) => ({
     conversation_id: newConv.id,
     user_id: uid,
     role: uid === userId ? "admin" : ("member" as const),
