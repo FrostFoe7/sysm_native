@@ -155,25 +155,28 @@ export default function UserProfileScreen() {
 
   return (
     <ScreenLayout>
-      <ProfileHeader
-        user={profile.user}
-        threadCount={profile.threads.length}
-        followerCount={followersCount}
-        followingCount={profile.followingCount}
-        isCurrentUser={false}
-        isFollowing={isFollowing}
-        onFollowToggle={handleFollowToggle}
-        onMessagePress={handleMessagePress}
-      />
-
-      <AnimatedTabBar
-        tabs={PROFILE_TABS}
-        activeKey={activeTab}
-        onTabPress={setActiveTab}
-      />
-
       <FlatList
         data={data}
+        ListHeaderComponent={
+          <>
+            <ProfileHeader
+              user={profile.user}
+              threadCount={profile.threads.length}
+              followerCount={followersCount}
+              followingCount={profile.followingCount}
+              isCurrentUser={false}
+              isFollowing={isFollowing}
+              onFollowToggle={handleFollowToggle}
+              onMessagePress={handleMessagePress}
+            />
+
+            <AnimatedTabBar
+              tabs={PROFILE_TABS}
+              activeKey={activeTab}
+              onTabPress={setActiveTab}
+            />
+          </>
+        }
         renderItem={({ item, index }) => (
           <AnimatedListItem index={index}>
             <ThreadCard
@@ -191,7 +194,7 @@ export default function UserProfileScreen() {
         )}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 24 }}
+        contentContainerStyle={{ paddingBottom: 40 }}
         ListEmptyComponent={
           isLoading ? (
             <View className="items-center justify-center py-16">

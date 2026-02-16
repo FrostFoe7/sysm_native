@@ -49,35 +49,37 @@ export function ProfileHeader({
   onMessagePress,
 }: ProfileHeaderProps) {
   return (
-    <VStack className="w-full shrink-0 p-4" space="md">
+    <VStack className="w-full shrink-0 px-4 pb-4 pt-2" space="md">
       {/* Top row: name + avatar */}
-      <HStack className="w-full items-start justify-between gap-3">
+      <HStack className="w-full items-start justify-between">
         <VStack className="flex-1 gap-1">
           <Heading
-            size="xl"
-            className="font-bold text-brand-light"
+            size="2xl"
+            className="text-[24px] font-bold tracking-tight text-brand-light"
             numberOfLines={1}
           >
             {user.display_name}
           </Heading>
-          <HStack className="flex-wrap items-center gap-1">
+          <HStack className="items-center gap-1.5">
             <Text className="text-[15px] text-brand-light" numberOfLines={1}>
-              @{user.username}
+              {user.username}
             </Text>
             {user.verified && <VerifiedIcon size={14} color="#0095f6" />}
-            <Box className="rounded-full bg-brand-border px-2 py-0.5">
-              <Text className="text-[11px] text-brand-muted">threads.net</Text>
+            <Box className="rounded-full bg-brand-border-secondary px-2 py-0.5">
+              <Text className="text-[11px] font-medium text-brand-muted">
+                threads.net
+              </Text>
             </Box>
           </HStack>
         </VStack>
 
-        <Avatar size="lg">
+        <Avatar size="xl">
           <AvatarImage source={{ uri: user.avatar_url }} />
         </Avatar>
       </HStack>
 
       {/* Bio */}
-      {user.bio.length > 0 && (
+      {user.bio && user.bio.length > 0 && (
         <Text className="text-[15px] leading-[21px] text-brand-light">
           {user.bio}
         </Text>
@@ -85,80 +87,50 @@ export function ProfileHeader({
 
       {/* Stats row */}
       <HStack className="items-center gap-2">
-        <Pressable onPress={onFollowersPress} hitSlop={8}>
-          <Text className="text-[13px] text-brand-muted-alt">
-            <Text className="font-semibold text-brand-light">
-              {formatCount(followerCount)}
-            </Text>{" "}
-            followers
-          </Text>
-        </Pressable>
-        <Text className="text-[13px] text-brand-muted-alt">·</Text>
-        <Pressable onPress={onFollowingPress} hitSlop={8}>
-          <Text className="text-[13px] text-brand-muted-alt">
-            <Text className="font-semibold text-brand-light">
-              {formatCount(followingCount)}
-            </Text>{" "}
-            following
+        <Pressable onPress={onFollowersPress} hitSlop={8} className="active:opacity-60">
+          <Text className="text-[14px] text-brand-muted">
+            {formatCount(followerCount)} followers
           </Text>
         </Pressable>
       </HStack>
 
       {/* Action buttons */}
-      <HStack className="w-full gap-2">
+      <HStack className="mt-2 w-full gap-3">
         {isCurrentUser ? (
           <>
             <Button
               variant="outline"
-              size="sm"
-              className="h-9 flex-1 flex-row items-center justify-center rounded-lg border-brand-border-secondary bg-transparent"
+              size="md"
+              className="h-[36px] flex-1 items-center justify-center rounded-xl border-brand-border-secondary bg-transparent active:bg-white/5"
               onPress={onEditProfile}
             >
-              <ButtonIcon
-                as={EditIcon}
-                size={"sm" as any}
-                color="#f3f5f7"
-                className="mr-2"
-              />
-              <ButtonText className="text-[14px] font-semibold text-brand-light">
+              <ButtonText className="text-[14px] font-bold text-brand-light">
                 Edit profile
               </ButtonText>
             </Button>
             <Button
               variant="outline"
-              size="sm"
-              className="h-9 flex-1 flex-row items-center justify-center rounded-lg border-brand-border-secondary bg-transparent"
+              size="md"
+              className="h-[36px] flex-1 items-center justify-center rounded-xl border-brand-border-secondary bg-transparent active:bg-white/5"
             >
-              <ButtonIcon
-                as={ShareIcon}
-                size={"sm" as any}
-                color="#f3f5f7"
-                className="mr-2"
-              />
-              <ButtonText className="text-[14px] font-semibold text-brand-light">
-                Share
+              <ButtonText className="text-[14px] font-bold text-brand-light">
+                Share profile
               </ButtonText>
             </Button>
           </>
         ) : (
           <>
             <Button
-              size="sm"
-              className={`h-9 flex-1 flex-row items-center justify-center rounded-lg ${
+              size="md"
+              className={`h-[36px] flex-1 items-center justify-center rounded-xl ${
                 isFollowing
-                  ? "border border-brand-border-secondary bg-transparent"
-                  : "bg-brand-light"
+                  ? "border border-brand-border-secondary bg-transparent active:bg-white/5"
+                  : "bg-brand-light active:opacity-90"
               }`}
               onPress={onFollowToggle}
             >
-              <ButtonIcon
-                as={isFollowing ? FollowingIcon : FollowIcon}
-                size={"sm" as any}
-                color={isFollowing ? "#f3f5f7" : "#101010"}
-                className="mr-2"
-              />
               <ButtonText
-                className={`text-[14px] font-semibold ${
+                className={`text-[14px] font-bold ${
                   isFollowing ? "text-brand-light" : "text-brand-dark"
                 }`}
               >
@@ -167,25 +139,17 @@ export function ProfileHeader({
             </Button>
             <Button
               variant="outline"
-              size="sm"
-              className="h-9 flex-1 rounded-lg border-brand-border-secondary bg-transparent"
+              size="md"
+              className="h-[36px] flex-1 items-center justify-center rounded-xl border-brand-border-secondary bg-transparent active:bg-white/5"
               onPress={onMessagePress}
             >
-              <ButtonIcon
-                as={MessageIcon}
-                size={"sm" as any}
-                color="#f3f5f7"
-                className="mr-2"
-              />
-              <ButtonText className="text-[14px] font-semibold text-brand-light">
+              <ButtonText className="text-[14px] font-bold text-brand-light">
                 Message
               </ButtonText>
             </Button>
           </>
         )}
       </HStack>
-
-      <Divider className="bg-brand-border" />
     </VStack>
   );
 }

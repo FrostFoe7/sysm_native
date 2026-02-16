@@ -13,6 +13,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   View,
+  ActivityIndicator,
 } from "react-native";
 import { useRouter, useNavigation } from "expo-router";
 import { ScreenLayout } from "@/components/ScreenLayout";
@@ -20,18 +21,15 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { HStack } from "@/components/ui/hstack";
-import { Divider } from "@/components/ui/divider";
 import { Box } from "@/components/ui/box";
 import { UserService } from "@/services/user.service";
-import { CameraIcon, CloseIcon, ArrowLeftIcon } from "@/constants/icons";
+import { CloseIcon } from "@/constants/icons";
 import { ConfirmationDialog } from "@/components/ConfirmationDialog";
 import {
   MAX_BIO_LENGTH,
-  MAX_NAME_LENGTH,
   MAX_USERNAME_LENGTH,
   AVATAR_OPTIONS,
 } from "@/constants/app";
-import { SafeAreaView } from "@/components/ui/safe-area-view";
 
 function EditField({
   label,
@@ -49,32 +47,30 @@ function EditField({
   multiline?: boolean;
 }) {
   return (
-    <VStack className="px-4 py-3">
-      <HStack className="mb-1 items-center justify-between">
-        <Text className="text-[13px] text-brand-muted-alt">{label}</Text>
-        <Text className="text-[12px] text-brand-muted">
-          {value.length}/{maxLength}
-        </Text>
-      </HStack>
+    <VStack className="border-b border-brand-border-secondary px-4 py-4">
+      <Text className="text-[14px] font-bold text-brand-light">{label}</Text>
       <TextInput
         value={value}
         onChangeText={(t) => onChangeText(t.slice(0, maxLength))}
         placeholder={placeholder}
-        placeholderTextColor="brand-muted"
+        placeholderTextColor="#777777"
         maxLength={maxLength}
         multiline={multiline}
-        numberOfLines={multiline ? 4 : 1}
+        numberOfLines={multiline ? 3 : 1}
         style={{
-          color: "brand-light",
-          fontSize: 16,
+          color: "#f3f5f7",
+          fontSize: 15,
           paddingVertical: 8,
           paddingHorizontal: 0,
-          minHeight: multiline ? 80 : undefined,
           textAlignVertical: multiline ? "top" : "center",
           ...(Platform.OS === "web" ? { outlineStyle: "none" as any } : {}),
         }}
       />
-      <Divider className="mt-1 bg-brand-border-secondary" />
+      {multiline && (
+        <Text className="mt-1 text-right text-[11px] text-brand-muted">
+          {value.length}/{maxLength}
+        </Text>
+      )}
     </VStack>
   );
 }
@@ -98,7 +94,7 @@ export default function EditProfileScreen() {
         setCurrentUser(user);
         setDisplayName(user.display_name);
         setUsername(user.username);
-        setBio(user.bio);
+        setBio(user.bio || "");
         setAvatarUrl(user.avatar_url);
       })
       .catch(console.error);
@@ -112,7 +108,7 @@ export default function EditProfileScreen() {
     currentUser &&
     (displayName !== currentUser.display_name ||
       username !== currentUser.username ||
-      bio !== currentUser.bio ||
+      bio !== (currentUser.bio || "") ||
       avatarUrl !== currentUser.avatar_url);
 
   const isValid =
@@ -124,16 +120,19 @@ export default function EditProfileScreen() {
     if (!isValid || !hasChanges) return;
 
     setIsSaving(true);
-
-    await UserService.updateProfile({
-      display_name: displayName.trim(),
-      username: username.trim(),
-      bio: bio.trim(),
-      avatar_url: avatarUrl,
-    });
-
-    setIsSaving(false);
-    router.back();
+    try {
+      await UserService.updateProfile({
+        display_name: displayName.trim(),
+        username: username.trim(),
+        bio: bio.trim(),
+        avatar_url: avatarUrl,
+      });
+      router.back();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSaving(false);
+    }
   }, [displayName, username, bio, avatarUrl, isValid, hasChanges, router]);
 
   const handleCancel = useCallback(() => {
@@ -148,45 +147,32 @@ export default function EditProfileScreen() {
     return (
       <ScreenLayout edges={[]}>
         <View className="flex-1 items-center justify-center">
-          <Text className="text-brand-muted">Loading...</Text>
+          <ActivityIndicator color="#0095f6" size="small" />
         </View>
       </ScreenLayout>
     );
   }
 
   return (
-    <ScreenLayout edges={[]}>
-      <SafeAreaView edges={["top"]}>
-        <HStack className="items-center justify-between px-4 py-2" space="md">
-          <HStack className="items-center" space="md">
-            <Pressable
-              onPress={handleCancel}
-              hitSlop={12}
-              className="rounded-full p-1 active:bg-white/10"
-            >
-              <ArrowLeftIcon size={24} color="#f5f5f5" />
-            </Pressable>
-            <Text className="text-[18px] font-bold text-brand-light">
-              Edit Profile
-            </Text>
-          </HStack>
-
-          <Pressable
-            onPress={handleSave}
-            hitSlop={12}
-            disabled={!hasChanges || !isValid || isSaving}
-            className="p-1"
-          >
-            <Text
-              className={`text-[16px] font-semibold ${
-                hasChanges && isValid ? "text-brand-blue" : "text-[#333333]"
-              }`}
-            >
-              Done
-            </Text>
-          </Pressable>
-        </HStack>
-      </SafeAreaView>
+    <ScreenLayout edges={["top", "bottom"]}>
+      <HStack className="h-[56px] items-center justify-between px-4">
+        <Pressable onPress={handleCancel} hitSlop={12} className="active:opacity-60">
+          <Text className="text-[16px] text-brand-light">Cancel</Text>
+        </Pressable>
+        <Text className="text-[17px] font-bold text-brand-light">
+          Edit profile
+        </Text>
+        <Pressable
+          onPress={handleSave}
+          hitSlop={12}
+          disabled={!hasChanges || !isValid || isSaving}
+          className="active:opacity-60 disabled:opacity-30"
+        >
+          <Text className="text-[16px] font-bold text-brand-blue">
+            Done
+          </Text>
+        </Pressable>
+      </HStack>
 
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -197,39 +183,55 @@ export default function EditProfileScreen() {
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={{ paddingBottom: 40 }}
         >
-          {/* Avatar section */}
-          <VStack className="items-center py-6">
-            <Pressable
-              onPress={() => setShowAvatarPicker((v) => !v)}
-              className="relative"
-            >
-              <Avatar size="xl">
-                <AvatarImage source={{ uri: avatarUrl }} />
-              </Avatar>
-              <Box className="absolute bottom-0 right-0 rounded-full border-2 border-brand-dark bg-brand-blue p-1.5">
-                <CameraIcon size={14} color="#ffffff" />
-              </Box>
-            </Pressable>
-            <Text className="mt-2 text-[14px] font-medium text-brand-blue">
-              Change photo
-            </Text>
+          <VStack className="mx-4 mt-4 rounded-3xl border border-brand-border-secondary bg-brand-dark overflow-hidden">
+            <HStack className="items-center justify-between border-b border-brand-border-secondary px-4 py-4">
+              <VStack className="flex-1 gap-1">
+                <Text className="text-[14px] font-bold text-brand-light">Name</Text>
+                <TextInput
+                  value={displayName}
+                  onChangeText={setDisplayName}
+                  placeholder="Name"
+                  placeholderTextColor="#777777"
+                  className="text-[15px] text-brand-light"
+                  style={Platform.OS === "web" ? ({ outlineStyle: "none" } as any) : {}}
+                />
+              </VStack>
+              <Pressable onPress={() => setShowAvatarPicker(true)}>
+                <Avatar size="lg">
+                  <AvatarImage source={{ uri: avatarUrl }} />
+                </Avatar>
+              </Pressable>
+            </HStack>
+
+            <EditField
+              label="Username"
+              value={username}
+              onChangeText={(t) => setUsername(t.replace(/[^a-zA-Z0-9._]/g, ""))}
+              maxLength={MAX_USERNAME_LENGTH}
+              placeholder="username"
+            />
+
+            <EditField
+              label="Bio"
+              value={bio}
+              onChangeText={setBio}
+              maxLength={MAX_BIO_LENGTH}
+              placeholder="Write a bio..."
+              multiline
+            />
           </VStack>
 
-          {/* Avatar picker grid */}
           {showAvatarPicker && (
-            <VStack className="mb-4 px-4">
-              <HStack className="mb-3 items-center justify-between">
-                <Text className="text-[13px] text-brand-muted-alt">
+            <VStack className="mt-6 px-4" space="md">
+              <HStack className="items-center justify-between">
+                <Text className="text-[15px] font-bold text-brand-light">
                   Choose avatar
                 </Text>
-                <Pressable
-                  onPress={() => setShowAvatarPicker(false)}
-                  hitSlop={8}
-                >
-                  <CloseIcon size={16} color="#777777" />
+                <Pressable onPress={() => setShowAvatarPicker(false)}>
+                  <CloseIcon size={20} color="#777777" />
                 </Pressable>
               </HStack>
-              <HStack className="flex-wrap" style={{ gap: 10 }}>
+              <HStack className="flex-wrap gap-3">
                 {AVATAR_OPTIONS.map((url) => (
                   <Pressable
                     key={url}
@@ -237,8 +239,8 @@ export default function EditProfileScreen() {
                       setAvatarUrl(url);
                       setShowAvatarPicker(false);
                     }}
-                    className={`rounded-full ${
-                      avatarUrl === url ? "border-2 border-brand-blue" : ""
+                    className={`rounded-full border-2 ${
+                      avatarUrl === url ? "border-brand-blue" : "border-transparent"
                     }`}
                   >
                     <Avatar size="md">
@@ -247,41 +249,12 @@ export default function EditProfileScreen() {
                   </Pressable>
                 ))}
               </HStack>
-              <Divider className="mt-4 bg-brand-border-secondary" />
             </VStack>
           )}
 
-          {/* Edit fields */}
-          <EditField
-            label="Name"
-            value={displayName}
-            onChangeText={setDisplayName}
-            maxLength={MAX_NAME_LENGTH}
-            placeholder="Display name"
-          />
-
-          <EditField
-            label="Username"
-            value={username}
-            onChangeText={(t) => setUsername(t.replace(/[^a-zA-Z0-9._]/g, ""))}
-            maxLength={MAX_USERNAME_LENGTH}
-            placeholder="username"
-          />
-
-          <EditField
-            label="Bio"
-            value={bio}
-            onChangeText={setBio}
-            maxLength={MAX_BIO_LENGTH}
-            placeholder="Write a bio..."
-            multiline
-          />
-
-          {/* Username validation */}
           {username.length > 0 && !isValid && (
-            <Text className="mt-1 px-4 text-[13px] text-brand-red">
-              Username can only contain letters, numbers, periods, and
-              underscores.
+            <Text className="mt-4 px-6 text-[13px] text-brand-red">
+              Username can only contain letters, numbers, periods, and underscores.
             </Text>
           )}
         </ScrollView>

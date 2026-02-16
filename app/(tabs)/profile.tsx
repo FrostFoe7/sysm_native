@@ -187,43 +187,46 @@ export default function ProfileScreen() {
       <View className="flex-1 lg:flex-row lg:justify-center">
         <View className="flex-1 lg:max-w-[600px]">
           {/* Toolbar */}
-          <HStack className="h-[44px] items-center justify-between px-4">
-            <Pressable hitSlop={8} className="p-1 active:opacity-60">
-              <CommunityIcon size={24} color="#f3f5f7" />
+          <HStack className="h-[48px] items-center justify-between px-4">
+            <Pressable hitSlop={12} className="p-1 active:opacity-60">
+              <CommunityIcon size={26} color="#f3f5f7" />
             </Pressable>
-            <HStack space="md">
-              <Pressable hitSlop={8} className="p-1 active:opacity-60">
-                <SettingsIcon size={24} color="#f3f5f7" />
+            <HStack space="lg" className="items-center">
+              <Pressable hitSlop={12} className="p-1 active:opacity-60">
+                <SettingsIcon size={26} color="#f3f5f7" />
               </Pressable>
               <Pressable
-                hitSlop={8}
+                hitSlop={12}
                 className="p-1 active:opacity-60"
                 onPress={handleLogoutPress}
               >
-                <LogOutIcon size={24} color="#ff3040" />
+                <LogOutIcon size={26} color="#ff3040" />
               </Pressable>
             </HStack>
           </HStack>
 
-          <ProfileHeader
-            user={profile!.user}
-            threadCount={profile!.threads.length}
-            followerCount={profile!.followersCount}
-            followingCount={profile!.followingCount}
-            isCurrentUser
-            onEditProfile={() => router.push("/profile/edit")}
-            onFollowersPress={handleFollowersPress}
-            onFollowingPress={handleFollowingPress}
-          />
-
-          <AnimatedTabBar
-            tabs={PROFILE_TABS}
-            activeKey={activeTab}
-            onTabPress={setActiveTab}
-          />
-
           <FlatList
             data={data}
+            ListHeaderComponent={
+              <>
+                <ProfileHeader
+                  user={profile!.user}
+                  threadCount={profile!.threads.length}
+                  followerCount={profile!.followersCount}
+                  followingCount={profile!.followingCount}
+                  isCurrentUser
+                  onEditProfile={() => router.push("/profile/edit")}
+                  onFollowersPress={handleFollowersPress}
+                  onFollowingPress={handleFollowingPress}
+                />
+
+                <AnimatedTabBar
+                  tabs={PROFILE_TABS}
+                  activeKey={activeTab}
+                  onTabPress={setActiveTab}
+                />
+              </>
+            }
             renderItem={({ item, index }) => (
               <AnimatedListItem index={index}>
                 <ThreadCard
@@ -241,9 +244,7 @@ export default function ProfileScreen() {
             )}
             keyExtractor={(item) => item.id}
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 24 }}
-            scrollEnabled
-            nestedScrollEnabled
+            contentContainerStyle={{ paddingBottom: 40 }}
             ListEmptyComponent={
               isLoading ? (
                 <View className="items-center justify-center py-16">

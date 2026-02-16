@@ -66,19 +66,19 @@ export function AnimatedTabBar({
 
   return (
     <View
-      className="z-10 border-b border-brand-border bg-brand-dark"
+      className="z-10 border-b border-brand-border-secondary bg-brand-dark"
       style={{ position: "relative" }}
       onLayout={handleLayout}
     >
-      <HStack style={{ paddingBottom: 2 }}>
+      <HStack>
         {tabs.map((tab) => (
           <Pressable
             key={tab.key}
             onPress={() => onTabPress(tab.key)}
-            className="flex-1 items-center py-3"
+            className="flex-1 items-center py-3.5 active:opacity-60"
           >
             <Text
-              className={`text-[15px] font-semibold ${
+              className={`text-[15px] font-bold ${
                 activeKey === tab.key ? "text-brand-light" : "text-brand-muted"
               }`}
             >
@@ -91,21 +91,18 @@ export function AnimatedTabBar({
         style={[
           {
             position: "absolute",
-            bottom: 0,
+            bottom: -1,
             height: 1.5,
-            borderRadius: 1,
-            backgroundColor: "brand-light",
+            backgroundColor: "#f3f5f7",
           },
           animatedUnderlineStyle,
           isWeb &&
             ({
               transition:
-                "transform 300ms cubic-bezier(0.4, 0.0, 0.2, 1), width 300ms ease",
+                "transform 250ms cubic-bezier(0.4, 0.0, 0.2, 1), width 250ms ease",
             } as any),
         ]}
-      >
-        <View className="mx-auto h-full w-[60px] rounded-full bg-brand-light" />
-      </SafeAnimatedView>
+      />
     </View>
   );
 }
