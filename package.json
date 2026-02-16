@@ -7,7 +7,7 @@
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",
-    "build": "expo export --platform web --clear && cp -r public/* dist/ 2>/dev/null || true",
+    "build": "expo export --platform web && cp -r public/* dist/ 2>/dev/null || true",
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
