@@ -14,6 +14,7 @@ import {
   Platform,
   KeyboardAvoidingView,
   View,
+  ActivityIndicator,
 } from "react-native";
 import { useLocalSearchParams, useRouter, useNavigation } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
@@ -296,8 +297,9 @@ export default function ThreadDetailScreen() {
     return (
       <View className="flex-1 bg-brand-dark">
         <Box
-          className={`flex-1 ${Platform.OS === "web" ? "w-full max-w-[680px] self-center" : ""}`}
+          className={`flex-1 items-center justify-center ${Platform.OS === "web" ? "w-full max-w-[680px] self-center" : ""}`}
         >
+          <ActivityIndicator color="#0095f6" size="small" />
         </Box>
       </View>
     );

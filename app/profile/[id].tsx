@@ -1,7 +1,7 @@
 // app/profile/[id].tsx
 
 import React, { useState, useCallback, useEffect } from "react";
-import { FlatList, View } from "react-native";
+import { FlatList, View, ActivityIndicator } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ScreenLayout } from "@/components/ScreenLayout";
 import { ProfileHeader } from "@/components/ProfileHeader";
@@ -133,7 +133,15 @@ export default function UserProfileScreen() {
     }
   }, [profile, router]);
 
-  if (isLoading) return null;
+  if (isLoading && !profile) {
+    return (
+      <ScreenLayout>
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator color="#0095f6" size="small" />
+        </View>
+      </ScreenLayout>
+    );
+  }
 
   if (!profile) return null;
 
@@ -179,11 +187,17 @@ export default function UserProfileScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 24 }}
         ListEmptyComponent={
-          <View className="items-center justify-center py-16">
-            <Text className="text-[15px] text-brand-muted">
-              {activeTab === "threads" ? "No threads yet" : "No replies yet"}
-            </Text>
-          </View>
+          isLoading ? (
+            <View className="items-center justify-center py-16">
+              <ActivityIndicator color="#0095f6" size="small" />
+            </View>
+          ) : (
+            <View className="items-center justify-center py-16">
+              <Text className="text-[15px] text-brand-muted">
+                {activeTab === "threads" ? "No threads yet" : "No replies yet"}
+              </Text>
+            </View>
+          )
         }
       />
       <ShareSheet

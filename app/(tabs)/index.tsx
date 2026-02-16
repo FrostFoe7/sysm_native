@@ -1,7 +1,7 @@
 // app/(tabs)/index.tsx
 
 import React, { useState, useCallback, useRef } from "react";
-import { FlatList, RefreshControl, Platform, View } from "react-native";
+import { FlatList, RefreshControl, Platform, View, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import { ScreenLayout } from "@/components/ScreenLayout";
 import { ThreadCard } from "@/components/ThreadCard";
@@ -160,7 +160,11 @@ export default function HomeScreen() {
 
   const renderEmpty = useCallback(
     () =>
-      isLoading ? null : (
+      isLoading ? (
+        <View className="flex-1 items-center justify-center py-20">
+          <ActivityIndicator color="#0095f6" size="small" />
+        </View>
+      ) : (
         <View className="flex-1 items-center justify-center py-20">
           <Text className="text-[15px] text-brand-muted">No threads yet</Text>
         </View>
@@ -228,9 +232,9 @@ export default function HomeScreen() {
           size="lg"
           placement="bottom right"
           onPress={() => router.push("/create")}
-          className="mb-[16px] mr-4 size-[56px] bg-brand-light"
+          className="mb-[16px] mr-4 size-[56px] bg-brand-blue"
         >
-          <FabIcon as={EditIcon} size={"md" as any} color="#1e1e1e" />
+          <FabIcon as={EditIcon} size={"md" as any} color="#ffffff" />
         </Fab>
       </View>
     </ScreenLayout>

@@ -7,6 +7,7 @@ import {
   View,
   TextInput,
   Platform,
+  ActivityIndicator,
   useWindowDimensions,
 } from "react-native";
 import { useRouter } from "expo-router";
@@ -299,7 +300,11 @@ export default function InboxScreen() {
         refreshing={isRefreshing}
         onRefresh={handleRefresh}
         ListEmptyComponent={
-          isLoading ? null : (
+          isLoading ? (
+            <View className="items-center justify-center py-16">
+              <ActivityIndicator color="#0095f6" size="small" />
+            </View>
+          ) : (
             <View className="items-center justify-center py-16">
               <Text className="mb-2 text-[28px]">📬</Text>
               <Text className="text-[16px] font-semibold text-brand-light">

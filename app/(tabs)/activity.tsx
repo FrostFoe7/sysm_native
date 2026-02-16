@@ -1,7 +1,7 @@
 // app/(tabs)/activity.tsx
 
 import React, { useState, useCallback, useMemo } from "react";
-import { FlatList, Pressable, View } from "react-native";
+import { FlatList, Pressable, View, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import { ScreenLayout } from "@/components/ScreenLayout";
 import { AnimatedListItem } from "@/components/AnimatedListItem";
@@ -225,7 +225,11 @@ export default function ActivityScreen() {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 24 }}
             ListEmptyComponent={
-              isLoading ? null : (
+              isLoading ? (
+                <View className="items-center justify-center py-16">
+                  <ActivityIndicator color="#0095f6" size="small" />
+                </View>
+              ) : (
                 <View className="items-center justify-center py-16">
                   <Text className="text-[15px] text-brand-muted">
                     No activity yet

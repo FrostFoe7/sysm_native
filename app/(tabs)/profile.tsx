@@ -1,7 +1,7 @@
 // app/(tabs)/profile.tsx
 
 import React, { useState, useCallback, useEffect } from "react";
-import { FlatList, Pressable, View } from "react-native";
+import { FlatList, Pressable, View, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import { ScreenLayout } from "@/components/ScreenLayout";
 import { ProfileHeader } from "@/components/ProfileHeader";
@@ -153,47 +153,26 @@ export default function ProfileScreen() {
     setFollowersModalOpen(true);
   }, []);
 
-  if (!profile && !isLoading) return null;
+  if (isLoading && !profile) {
+    return (
+      <ScreenLayout>
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator color="#0095f6" size="small" />
+        </View>
+      </ScreenLayout>
+    );
+  }
 
-  if (isLoading) return null;
+  if (!profile) return null;
 
-  const renderHeader = useCallback(
-    () => (
-      <View>
-        <ProfileHeader
-          user={profile!.user}
-          threadCount={profile!.threads.length}
-          followerCount={profile!.followersCount}
-          followingCount={profile!.followingCount}
-          isCurrentUser
-          onEditProfile={() => router.push("/profile/edit")}
-          onFollowersPress={handleFollowersPress}
-          onFollowingPress={handleFollowingPress}
-        />
-
-        <AnimatedTabBar
-          tabs={PROFILE_TABS}
-          activeKey={activeTab}
-          onTabPress={setActiveTab}
-        />
-      </View>
-    ),
-    [
-      profile,
-      activeTab,
-      handleFollowersPress,
-      handleFollowingPress,
-      router,
-      setActiveTab,
-    ],
-  );
+  const data = activeTab === "threads" ? profile!.threads : profile!.replies;
 
   return (
     <ScreenLayout>
       <View className="flex-1 lg:flex-row lg:justify-center">
         <View className="flex-1 lg:max-w-[600px]">
-          {/* Sticky Toolbar */}
-          <HStack className="h-[44px] items-center justify-between bg-brand-dark px-4">
+          {/* Toolbar */}
+          <HStack className="h-[44px] items-center justify-between px-4">
             <Pressable hitSlop={8} className="p-1 active:opacity-60">
               <CommunityIcon size={24} color="#f3f5f7" />
             </Pressable>
@@ -202,9 +181,25 @@ export default function ProfileScreen() {
             </Pressable>
           </HStack>
 
+          <ProfileHeader
+            user={profile!.user}
+            threadCount={profile!.threads.length}
+            followerCount={profile!.followersCount}
+            followingCount={profile!.followingCount}
+            isCurrentUser
+            onEditProfile={() => router.push("/profile/edit")}
+            onFollowersPress={handleFollowersPress}
+            onFollowingPress={handleFollowingPress}
+          />
+
+          <AnimatedTabBar
+            tabs={PROFILE_TABS}
+            activeKey={activeTab}
+            onTabPress={setActiveTab}
+          />
+
           <FlatList
             data={data}
-            ListHeaderComponent={renderHeader}
             renderItem={({ item, index }) => (
               <AnimatedListItem index={index}>
                 <ThreadCard
@@ -223,14 +218,22 @@ export default function ProfileScreen() {
             keyExtractor={(item) => item.id}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 24 }}
+            scrollEnabled
+            nestedScrollEnabled
             ListEmptyComponent={
-              <View className="items-center justify-center py-16">
-                <Text className="text-[15px] text-brand-muted">
-                  {activeTab === "threads"
-                    ? "No threads yet"
-                    : "No replies yet"}
-                </Text>
-              </View>
+              isLoading ? (
+                <View className="items-center justify-center py-16">
+                  <ActivityIndicator color="#0095f6" size="small" />
+                </View>
+              ) : (
+                <View className="items-center justify-center py-16">
+                  <Text className="text-[15px] text-brand-muted">
+                    {activeTab === "threads"
+                      ? "No threads yet"
+                      : "No replies yet"}
+                  </Text>
+                </View>
+              )
             }
           />
         </View>

@@ -1,7 +1,7 @@
 // app/(tabs)/explore.tsx
 
 import React, { useState, useCallback, useEffect, useMemo } from "react";
-import { FlatList, TextInput, Pressable, Platform, View } from "react-native";
+import { FlatList, TextInput, Pressable, Platform, View, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import { ScreenLayout } from "@/components/ScreenLayout";
 import { ThreadCard } from "@/components/ThreadCard";
@@ -390,7 +390,11 @@ export default function ExploreScreen() {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 24 }}
             ListEmptyComponent={
-              isLoading ? null : query.trim() ? (
+              isLoading ? (
+                <View className="items-center justify-center py-16">
+                  <ActivityIndicator color="#0095f6" size="small" />
+                </View>
+              ) : query.trim() ? (
                 <View className="items-center justify-center py-16">
                   <Text className="text-[15px] text-brand-muted">
                     No results for &quot;{query}&quot;
