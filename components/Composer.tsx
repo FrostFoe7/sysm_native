@@ -14,7 +14,7 @@ import { Divider } from '@/components/ui/divider';
 import { Button, ButtonText } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserService } from '@/services/user.service';
-import { MediaIcon, ReelsIcon, ChatIcon, CommunityIcon, CloseIcon } from '@/constants/icons';
+import { MediaIcon, ReelsIcon, ChatIcon, CommunityIcon, CloseIcon, ArrowLeftIcon } from '@/constants/icons';
 import type { MediaItem, User } from '@/types/types';
 
 interface ComposerMedia {
@@ -173,6 +173,18 @@ export function Composer({
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
+          {/* Header with Back Button */}
+          <HStack className="px-4 py-3 items-center" space="md">
+            <Pressable 
+              onPress={() => router.back()} 
+              hitSlop={12} 
+              className="rounded-full p-1 active:bg-white/10"
+            >
+              <ArrowLeftIcon size={24} color="#f5f5f5" />
+            </Pressable>
+            <Text className="text-[18px] font-bold text-brand-light">New thread</Text>
+          </HStack>
+
           <HStack className="px-4 pt-4" space="md">
             {/* Avatar column */}
             <VStack className="items-center">

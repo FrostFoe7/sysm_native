@@ -19,13 +19,14 @@ import { HStack } from '@/components/ui/hstack';
 import { Divider } from '@/components/ui/divider';
 import { Box } from '@/components/ui/box';
 import { UserService } from '@/services/user.service';
-import { CameraIcon, CloseIcon } from '@/constants/icons';
+import { CameraIcon, CloseIcon, ArrowLeftIcon } from '@/constants/icons';
 import { 
   MAX_BIO_LENGTH, 
   MAX_NAME_LENGTH, 
   MAX_USERNAME_LENGTH, 
   AVATAR_OPTIONS 
 } from '@/constants/app';
+import { SafeAreaView } from '@/components/ui/safe-area-view';
 
 function EditField({
   label,
@@ -95,6 +96,10 @@ export default function EditProfileScreen() {
     }).catch(console.error);
   }, []);
 
+  useLayoutEffect(() => {
+    navigation.setOptions({ headerShown: false });
+  }, [navigation]);
+
   const hasChanges =
     currentUser && (
       displayName !== currentUser.display_name ||
@@ -140,32 +145,6 @@ export default function EditProfileScreen() {
     }
   }, [hasChanges, router]);
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <Pressable onPress={handleCancel} hitSlop={12} className="p-1">
-          <Text className="text-[16px] text-brand-light">Cancel</Text>
-        </Pressable>
-      ),
-      headerRight: () => (
-        <Pressable
-          onPress={handleSave}
-          hitSlop={12}
-          disabled={!hasChanges || !isValid || isSaving}
-          className="p-1"
-        >
-          <Text
-            className={`text-[16px] font-semibold ${
-              hasChanges && isValid ? 'text-brand-blue' : 'text-[#333333]'
-            }`}
-          >
-            Done
-          </Text>
-        </Pressable>
-      ),
-    });
-  }, [navigation, handleCancel, handleSave, hasChanges, isValid, isSaving]);
-
   if (!currentUser) {
     return (
       <ScreenLayout edges={[]}>
@@ -178,6 +157,36 @@ export default function EditProfileScreen() {
 
   return (
     <ScreenLayout edges={[]}>
+      <SafeAreaView edges={['top']}>
+        <HStack className="items-center justify-between px-4 py-2" space="md">
+          <HStack className="items-center" space="md">
+            <Pressable 
+              onPress={handleCancel} 
+              hitSlop={12} 
+              className="rounded-full p-1 active:bg-white/10"
+            >
+              <ArrowLeftIcon size={24} color="#f5f5f5" />
+            </Pressable>
+            <Text className="text-[18px] font-bold text-brand-light">Edit Profile</Text>
+          </HStack>
+          
+          <Pressable
+            onPress={handleSave}
+            hitSlop={12}
+            disabled={!hasChanges || !isValid || isSaving}
+            className="p-1"
+          >
+            <Text
+              className={`text-[16px] font-semibold ${
+                hasChanges && isValid ? 'text-brand-blue' : 'text-[#333333]'
+              }`}
+            >
+              Done
+            </Text>
+          </Pressable>
+        </HStack>
+      </SafeAreaView>
+
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         className="flex-1"

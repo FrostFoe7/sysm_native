@@ -1,6 +1,6 @@
 // app/thread/[id].tsx
 
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef, useEffect, useLayoutEffect } from 'react';
 import {
   FlatList,
   TextInput,
@@ -9,7 +9,7 @@ import {
   KeyboardAvoidingView,
   View,
 } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter, useNavigation } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { ThreadCard } from '@/components/ThreadCard';
 import { ShareSheet } from '@/components/ShareSheet';
@@ -22,8 +22,9 @@ import { Box } from '@/components/ui/box';
 import { ThreadService } from '@/services/thread.service';
 import { UserService } from '@/services/user.service';
 import { formatFullDate } from '@/services/format';
-import { SendIcon } from '@/constants/icons';
+import { SendIcon, ArrowLeftIcon } from '@/constants/icons';
 import { ThreadDetailSkeleton } from '@/components/skeletons';
+import { SafeAreaView } from '@/components/ui/safe-area-view';
 import type { ThreadWithAuthor, ThreadWithReplies } from '@/types/types';
 import { useInteractionStore } from '@/store/useInteractionStore';
 
@@ -36,6 +37,7 @@ type ListItem =
 export default function ThreadDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const navigation = useNavigation();
   const inputRef = useRef<TextInput>(null);
   const flatListRef = useRef<FlatList>(null);
   const [replyText, setReplyText] = useState('');
@@ -57,6 +59,10 @@ export default function ThreadDetailScreen() {
   useEffect(() => {
     UserService.getCurrentUser().then(setCurrentUser).catch(console.error);
   }, []);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({ headerShown: false });
+  }, [navigation]);
 
   const loadData = useCallback(async () => {
     if (!id) return;
@@ -323,6 +329,20 @@ export default function ThreadDetailScreen() {
       keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 0}
     >
       <Box className={`flex-1 ${Platform.OS === 'web' ? 'w-full max-w-[680px] self-center' : ''}`}>
+        {/* Custom Header with Back Button */}
+        <SafeAreaView edges={['top']}>
+          <HStack className="items-center px-4 py-2" space="md">
+            <Pressable 
+              onPress={() => router.back()} 
+              hitSlop={12} 
+              className="rounded-full p-1 active:bg-white/10"
+            >
+              <ArrowLeftIcon size={24} color="#f5f5f5" />
+            </Pressable>
+            <Text className="text-[18px] font-bold text-brand-light">Thread</Text>
+          </HStack>
+        </SafeAreaView>
+
         <FlatList
           ref={flatListRef}
           data={listData}
