@@ -10,9 +10,16 @@
   RewriteRule . /index.html [L]
 </IfModule>
 
+# --- FIX FOR ASSETS IN NODE_MODULES ---
+# Some hosting providers block URLs containing "node_modules".
+# This attempts to allow them if they are inside the assets folder.
+<IfModule mod_authz_core.c>
+  <Location "/assets">
+    Require all granted
+  </Location>
+</IfModule>
+
 # --- FIX CSP CONFLICTS ---
-# If the hosting provider (cPanel/GoDaddy) is injecting a strict CSP header, 
-# it will override our meta tag. This attempt to unset it.
 <IfModule mod_headers.c>
   Header unset Content-Security-Policy
   Header unset X-Content-Security-Policy
