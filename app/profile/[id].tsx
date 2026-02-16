@@ -120,7 +120,7 @@ export default function UserProfileScreen() {
         profile.user.id,
       );
       // Navigate to the conversation
-      router.push(`/conversation/${conversation.id}`);
+      router.push(`/conversation/${conversation.conversation.id}`);
     } catch (error) {
       console.error("Failed to create conversation:", error);
     }
