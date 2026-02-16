@@ -31,22 +31,6 @@ export default function ComposerModal() {
 
   return (
     <View className="flex-1 bg-brand-elevated">
-      <Stack.Screen
-        options={{
-          headerTitle: "New Thread",
-          headerTitleStyle: { color: "#f3f5f7", fontWeight: "bold" },
-          headerStyle: { backgroundColor: "#181818" },
-          headerLeft: () => (
-            <Pressable
-              onPress={() => router.back()}
-              className="ml-2 p-2 active:opacity-60"
-              hitSlop={10}
-            >
-              <Text className="text-[16px] text-brand-light">Cancel</Text>
-            </Pressable>
-          ),
-        }}
-      />
       <SafeAnimatedView
         entering={FadeInDown?.duration(300)
           .springify()

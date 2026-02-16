@@ -169,33 +169,21 @@ export default function RootLayout() {
               <Stack.Screen
                 name="thread/[id]"
                 options={{
-                  headerShown: true,
-                  headerTitle: "Thread",
-                  headerTintColor: "#f5f5f5",
-                  headerStyle: { backgroundColor: "#101010" },
-                  headerShadowVisible: false,
+                  headerShown: false,
                   animation: "slide_from_right",
                 }}
               />
               <Stack.Screen
                 name="profile/[id]"
                 options={{
-                  headerShown: true,
-                  headerTitle: "",
-                  headerTintColor: "#f5f5f5",
-                  headerStyle: { backgroundColor: "#101010" },
-                  headerShadowVisible: false,
+                  headerShown: false,
                   animation: "slide_from_right",
                 }}
               />
               <Stack.Screen
                 name="profile/edit"
                 options={{
-                  headerShown: true,
-                  headerTitle: "Edit Profile",
-                  headerTintColor: "#f5f5f5",
-                  headerStyle: { backgroundColor: "#101010" },
-                  headerShadowVisible: false,
+                  headerShown: false,
                   animation: "slide_from_right",
                 }}
               />
@@ -224,11 +212,7 @@ export default function RootLayout() {
                 name="modal"
                 options={{
                   presentation: "modal",
-                  headerShown: true,
-                  headerTitle: "New Thread",
-                  headerTintColor: "#f5f5f5",
-                  headerStyle: { backgroundColor: "#1a1a1a" },
-                  headerShadowVisible: false,
+                  headerShown: false,
                   animation: "slide_from_bottom",
                 }}
               />

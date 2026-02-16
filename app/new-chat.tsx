@@ -30,6 +30,11 @@ type FlowStep = "select-user" | "group-setup";
 
 export default function NewChatScreen() {
   const router = useRouter();
+  return <NewChatContent />;
+}
+
+function NewChatContent() {
+  const router = useRouter();
   const [step, setStep] = useState<FlowStep>("select-user");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
