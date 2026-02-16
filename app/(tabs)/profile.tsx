@@ -16,7 +16,8 @@ import { DesktopRightColumn } from "@/components/DesktopRightColumn";
 import { Text } from "@/components/ui/text";
 import { HStack } from "@/components/ui/hstack";
 import { ThreadService } from "@/services/thread.service";
-import { SettingsIcon, CommunityIcon } from "@/constants/icons";
+import { SettingsIcon, CommunityIcon, LogOutIcon } from "@/constants/icons";
+import { ConfirmationDialog } from "@/components/ConfirmationDialog";
 import type { ThreadWithAuthor } from "@/types/types";
 import { PROFILE_TABS } from "@/constants/app";
 import { useCurrentUserProfile } from "@/hooks/use-user-profile";
@@ -26,7 +27,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 export default function ProfileScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("threads");
-  const { userId } = useAuthStore();
+  const { userId, logout } = useAuthStore();
 
   const { profile, isLoading, refresh: refetch } = useCurrentUserProfile();
 
@@ -49,6 +50,7 @@ export default function ProfileScreen() {
   const [followersTab, setFollowersTab] = useState<"followers" | "following">(
     "followers",
   );
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   // Sync maps when profile loads
   useEffect(() => {
@@ -153,6 +155,15 @@ export default function ProfileScreen() {
     setFollowersModalOpen(true);
   }, []);
 
+  const handleLogoutPress = () => {
+    setShowLogoutConfirm(true);
+  };
+
+  const confirmLogout = async () => {
+    await logout();
+    router.replace("/(auth)/login");
+  };
+
   if (isLoading && !profile) {
     return (
       <ScreenLayout>
@@ -176,9 +187,18 @@ export default function ProfileScreen() {
             <Pressable hitSlop={8} className="p-1 active:opacity-60">
               <CommunityIcon size={24} color="#f3f5f7" />
             </Pressable>
-            <Pressable hitSlop={8} className="p-1 active:opacity-60">
-              <SettingsIcon size={24} color="#f3f5f7" />
-            </Pressable>
+            <HStack space="md">
+              <Pressable hitSlop={8} className="p-1 active:opacity-60">
+                <SettingsIcon size={24} color="#f3f5f7" />
+              </Pressable>
+              <Pressable
+                hitSlop={8}
+                className="p-1 active:opacity-60"
+                onPress={handleLogoutPress}
+              >
+                <LogOutIcon size={24} color="#ff3040" />
+              </Pressable>
+            </HStack>
           </HStack>
 
           <ProfileHeader
@@ -269,6 +289,16 @@ export default function ProfileScreen() {
         onClose={() => setFollowersModalOpen(false)}
         userId={userId ?? ""}
         initialTab={followersTab}
+      />
+
+      <ConfirmationDialog
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={confirmLogout}
+        title="Log out?"
+        description="Are you sure you want to log out? You will need to sign in again to access your account."
+        confirmLabel="Log out"
+        isDestructive
       />
     </ScreenLayout>
   );

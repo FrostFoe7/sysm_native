@@ -25,6 +25,7 @@ import {
 } from "@/constants/icons";
 import { ChatService } from "@/services/chat.service";
 import { useAuthStore } from "@/store/useAuthStore";
+import { ConfirmationDialog } from "@/components/ConfirmationDialog";
 import type { ConversationWithDetails } from "@/types/types";
 
 export default function GroupInfoScreen() {
@@ -36,6 +37,7 @@ export default function GroupInfoScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [isEditingName, setIsEditingName] = useState(false);
   const [newName, setNewName] = useState("");
+  const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const { userId: currentUserId } = useAuthStore();
 
   const loadDetails = useCallback(async () => {
@@ -90,6 +92,10 @@ export default function GroupInfoScreen() {
     if (!id) return;
     await ChatService.leaveGroup(id);
     router.replace("/(tabs)/inbox" as any);
+  };
+
+  const handleLeavePress = () => {
+    setShowLeaveConfirm(true);
   };
 
   const handleRemoveMember = async (userId: string) => {
@@ -308,7 +314,7 @@ export default function GroupInfoScreen() {
 
         {/* Leave group */}
         <Pressable
-          onPress={handleLeave}
+          onPress={handleLeavePress}
           className="flex-row items-center p-4 active:bg-white/5"
         >
           <LogOutIcon size={20} color="#ff3040" />
@@ -329,6 +335,16 @@ export default function GroupInfoScreen() {
           </Pressable>
         )}
       </ScrollView>
+
+      <ConfirmationDialog
+        isOpen={showLeaveConfirm}
+        onClose={() => setShowLeaveConfirm(false)}
+        onConfirm={handleLeave}
+        title="Leave Group?"
+        description="Are you sure you want to leave this group? You will no longer receive messages from this conversation."
+        confirmLabel="Leave"
+        isDestructive
+      />
     </SafeAreaView>
   );
 }

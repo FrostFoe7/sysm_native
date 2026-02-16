@@ -21,6 +21,7 @@ import { UserService } from "@/services/user.service";
 import { ThreadService } from "@/services/thread.service";
 import { useAuthStore } from "@/store/useAuthStore";
 import { analytics } from "@/services/analytics.service";
+import { ConfirmationDialog } from "./ConfirmationDialog";
 import type { ThreadWithAuthor } from "@/types/types";
 import {
   VolumeX,
@@ -54,6 +55,7 @@ export function ThreadOverflowMenu({
   const currentUserId = useAuthStore((s) => s.userId);
   const isOwnThread = thread?.user_id === currentUserId;
   const [muted, setMuted] = React.useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
   const { showToast } = useAppToast();
 
   React.useEffect(() => {
@@ -90,23 +92,18 @@ export function ThreadOverflowMenu({
   const handleDelete = useCallback(() => {
     if (!thread) return;
     onClose();
-    const doDelete = () => {
-      ThreadService.deleteThread(thread.id);
-      onThreadDeleted?.(thread.id);
-      showToast("Thread deleted", TOAST_ICONS.deleted, "brand-red");
-    };
-    if (Platform.OS === "web") {
-      const confirmed = window.confirm(
-        "Delete this thread? This action cannot be undone.",
-      );
-      if (confirmed) doDelete();
-    } else {
-      Alert.alert("Delete thread?", "This action cannot be undone.", [
-        { text: "Cancel", style: "cancel" },
-        { text: "Delete", style: "destructive", onPress: doDelete },
-      ]);
-    }
-  }, [thread, onClose, onThreadDeleted, showToast]);
+    // Wait for actionsheet to close before showing dialog
+    setTimeout(() => {
+      setShowDeleteConfirm(true);
+    }, 300);
+  }, [thread, onClose]);
+
+  const confirmDelete = useCallback(() => {
+    if (!thread) return;
+    ThreadService.deleteThread(thread.id);
+    onThreadDeleted?.(thread.id);
+    showToast("Thread deleted", TOAST_ICONS.deleted, "brand-red");
+  }, [thread, onThreadDeleted, showToast]);
 
   const handleReport = useCallback(() => {
     if (thread) {
@@ -254,6 +251,16 @@ export function ThreadOverflowMenu({
           )}
         </VStack>
       </ActionsheetContent>
+
+      <ConfirmationDialog
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={confirmDelete}
+        title="Delete thread?"
+        description="This action cannot be undone. This post will be permanently removed from your profile and the feed."
+        confirmLabel="Delete"
+        isDestructive
+      />
     </Actionsheet>
   );
 }

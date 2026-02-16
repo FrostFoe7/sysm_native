@@ -368,15 +368,34 @@ async function hideThread(threadId: string): Promise<void> {
 async function editThread(
   threadId: string,
   content: string,
-  media?: any,
+  media?: MediaItem[],
 ): Promise<ThreadWithAuthor> {
   const userId = await getCachedUserId();
+
+  // Handle media uploads for new attachments
+  const finalMedia: MediaItem[] = [];
+  if (media && media.length > 0) {
+    for (const item of media) {
+      if (
+        item.uri.startsWith("blob:") ||
+        item.uri.startsWith("file:") ||
+        item.uri.startsWith("content:")
+      ) {
+        // New attachment, upload it
+        const publicUrl = await uploadMedia(item);
+        finalMedia.push({ ...item, uri: publicUrl });
+      } else {
+        // Already uploaded, keep it
+        finalMedia.push(item);
+      }
+    }
+  }
 
   const { data, error } = await supabase.rpc("edit_thread", {
     p_user_id: userId,
     p_thread_id: threadId,
     p_content: content,
-    ...(media ? { p_media: media } : {}),
+    p_media: finalMedia,
   });
 
   if (error) throw error;
@@ -404,12 +423,13 @@ async function reportThread(
 }
 
 async function deleteThread(threadId: string): Promise<boolean> {
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("threads")
     .update({ is_deleted: true })
-    .eq("id", threadId);
+    .eq("id", threadId)
+    .select("id");
 
-  return !error;
+  return !error && data && data.length > 0;
 }
 
 async function isLikedByCurrentUser(threadId: string): Promise<boolean> {

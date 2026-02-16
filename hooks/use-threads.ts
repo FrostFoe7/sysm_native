@@ -305,6 +305,12 @@ export function useThreadsFeed(feedType: "foryou" | "following" = "foryou") {
         );
       }
     },
+    onSuccess: (success) => {
+      if (success) {
+        queryClient.invalidateQueries({ queryKey: ["threads-feed"] });
+        queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+      }
+    },
   });
 
   const handleDelete = useCallback(
@@ -325,7 +331,7 @@ export function useThreadsFeed(feedType: "foryou" | "following" = "foryou") {
       content: string;
       media?: any;
     }) => ThreadService.editThread(threadId, content, media),
-    onMutate: async ({ threadId, content }) => {
+    onMutate: async ({ threadId, content, media }) => {
       await queryClient.cancelQueries({ queryKey: ["threads-feed"] });
 
       const previousForYou = queryClient.getQueryData<ThreadWithAuthor[]>([
@@ -338,7 +344,19 @@ export function useThreadsFeed(feedType: "foryou" | "following" = "foryou") {
       ]);
 
       const updater = (old: ThreadWithAuthor[] | undefined) =>
-        old?.map((t) => (t.id === threadId ? { ...t, content } : t));
+        old?.map((t) =>
+          t.id === threadId
+            ? {
+                ...t,
+                content,
+                media: media ?? t.media,
+                images:
+                  media
+                    ?.filter((m: any) => m.type === "image")
+                    .map((m: any) => m.uri) ?? t.images,
+              }
+            : t,
+        );
 
       queryClient.setQueryData<ThreadWithAuthor[]>(
         ["threads-feed", "foryou"],

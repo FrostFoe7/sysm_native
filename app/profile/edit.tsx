@@ -25,6 +25,7 @@ import { Divider } from "@/components/ui/divider";
 import { Box } from "@/components/ui/box";
 import { UserService } from "@/services/user.service";
 import { CameraIcon, CloseIcon, ArrowLeftIcon } from "@/constants/icons";
+import { ConfirmationDialog } from "@/components/ConfirmationDialog";
 import {
   MAX_BIO_LENGTH,
   MAX_NAME_LENGTH,
@@ -89,6 +90,7 @@ export default function EditProfileScreen() {
   const [bio, setBio] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
+  const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
@@ -137,19 +139,7 @@ export default function EditProfileScreen() {
 
   const handleCancel = useCallback(() => {
     if (hasChanges) {
-      if (Platform.OS === "web") {
-        const confirmed = window.confirm("Discard changes?");
-        if (confirmed) router.back();
-      } else {
-        Alert.alert("Discard changes?", "Your edits will not be saved.", [
-          { text: "Keep Editing", style: "cancel" },
-          {
-            text: "Discard",
-            style: "destructive",
-            onPress: () => router.back(),
-          },
-        ]);
-      }
+      setShowDiscardConfirm(true);
     } else {
       router.back();
     }
@@ -297,6 +287,17 @@ export default function EditProfileScreen() {
           )}
         </ScrollView>
       </KeyboardAvoidingView>
+
+      <ConfirmationDialog
+        isOpen={showDiscardConfirm}
+        onClose={() => setShowDiscardConfirm(false)}
+        onConfirm={() => router.back()}
+        title="Discard changes?"
+        description="Your edits will not be saved."
+        confirmLabel="Discard"
+        cancelLabel="Keep Editing"
+        isDestructive
+      />
     </ScreenLayout>
   );
 }
