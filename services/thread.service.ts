@@ -44,7 +44,7 @@ function rowToUser(row: any): User {
 async function uploadMedia(item: MediaItem): Promise<string> {
   const userId = await getCachedUserId();
   const fileExt = item.uri.split('.').pop()?.toLowerCase() ?? (item.type === 'video' ? 'mp4' : 'jpg');
-  const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+  const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
   const filePath = `${userId}/${fileName}`;
 
   let blob: Blob;

@@ -3,7 +3,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { Pressable } from 'react-native';
-import { Heart } from 'lucide-react-native';
 import { 
   SafeAnimatedView, 
   isWeb, 
@@ -13,6 +12,7 @@ import {
   useAnimatedStyle 
 } from '@/utils/animatedWebSafe';
 import { BOUNCY_SPRING_CONFIG } from '@/constants/ui';
+import { HeartIcon, HeartFillIcon } from '@/constants/icons';
 
 interface AnimatedHeartProps {
   isLiked: boolean;
@@ -49,16 +49,6 @@ export function AnimatedHeart({ isLiked, onPress, size = 19 }: AnimatedHeartProp
   }));
 
   const heartColor = isLiked ? '#ff3040' : '#777777';
-  const heartFill = isLiked ? '#ff3040' : 'transparent';
-
-  const heartIcon = (
-    <Heart
-      size={size}
-      color={heartColor}
-      fill={heartFill}
-      strokeWidth={isLiked ? 0 : 1.8}
-    />
-  );
 
   return (
     <Pressable
@@ -72,7 +62,11 @@ export function AnimatedHeart({ isLiked, onPress, size = 19 }: AnimatedHeartProp
           isWeb && ({ transition: 'transform 200ms ease-out' } as any)
         ]}
       >
-        {heartIcon}
+        {isLiked ? (
+          <HeartFillIcon size={size} color={heartColor} />
+        ) : (
+          <HeartIcon size={size} color={heartColor} />
+        )}
       </SafeAnimatedView>
     </Pressable>
   );

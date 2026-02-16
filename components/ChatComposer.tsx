@@ -5,7 +5,14 @@ import { Pressable, TextInput, View, Platform, Animated } from 'react-native';
 import { HStack } from '@/components/ui/hstack';
 import { VStack } from '@/components/ui/vstack';
 import { Text } from '@/components/ui/text';
-import { Send, Mic, Smile, X, Camera, Trash2 } from 'lucide-react-native';
+import { 
+  SendIcon, 
+  MicIcon, 
+  SmileIcon, 
+  CloseIcon, 
+  CameraIcon, 
+  TrashIcon 
+} from '@/constants/icons';
 import { MAX_MESSAGE_LENGTH, REACTION_EMOJIS } from '@/constants/app';
 import { VoiceService } from '@/services/voice.service';
 import type { MessageWithSender } from '@/types/types';
@@ -151,7 +158,7 @@ export function ChatComposer({
             onPress={cancelVoiceRecording}
             className="rounded-full bg-red-500/20 p-2 active:bg-red-500/40"
           >
-            <Trash2 size={20} color="#ef4444" />
+            <TrashIcon size={20} color="#ef4444" />
           </Pressable>
 
           {/* Waveform + duration */}
@@ -182,7 +189,7 @@ export function ChatComposer({
             onPress={stopVoiceRecording}
             className="items-center justify-center rounded-full bg-brand-blue p-2.5 active:opacity-80"
           >
-            <Send size={18} color="white" />
+            <SendIcon size={18} color="white" />
           </Pressable>
         </HStack>
       </View>
@@ -207,7 +214,7 @@ export function ChatComposer({
             onPress={onCancelReply}
             className="rounded-full p-1 active:bg-white/10"
           >
-            <X size={16} color="brand-muted" />
+            <CloseIcon size={16} color="#777777" />
           </Pressable>
         </HStack>
       )}
@@ -243,7 +250,7 @@ export function ChatComposer({
           className="mb-1 rounded-full p-1.5 active:bg-white/10"
           onPress={onSendImage}
         >
-          <Camera size={22} color="brand-blue" />
+          <CameraIcon size={22} color="#0095f6" />
         </Pressable>
 
         {/* Text input */}
@@ -253,13 +260,14 @@ export function ChatComposer({
             value={text}
             onChangeText={handleChangeText}
             placeholder="Message..."
-            placeholderTextColor="brand-muted"
+            placeholderTextColor="#555555"
             multiline
             maxLength={MAX_MESSAGE_LENGTH}
             className="max-h-[100px] flex-1 text-[15px] text-brand-light"
             style={{
               paddingTop: Platform.OS === 'ios' ? 8 : 4,
               paddingBottom: Platform.OS === 'ios' ? 8 : 4,
+              ...(Platform.OS === 'web' ? { outlineStyle: 'none' as any } : {}),
             }}
             editable={!disabled}
             onKeyPress={Platform.OS === 'web' ? handleKeyPress : undefined}
@@ -269,7 +277,7 @@ export function ChatComposer({
             className="ml-2 p-1 active:opacity-60"
             onPress={() => setShowEmojiPicker(!showEmojiPicker)}
           >
-            <Smile size={20} color="brand-muted" />
+            <SmileIcon size={20} color="#777777" />
           </Pressable>
         </View>
 
@@ -279,7 +287,7 @@ export function ChatComposer({
             className="mb-1 items-center justify-center rounded-full bg-brand-blue p-2 active:opacity-80"
             onPress={handleSend}
           >
-            <Send size={18} color="white" />
+            <SendIcon size={18} color="white" />
           </Pressable>
         ) : (
           <Pressable
@@ -288,7 +296,7 @@ export function ChatComposer({
             onPress={startVoiceRecording}
             delayLongPress={200}
           >
-            <Mic size={22} color="brand-light" />
+            <MicIcon size={22} color="#f3f5f7" />
           </Pressable>
         )}
       </HStack>

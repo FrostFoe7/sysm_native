@@ -13,7 +13,8 @@ import {
   withSpring,
   withSequence,
 } from '@/utils/animatedWebSafe';
-import { Heart, Volume2, VolumeX } from 'lucide-react-native';
+import { HeartFillIcon } from '@/constants/icons';
+import { Volume2, VolumeX } from 'lucide-react-native';
 import { ReelOverlay } from '@/components/ReelOverlay';
 import { ReelCommentSheet } from '@/components/ReelCommentSheet';
 import { ReelSkeleton } from '@/components/ReelSkeleton';
@@ -200,7 +201,7 @@ export function ReelPlayer({ reel, isActive, isMuted, onMuteToggle }: ReelPlayer
             isWeb && ({ transition: 'transform 200ms ease-out, opacity 300ms ease-in-out' } as any),
           ]}
         >
-          <Heart size={88} color="brand-red" fill="brand-red" />
+          <HeartFillIcon size={88} color="#ff3040" />
         </SafeAnimatedView>
       )}
 

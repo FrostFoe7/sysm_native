@@ -19,7 +19,7 @@ import { HStack } from '@/components/ui/hstack';
 import { Divider } from '@/components/ui/divider';
 import { Box } from '@/components/ui/box';
 import { UserService } from '@/services/user.service';
-import { Camera, X } from 'lucide-react-native';
+import { CameraIcon, CloseIcon } from '@/constants/icons';
 import { 
   MAX_BIO_LENGTH, 
   MAX_NAME_LENGTH, 
@@ -197,7 +197,7 @@ export default function EditProfileScreen() {
                 <AvatarImage source={{ uri: avatarUrl }} />
               </Avatar>
               <Box className="absolute bottom-0 right-0 rounded-full border-2 border-brand-dark bg-brand-blue p-1.5">
-                <Camera size={14} color="#ffffff" strokeWidth={2.5} />
+                <CameraIcon size={14} color="#ffffff" />
               </Box>
             </Pressable>
             <Text className="mt-2 text-[14px] font-medium text-brand-blue">
@@ -214,7 +214,7 @@ export default function EditProfileScreen() {
                   onPress={() => setShowAvatarPicker(false)}
                   hitSlop={8}
                 >
-                  <X size={16} color="brand-muted" />
+                  <CloseIcon size={16} color="#777777" />
                 </Pressable>
               </HStack>
               <HStack className="flex-wrap" style={{ gap: 10 }}>

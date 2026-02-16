@@ -22,7 +22,7 @@ import { Box } from '@/components/ui/box';
 import { ThreadService } from '@/services/thread.service';
 import { UserService } from '@/services/user.service';
 import { formatFullDate } from '@/services/format';
-import { Send } from 'lucide-react-native';
+import { SendIcon } from '@/constants/icons';
 import { ThreadDetailSkeleton } from '@/components/skeletons';
 import type { ThreadWithAuthor, ThreadWithReplies } from '@/types/types';
 import { useInteractionStore } from '@/store/useInteractionStore';
@@ -362,10 +362,9 @@ export default function ThreadDetailScreen() {
             className={`rounded-full p-2 ${replyText.trim() ? 'active:bg-white/10' : 'opacity-40'}`}
             hitSlop={8}
           >
-            <Send
+            <SendIcon
               size={20}
-              color={replyText.trim() ? 'brand-blue' : 'brand-muted'}
-              strokeWidth={2}
+              color={replyText.trim() ? '#0095f6' : '#555555'}
             />
           </Pressable>
         </HStack>

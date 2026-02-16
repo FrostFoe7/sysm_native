@@ -1,112 +1,86 @@
 // components/FloatingInput.tsx
-// Instagram-style floating label text input
 
-import React, { useState, useRef, useCallback } from 'react';
-import { TextInput, View, Pressable, Platform } from 'react-native';
+import React, { useState } from 'react';
+import { View, TextInput, Pressable, Platform } from 'react-native';
 import { Text } from '@/components/ui/text';
-import { Eye, EyeOff } from 'lucide-react-native';
+import { EyeIcon, EyeOffIcon } from '@/constants/icons';
 
 interface FloatingInputProps {
   label: string;
   value: string;
   onChangeText: (text: string) => void;
-  error?: string;
   secureTextEntry?: boolean;
-  keyboardType?: 'default' | 'email-address' | 'numeric';
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
-  autoComplete?: string;
-  maxLength?: number;
-  editable?: boolean;
-  rightElement?: React.ReactNode;
-  onSubmitEditing?: () => void;
-  returnKeyType?: 'done' | 'next' | 'go' | 'send';
+  keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad';
+  error?: string;
+  placeholder?: string;
 }
 
 export function FloatingInput({
   label,
   value,
   onChangeText,
-  error,
-  secureTextEntry = false,
-  keyboardType = 'default',
+  secureTextEntry,
   autoCapitalize = 'none',
-  autoComplete,
-  maxLength,
-  editable = true,
-  rightElement,
-  onSubmitEditing,
-  returnKeyType,
+  keyboardType = 'default',
+  error,
+  placeholder,
 }: FloatingInputProps) {
   const [isFocused, setIsFocused] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const inputRef = useRef<TextInput>(null);
-  const isActive = isFocused || value.length > 0;
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
-  const handleFocus = useCallback(() => setIsFocused(true), []);
-  const handleBlur = useCallback(() => setIsFocused(false), []);
-
-  const borderColor = error
-    ? 'border-brand-red'
-    : isFocused
-      ? 'border-brand-blue'
-      : 'border-brand-border';
+  const showLabel = isFocused || value.length > 0;
 
   return (
-    <View>
-      <Pressable
-        onPress={() => inputRef.current?.focus()}
-        className={`relative rounded-xl border ${borderColor} bg-[#1a1a1a] px-4 pb-2 pt-5`}
+    <View className="w-full">
+      <View
+        className={`relative h-[56px] rounded-xl border px-4 justify-center ${
+          error 
+            ? 'border-brand-red' 
+            : isFocused 
+              ? 'border-brand-blue' 
+              : 'border-brand-border bg-brand-elevated'
+        }`}
       >
-        {/* Floating label */}
-        <Text
-          className={`absolute left-4 transition-all ${
-            isActive
-              ? 'top-1.5 text-[11px] text-brand-muted'
-              : 'top-4 text-[15px] text-[#666]'
-          }`}
-          style={Platform.OS === 'web' ? { transition: 'all 0.15s ease' } as any : undefined}
-        >
-          {label}
-        </Text>
-
+        {showLabel && (
+          <Text
+            className={`absolute left-4 top-2 text-[11px] font-semibold ${
+              error ? 'text-brand-red' : 'text-brand-blue'
+            }`}
+          >
+            {label}
+          </Text>
+        )}
         <TextInput
-          ref={inputRef}
           value={value}
           onChangeText={onChangeText}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          secureTextEntry={secureTextEntry && !showPassword}
-          keyboardType={keyboardType}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          placeholder={!showLabel ? placeholder || label : ''}
+          placeholderTextColor="#555555"
+          secureTextEntry={secureTextEntry && !isPasswordVisible}
           autoCapitalize={autoCapitalize}
-          autoComplete={autoComplete as any}
-          maxLength={maxLength}
-          editable={editable}
-          onSubmitEditing={onSubmitEditing}
-          returnKeyType={returnKeyType}
+          keyboardType={keyboardType}
           className="text-[15px] text-brand-light"
-          placeholderTextColor="transparent"
-          style={{ minHeight: 24 }}
+          style={{
+            paddingTop: showLabel ? 12 : 0,
+            ...(Platform.OS === 'web' ? { outlineStyle: 'none' as any } : {}),
+          }}
         />
-
-        {/* Right element: password toggle or custom */}
-        {(secureTextEntry || rightElement) && (
-          <View className="absolute inset-y-0 right-3 justify-center">
-            {secureTextEntry ? (
-              <Pressable onPress={() => setShowPassword((v) => !v)} hitSlop={12}>
-                {showPassword ? (
-                  <EyeOff size={20} color="#666" />
-                ) : (
-                  <Eye size={20} color="#666" />
-                )}
-              </Pressable>
+        {secureTextEntry && (
+          <Pressable
+            onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+            className="absolute right-4 top-[18px]"
+            hitSlop={10}
+          >
+            {isPasswordVisible ? (
+              <EyeOffIcon size={20} color="#777777" />
             ) : (
-              rightElement
+              <EyeIcon size={20} color="#777777" />
             )}
-          </View>
+          </Pressable>
         )}
-      </Pressable>
-
-      {/* Error message */}
+      </View>
       {error && (
         <Text className="ml-1 mt-1 text-[12px] text-brand-red">{error}</Text>
       )}

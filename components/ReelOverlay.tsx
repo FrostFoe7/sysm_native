@@ -11,13 +11,12 @@ import {
   Heart,
   MoreHorizontal,
   Music,
-  Plus,
   Bookmark,
   Flag,
   Link2,
   EyeOff,
 } from 'lucide-react-native';
-import { VerifiedIcon, ChatIcon, ShareIcon, TOAST_ICONS } from '@/constants/icons';
+import { VerifiedIcon, ChatIcon, ShareIcon, PlusIcon, TOAST_ICONS } from '@/constants/icons';
 import { formatCount } from '@/services/format';
 import { ReelService } from '@/services/reel.service';
 import { UserService } from '@/services/user.service';
@@ -147,7 +146,7 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
                 borderColor: '#0a0a0a',
               }}
             >
-              <Plus size={12} color="#ffffff" strokeWidth={3} />
+              <PlusIcon size={12} color="#ffffff" />
             </Pressable>
           )}
         </View>

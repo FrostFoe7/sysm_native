@@ -5,8 +5,7 @@ import { Pressable } from 'react-native';
 import { HStack } from '@/components/ui/hstack';
 import { Text } from '@/components/ui/text';
 import { AnimatedHeart } from '@/components/AnimatedHeart';
-import { ChatIcon, ShareIcon } from '@/constants/icons';
-import { Repeat2 } from 'lucide-react-native';
+import { ChatIcon, ShareIcon, RepostIcon } from '@/constants/icons';
 import { formatCount } from '@/services/format';
 
 interface ActionRowProps {
@@ -70,7 +69,7 @@ export function ActionRow({
         className="flex-row items-center rounded-full p-2 active:bg-white/5"
         hitSlop={8}
       >
-        <Repeat2 size={19} color={repostColor} strokeWidth={1.8} />
+        <RepostIcon size={19} color={repostColor} />
         {repostCount > 0 && (
           <Text style={{ color: repostColor }} className="ml-1 text-[13px]">
             {formatCount(repostCount)}

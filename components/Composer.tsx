@@ -14,8 +14,7 @@ import { Divider } from '@/components/ui/divider';
 import { Button, ButtonText } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserService } from '@/services/user.service';
-import { MediaIcon, ReelsIcon, ChatIcon, CommunityIcon } from '@/constants/icons';
-import { X } from 'lucide-react-native';
+import { MediaIcon, ReelsIcon, ChatIcon, CommunityIcon, CloseIcon } from '@/constants/icons';
 import type { MediaItem, User } from '@/types/types';
 
 interface ComposerMedia {
@@ -280,7 +279,7 @@ export function Composer({
                           }}
                           hitSlop={4}
                         >
-                          <X size={13} color="#ffffff" />
+                          <CloseIcon size={13} color="#ffffff" />
                         </Pressable>
                       </View>
                     ))}

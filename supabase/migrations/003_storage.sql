@@ -18,7 +18,8 @@ VALUES
   ),
   ('chat-media', 'chat-media', FALSE, 26214400, -- 25 MB
     ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'video/mp4', 'audio/mpeg', 'audio/ogg', 'audio/wav']
-  );
+  )
+ON CONFLICT (id) DO NOTHING;
 
 -- ═══════════════════════════════════════════════════════════════════════════════
 -- AVATARS: public read, authenticated users upload their own
@@ -32,21 +33,21 @@ CREATE POLICY "avatars_select_public" ON storage.objects
 CREATE POLICY "avatars_insert_own" ON storage.objects
   FOR INSERT WITH CHECK (
     bucket_id = 'avatars'
-    AND (storage.foldername(name))[1] = (SELECT id::text FROM public.users WHERE auth_id = auth.uid())
+    AND (storage.foldername(name))[1] = public.current_user_id()::text
   );
 
 -- Users can update their own avatars
 CREATE POLICY "avatars_update_own" ON storage.objects
   FOR UPDATE USING (
     bucket_id = 'avatars'
-    AND (storage.foldername(name))[1] = (SELECT id::text FROM public.users WHERE auth_id = auth.uid())
+    AND (storage.foldername(name))[1] = public.current_user_id()::text
   );
 
 -- Users can delete their own avatars
 CREATE POLICY "avatars_delete_own" ON storage.objects
   FOR DELETE USING (
     bucket_id = 'avatars'
-    AND (storage.foldername(name))[1] = (SELECT id::text FROM public.users WHERE auth_id = auth.uid())
+    AND (storage.foldername(name))[1] = public.current_user_id()::text
   );
 
 -- ═══════════════════════════════════════════════════════════════════════════════
@@ -56,23 +57,23 @@ CREATE POLICY "avatars_delete_own" ON storage.objects
 CREATE POLICY "thread_media_select_public" ON storage.objects
   FOR SELECT USING (bucket_id = 'thread-media');
 
--- Upload path: thread-media/{user_id}/{thread_id}/{filename}
+-- Upload path: thread-media/{user_id}/{filename}
 CREATE POLICY "thread_media_insert_own" ON storage.objects
   FOR INSERT WITH CHECK (
     bucket_id = 'thread-media'
-    AND (storage.foldername(name))[1] = (SELECT id::text FROM public.users WHERE auth_id = auth.uid())
+    AND (storage.foldername(name))[1] = public.current_user_id()::text
   );
 
 CREATE POLICY "thread_media_update_own" ON storage.objects
   FOR UPDATE USING (
     bucket_id = 'thread-media'
-    AND (storage.foldername(name))[1] = (SELECT id::text FROM public.users WHERE auth_id = auth.uid())
+    AND (storage.foldername(name))[1] = public.current_user_id()::text
   );
 
 CREATE POLICY "thread_media_delete_own" ON storage.objects
   FOR DELETE USING (
     bucket_id = 'thread-media'
-    AND (storage.foldername(name))[1] = (SELECT id::text FROM public.users WHERE auth_id = auth.uid())
+    AND (storage.foldername(name))[1] = public.current_user_id()::text
   );
 
 -- ═══════════════════════════════════════════════════════════════════════════════
@@ -82,23 +83,23 @@ CREATE POLICY "thread_media_delete_own" ON storage.objects
 CREATE POLICY "reel_videos_select_public" ON storage.objects
   FOR SELECT USING (bucket_id = 'reel-videos');
 
--- Upload path: reel-videos/{user_id}/{reel_id}/{filename}
+-- Upload path: reel-videos/{user_id}/{filename}
 CREATE POLICY "reel_videos_insert_own" ON storage.objects
   FOR INSERT WITH CHECK (
     bucket_id = 'reel-videos'
-    AND (storage.foldername(name))[1] = (SELECT id::text FROM public.users WHERE auth_id = auth.uid())
+    AND (storage.foldername(name))[1] = public.current_user_id()::text
   );
 
 CREATE POLICY "reel_videos_update_own" ON storage.objects
   FOR UPDATE USING (
     bucket_id = 'reel-videos'
-    AND (storage.foldername(name))[1] = (SELECT id::text FROM public.users WHERE auth_id = auth.uid())
+    AND (storage.foldername(name))[1] = public.current_user_id()::text
   );
 
 CREATE POLICY "reel_videos_delete_own" ON storage.objects
   FOR DELETE USING (
     bucket_id = 'reel-videos'
-    AND (storage.foldername(name))[1] = (SELECT id::text FROM public.users WHERE auth_id = auth.uid())
+    AND (storage.foldername(name))[1] = public.current_user_id()::text
   );
 
 -- ═══════════════════════════════════════════════════════════════════════════════
@@ -106,7 +107,6 @@ CREATE POLICY "reel_videos_delete_own" ON storage.objects
 -- ═══════════════════════════════════════════════════════════════════════════════
 
 -- Read: only conversation participants can view
--- Path: chat-media/{conversation_id}/{message_id}/{filename}
 CREATE POLICY "chat_media_select_participant" ON storage.objects
   FOR SELECT USING (
     bucket_id = 'chat-media'

@@ -16,10 +16,17 @@ import { VStack } from '@/components/ui/vstack';
 import { Text } from '@/components/ui/text';
 import { Divider } from '@/components/ui/divider';
 import { useAppToast } from '@/components/AppToast';
-import { TOAST_ICONS } from '@/constants/icons';
+import { 
+  TOAST_ICONS, 
+  LinkIcon, 
+  ExternalShareIcon, 
+  MessageIcon, 
+  BookmarkIcon, 
+  BookmarkFillIcon, 
+  FlagIcon 
+} from '@/constants/icons';
 import { ThreadService } from '@/services/thread.service';
 import { analytics } from '@/services/analytics.service';
-import { Link2, Share2, MessageSquare, Bookmark, Flag } from 'lucide-react-native';
 
 interface ShareSheetProps {
   isOpen: boolean;
@@ -101,7 +108,7 @@ export function ShareSheet({ isOpen, onClose, threadId }: ShareSheetProps) {
             onPress={handleCopyLink}
           >
             <HStack className="flex-1 items-center" space="lg">
-              <Link2 size={22} color="brand-light" strokeWidth={1.8} />
+              <LinkIcon size={22} color="#f3f5f7" />
               <ActionsheetItemText className="text-[16px] text-brand-light">
                 Copy link
               </ActionsheetItemText>
@@ -113,7 +120,7 @@ export function ShareSheet({ isOpen, onClose, threadId }: ShareSheetProps) {
             onPress={handleShareExternal}
           >
             <HStack className="flex-1 items-center" space="lg">
-              <Share2 size={22} color="brand-light" strokeWidth={1.8} />
+              <ExternalShareIcon size={22} color="#f3f5f7" />
               <ActionsheetItemText className="text-[16px] text-brand-light">
                 Share via...
               </ActionsheetItemText>
@@ -125,7 +132,7 @@ export function ShareSheet({ isOpen, onClose, threadId }: ShareSheetProps) {
             onPress={handleSendVia}
           >
             <HStack className="flex-1 items-center" space="lg">
-              <MessageSquare size={22} color="brand-light" strokeWidth={1.8} />
+              <MessageIcon size={22} color="#f3f5f7" />
               <ActionsheetItemText className="text-[16px] text-brand-light">
                 Send via Direct Message
               </ActionsheetItemText>
@@ -137,12 +144,11 @@ export function ShareSheet({ isOpen, onClose, threadId }: ShareSheetProps) {
             onPress={handleBookmark}
           >
             <HStack className="flex-1 items-center" space="lg">
-              <Bookmark
-                size={22}
-                color="brand-light"
-                strokeWidth={1.8}
-                fill={isBookmarked ? 'brand-light' : 'none'}
-              />
+              {isBookmarked ? (
+                <BookmarkFillIcon size={22} color="#f3f5f7" />
+              ) : (
+                <BookmarkIcon size={22} color="#f3f5f7" />
+              )}
               <ActionsheetItemText className="text-[16px] text-brand-light">
                 {isBookmarked ? 'Unsave' : 'Save'}
               </ActionsheetItemText>
@@ -156,7 +162,7 @@ export function ShareSheet({ isOpen, onClose, threadId }: ShareSheetProps) {
             onPress={handleReport}
           >
             <HStack className="flex-1 items-center" space="lg">
-              <Flag size={22} color="brand-red" strokeWidth={1.8} />
+              <FlagIcon size={22} color="#ff3040" />
               <ActionsheetItemText className="text-[16px] text-brand-red">
                 Report
               </ActionsheetItemText>
