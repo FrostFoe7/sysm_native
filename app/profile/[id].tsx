@@ -12,6 +12,7 @@ import { AnimatedListItem } from "@/components/AnimatedListItem";
 import { AnimatedTabBar } from "@/components/AnimatedTabBar";
 import { Text } from "@/components/ui/text";
 import { ThreadService } from "@/services/thread.service";
+import { ChatService } from "@/services/chat.service";
 import type { ThreadWithAuthor } from "@/types/types";
 import {
   ProfileHeaderSkeleton,
@@ -111,6 +112,20 @@ export default function UserProfileScreen() {
   const handleThreadHidden = useCallback(() => {}, []);
   const handleUserMuted = useCallback(() => {}, []);
 
+  const handleMessagePress = useCallback(async () => {
+    if (!profile) return;
+    try {
+      // Create or get direct conversation with this user
+      const conversation = await ChatService.createDirectConversation(
+        profile.user.id,
+      );
+      // Navigate to the conversation
+      router.push(`/conversation/${conversation.id}`);
+    } catch (error) {
+      console.error("Failed to create conversation:", error);
+    }
+  }, [profile, router]);
+
   if (isLoading) {
     return (
       <ScreenLayout>
@@ -135,6 +150,7 @@ export default function UserProfileScreen() {
         isCurrentUser={false}
         isFollowing={isFollowing}
         onFollowToggle={handleFollowToggle}
+        onMessagePress={handleMessagePress}
       />
 
       <AnimatedTabBar

@@ -92,6 +92,7 @@ $$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
 
 -- 3a. notifications INSERT policy — needed for SECURITY DEFINER triggers,
 --     but also allows service_role and edge functions to insert
+DROP POLICY IF EXISTS "notifications_insert_service" ON public.notifications;
 CREATE POLICY "notifications_insert_service"
   ON public.notifications FOR INSERT
   WITH CHECK (TRUE);
@@ -101,11 +102,13 @@ CREATE POLICY "notifications_insert_service"
 -- because they'd need a valid user_id FK that matches.
 
 -- 3b. feed_events DELETE policy (for pruning)
+DROP POLICY IF EXISTS "feed_events_delete_own" ON public.feed_events;
 CREATE POLICY "feed_events_delete_own"
   ON public.feed_events FOR DELETE
   USING (user_id = public.current_user_id());
 
 -- 3c. conversations DELETE policy — creator can delete
+DROP POLICY IF EXISTS "conversations_delete_creator" ON public.conversations;
 CREATE POLICY "conversations_delete_creator"
   ON public.conversations FOR DELETE
   USING (created_by = public.current_user_id());
@@ -220,9 +223,6 @@ CREATE POLICY "devices_select_own" ON public.user_devices
     user_id = public.current_user_id()
     OR auth.role() = 'service_role'
   );
-
-DROP POLICY IF EXISTS "devices_select_service" ON public.user_devices;
--- Merged into devices_select_own above
 
 DROP POLICY IF EXISTS "devices_insert_own" ON public.user_devices;
 CREATE POLICY "devices_insert_own" ON public.user_devices
@@ -344,6 +344,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- 12. ADD reel_comments RLS UPDATE policy (missing — can't edit comments)
 -- ═══════════════════════════════════════════════════════════════════════════════
 
+DROP POLICY IF EXISTS "reel_comments_update_own" ON public.reel_comments;
 CREATE POLICY "reel_comments_update_own" ON public.reel_comments
   FOR UPDATE USING (user_id = public.current_user_id());
 
@@ -351,8 +352,7 @@ CREATE POLICY "reel_comments_update_own" ON public.reel_comments
 -- 13. REALTIME: Add reels to publication for live comment counts
 -- ═══════════════════════════════════════════════════════════════════════════════
 
--- reels table is NOT in supabase_realtime yet — add for live updates
-ALTER PUBLICATION supabase_realtime ADD TABLE public.reels;
-
--- reel_comments for live comment updates
-ALTER PUBLICATION supabase_realtime ADD TABLE public.reel_comments;
+-- Note: reels and reel_comments tables should already be in supabase_realtime
+-- from earlier migrations (001). If not present, add them manually via:
+-- ALTER PUBLICATION supabase_realtime ADD TABLE public.reels;
+-- ALTER PUBLICATION supabase_realtime ADD TABLE public.reel_comments;

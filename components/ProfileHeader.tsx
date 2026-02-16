@@ -17,6 +17,7 @@ import {
   ShareIcon,
   FollowIcon,
   FollowingIcon,
+  MessageIcon,
 } from "@/constants/icons";
 import type { User } from "@/types/types";
 
@@ -31,6 +32,7 @@ interface ProfileHeaderProps {
   onEditProfile?: () => void;
   onFollowersPress?: () => void;
   onFollowingPress?: () => void;
+  onMessagePress?: () => void;
 }
 
 export function ProfileHeader({
@@ -44,6 +46,7 @@ export function ProfileHeader({
   onEditProfile,
   onFollowersPress,
   onFollowingPress,
+  onMessagePress,
 }: ProfileHeaderProps) {
   return (
     <VStack className="w-full shrink-0 p-4" space="md">
@@ -166,9 +169,16 @@ export function ProfileHeader({
               variant="outline"
               size="sm"
               className="h-9 flex-1 rounded-lg border-brand-border-secondary bg-transparent"
+              onPress={onMessagePress}
             >
+              <ButtonIcon
+                as={MessageIcon}
+                size={"sm" as any}
+                color="#f3f5f7"
+                className="mr-2"
+              />
               <ButtonText className="text-[14px] font-semibold text-brand-light">
-                Mention
+                Message
               </ButtonText>
             </Button>
           </>
