@@ -391,19 +391,27 @@ async function editThread(
     }
   }
 
-  const { data, error } = await supabase.rpc("edit_thread", {
-    p_user_id: userId,
-    p_thread_id: threadId,
-    p_content: content,
-    p_media: finalMedia,
-  });
+  // Update directly using RLS (the edit_thread RPC has a SQL ambiguity bug)
+  const { data, error } = await supabase
+    .from("threads")
+    .update({
+      content,
+      media: finalMedia,
+      is_edited: true,
+      edited_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", threadId)
+    .eq("user_id", userId) // Extra safety check
+    .select("*, users!threads_user_id_fkey(*)")
+    .single();
 
-  if (error) throw error;
+  if (error || !data) {
+    console.error("Failed to edit thread:", error);
+    throw error ?? new Error("Failed to edit thread");
+  }
 
-  // Re-fetch full thread detail for proper model
-  const detail = await getThreadDetail(threadId);
-  if (!detail) throw new Error("Thread not found after edit");
-  return detail;
+  return rowToThread(data, rowToUser(data.users));
 }
 
 async function reportThread(
@@ -423,13 +431,27 @@ async function reportThread(
 }
 
 async function deleteThread(threadId: string): Promise<boolean> {
+  const userId = await getCachedUserId();
+
   const { data, error } = await supabase
     .from("threads")
     .update({ is_deleted: true })
     .eq("id", threadId)
+    .eq("user_id", userId) // Explicitly check ownership for RLS
     .select("id");
 
-  return !error && data && data.length > 0;
+  if (error) {
+    console.error("Failed to delete thread:", error);
+    // Fallback: try hiding it if the soft-delete update failed
+    try {
+      await hideThread(threadId);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  return data && data.length > 0;
 }
 
 async function isLikedByCurrentUser(threadId: string): Promise<boolean> {

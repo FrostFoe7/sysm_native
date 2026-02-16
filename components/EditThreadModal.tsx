@@ -29,7 +29,7 @@ export function EditThreadModal({
       try {
         const updated = await ThreadService.editThread(thread.id, content, media);
         onThreadUpdated?.(updated);
-        showToast("Thread updated", TOAST_ICONS.copied);
+        showToast("Thread updated", TOAST_ICONS.success);
         onClose();
       } catch (err) {
         console.error("Failed to edit thread:", err);
