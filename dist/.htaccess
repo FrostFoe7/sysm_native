@@ -4,22 +4,15 @@
   RewriteBase /
 
   # SPA Routing
+  # If the request is for a real file or directory, serve it as is
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteCond %{REQUEST_URI} !^/assets/.*$
+  # Otherwise, send everything to index.html for client-side routing
   RewriteRule . /index.html [L]
 </IfModule>
 
-# --- FIX FOR ASSETS IN NODE_MODULES ---
-# Some hosting providers block URLs containing "node_modules".
-# This attempts to allow them if they are inside the assets folder.
-<IfModule mod_authz_core.c>
-  <Location "/assets">
-    Require all granted
-  </Location>
-</IfModule>
-
 # --- FIX CSP CONFLICTS ---
+# Attempt to unset strict CSP headers if injected by the host
 <IfModule mod_headers.c>
   Header unset Content-Security-Policy
   Header unset X-Content-Security-Policy
