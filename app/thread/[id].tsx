@@ -217,7 +217,8 @@ export default function ThreadDetailScreen() {
   }, []);
 
   const handleThreadDeleted = useCallback(
-    (threadId: string) => {
+    async (threadId: string) => {
+      await ThreadService.deleteThread(threadId);
       if (threadId === id) {
         router.back();
       } else {

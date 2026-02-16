@@ -213,7 +213,8 @@ export default function ExploreScreen() {
     setEditingThread(thread);
   }, []);
 
-  const handleThreadDeleted = useCallback((_threadId: string) => {
+  const handleThreadDeleted = useCallback(async (threadId: string) => {
+    await ThreadService.deleteThread(threadId);
     setRefreshKey((k) => k + 1);
   }, []);
 

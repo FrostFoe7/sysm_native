@@ -100,14 +100,9 @@ export function ThreadOverflowMenu({
 
   const confirmDelete = useCallback(async () => {
     if (!thread) return;
-    const success = await ThreadService.deleteThread(thread.id);
-    if (success) {
-      onThreadDeleted?.(thread.id);
-      showToast("Thread deleted", TOAST_ICONS.deleted, "brand-red");
-    } else {
-      showToast("Failed to delete thread", TOAST_ICONS.reported, "brand-red");
-    }
-  }, [thread, onThreadDeleted, showToast]);
+    onThreadDeleted?.(thread.id);
+    setShowDeleteConfirm(false);
+  }, [thread, onThreadDeleted]);
 
   const handleReport = useCallback(() => {
     if (thread) {

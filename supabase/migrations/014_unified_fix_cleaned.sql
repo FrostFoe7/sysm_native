@@ -342,9 +342,7 @@ RETURNS BOOLEAN
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = public
 AS $$
 BEGIN
-  UPDATE public.threads
-  SET is_deleted = TRUE,
-      updated_at = NOW()
+  DELETE FROM public.threads
   WHERE id = p_thread_id AND user_id = p_user_id;
 
   RETURN FOUND;

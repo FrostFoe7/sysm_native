@@ -121,7 +121,8 @@ export default function ProfileScreen() {
   }, []);
 
   const handleThreadDeleted = useCallback(
-    (_threadId: string) => {
+    async (threadId: string) => {
+      await ThreadService.deleteThread(threadId);
       refetch();
     },
     [refetch],

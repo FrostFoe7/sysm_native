@@ -30,6 +30,7 @@ export default function UserProfileScreen() {
     isFollowing,
     followersCount,
     handleFollowToggle,
+    refresh,
   } = useUserProfile(id ?? "");
 
   const {
@@ -108,9 +109,10 @@ export default function UserProfileScreen() {
     setEditingThread(thread);
   }, []);
 
-  const handleThreadDeleted = useCallback(() => {
-    // Re-fetch via hook if needed
-  }, []);
+  const handleThreadDeleted = useCallback(async (threadId: string) => {
+    await ThreadService.deleteThread(threadId);
+    refresh();
+  }, [refresh]);
 
   const handleThreadHidden = useCallback(() => {}, []);
   const handleUserMuted = useCallback(() => {}, []);
