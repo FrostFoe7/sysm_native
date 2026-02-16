@@ -12,7 +12,7 @@ import { ThreadOverflowMenu } from '@/components/ThreadOverflowMenu';
 import { DesktopRightColumn } from '@/components/DesktopRightColumn';
 import { Text } from '@/components/ui/text';
 import { Fab, FabIcon } from '@/components/ui/fab';
-import { SquarePen } from 'lucide-react-native';
+import { EditIcon } from '@/constants/icons';
 import { FeedSkeleton } from '@/components/skeletons';
 import { FEED_TABS } from '@/constants/app';
 import { useThreadsFeed } from '@/hooks/use-threads';
@@ -181,9 +181,9 @@ export default function HomeScreen() {
           size="lg"
           placement="bottom right"
           onPress={() => router.push('/modal')}
-          className="mb-[16px] mr-4 size-[56px]"
+          className="mb-[16px] mr-4 size-[56px] bg-brand-light"
         >
-          <FabIcon as={SquarePen} size="lg" />
+          <FabIcon as={EditIcon} size={"md" as any} color="#101010" />
         </Fab>
       </View>
     </ScreenLayout>

@@ -9,8 +9,6 @@ import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { HStack } from '@/components/ui/hstack';
 import {
   Heart,
-  MessageCircle,
-  Send,
   MoreHorizontal,
   Music,
   Plus,
@@ -19,11 +17,11 @@ import {
   Link2,
   EyeOff,
 } from 'lucide-react-native';
+import { VerifiedIcon, ChatIcon, ShareIcon, TOAST_ICONS } from '@/constants/icons';
 import { formatCount } from '@/services/format';
 import { ReelService } from '@/services/reel.service';
 import { UserService } from '@/services/user.service';
 import { useAppToast } from '@/components/AppToast';
-import { TOAST_ICONS } from '@/constants/icons';
 import type { ReelWithAuthor } from '@/types/types';
 
 interface ReelOverlayProps {
@@ -108,8 +106,8 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
         >
           <Heart
             size={80}
-            color="brand-red"
-            fill="brand-red"
+            color="#ff3040"
+            fill="#ff3040"
             style={{ opacity: 0.9 }}
           />
         </View>
@@ -129,7 +127,7 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
         {/* Creator avatar + follow */}
         <View style={{ alignItems: 'center', marginBottom: 6 }}>
           <Pressable onPress={handleAvatarPress}>
-            <Avatar size="sm" style={{ borderWidth: 2, borderColor: 'brand-light' }}>
+            <Avatar size="sm" style={{ borderWidth: 2, borderColor: '#f3f5f7' }}>
               <AvatarImage source={{ uri: reel.author.avatar_url }} />
             </Avatar>
           </Pressable>
@@ -139,7 +137,7 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
               style={{
                 position: 'absolute',
                 bottom: -8,
-                backgroundColor: 'brand-blue',
+                backgroundColor: '#0095f6',
                 borderRadius: 10,
                 width: 20,
                 height: 20,
@@ -162,8 +160,8 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
         >
           <Heart
             size={28}
-            color={liked ? 'brand-red' : '#ffffff'}
-            fill={liked ? 'brand-red' : 'transparent'}
+            color={liked ? '#ff3040' : '#ffffff'}
+            fill={liked ? '#ff3040' : 'transparent'}
             strokeWidth={liked ? 0 : 2}
           />
           <Text className="mt-1 text-[12px] font-medium text-white">
@@ -177,7 +175,7 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
           style={{ alignItems: 'center' }}
           hitSlop={6}
         >
-          <MessageCircle size={28} color="#ffffff" strokeWidth={2} />
+          <ChatIcon size={28} color="#ffffff" />
           <Text className="mt-1 text-[12px] font-medium text-white">
             {formatCount(commentCount)}
           </Text>
@@ -192,7 +190,7 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
           style={{ alignItems: 'center' }}
           hitSlop={6}
         >
-          <Send size={26} color="#ffffff" strokeWidth={2} />
+          <ShareIcon size={26} color="#ffffff" />
           <Text className="mt-1 text-[12px] font-medium text-white">
             {formatCount(shareCount)}
           </Text>
@@ -226,7 +224,7 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
               position: 'absolute',
               right: 56,
               bottom: Platform.OS === 'ios' ? 140 : 110,
-              backgroundColor: 'brand-border-secondary',
+              backgroundColor: '#2a2a2a',
               borderRadius: 12,
               paddingVertical: 4,
               minWidth: 180,
@@ -247,7 +245,7 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
                 gap: 12,
               }}
             >
-              <Bookmark size={18} color="brand-light" strokeWidth={1.8} />
+              <Bookmark size={18} color="#f3f5f7" strokeWidth={1.8} />
               <Text className="text-[14px] text-brand-light">Save</Text>
             </Pressable>
             <Pressable
@@ -260,7 +258,7 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
                 gap: 12,
               }}
             >
-              <Link2 size={18} color="brand-light" strokeWidth={1.8} />
+              <Link2 size={18} color="#f3f5f7" strokeWidth={1.8} />
               <Text className="text-[14px] text-brand-light">Copy link</Text>
             </Pressable>
             <Pressable
@@ -276,7 +274,7 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
                 gap: 12,
               }}
             >
-              <EyeOff size={18} color="brand-light" strokeWidth={1.8} />
+              <EyeOff size={18} color="#f3f5f7" strokeWidth={1.8} />
               <Text className="text-[14px] text-brand-light">Not interested</Text>
             </Pressable>
             <Pressable
@@ -313,18 +311,7 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
               {reel.author.username}
             </Text>
             {reel.author.verified && (
-              <View
-                style={{
-                  width: 14,
-                  height: 14,
-                  borderRadius: 7,
-                  backgroundColor: 'brand-blue',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Text style={{ color: '#fff', fontSize: 9, fontWeight: '700' }}>✓</Text>
-              </View>
+              <VerifiedIcon size={14} color="#0095f6" />
             )}
             {!following && (
               <Pressable onPress={handleFollow}>

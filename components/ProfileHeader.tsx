@@ -7,11 +7,11 @@ import { Text } from '@/components/ui/text';
 import { Heading } from '@/components/ui/heading';
 import { HStack } from '@/components/ui/hstack';
 import { VStack } from '@/components/ui/vstack';
-import { Button, ButtonText } from '@/components/ui/button';
+import { Button, ButtonText, ButtonIcon } from '@/components/ui/button';
 import { Divider } from '@/components/ui/divider';
 import { Box } from '@/components/ui/box';
 import { formatCount } from '@/services/format';
-import { BadgeCheck } from 'lucide-react-native';
+import { VerifiedIcon, EditIcon, ShareIcon, FollowIcon, FollowingIcon } from '@/constants/icons';
 import type { User } from '@/types/types';
 
 interface ProfileHeaderProps {
@@ -56,7 +56,7 @@ export function ProfileHeader({
               @{user.username}
             </Text>
             {user.verified && (
-              <BadgeCheck size={14} color="brand-blue" fill="brand-blue" strokeWidth={0} />
+              <VerifiedIcon size={14} color="#0095f6" />
             )}
             <Box className="rounded-full bg-brand-border px-2 py-0.5">
               <Text className="text-[11px] text-brand-muted">threads.net</Text>
@@ -98,9 +98,10 @@ export function ProfileHeader({
             <Button
               variant="outline"
               size="sm"
-              className="h-9 flex-1 rounded-lg border-[#333333] bg-transparent"
+              className="h-9 flex-1 flex-row items-center justify-center rounded-lg border-brand-border-secondary bg-transparent"
               onPress={onEditProfile}
             >
+              <ButtonIcon as={EditIcon} size={"sm" as any} color="#f3f5f7" className="mr-2" />
               <ButtonText className="text-[14px] font-semibold text-brand-light">
                 Edit profile
               </ButtonText>
@@ -108,8 +109,9 @@ export function ProfileHeader({
             <Button
               variant="outline"
               size="sm"
-              className="h-9 flex-1 rounded-lg border-[#333333] bg-transparent"
+              className="h-9 flex-1 flex-row items-center justify-center rounded-lg border-brand-border-secondary bg-transparent"
             >
+              <ButtonIcon as={ShareIcon} size={"sm" as any} color="#f3f5f7" className="mr-2" />
               <ButtonText className="text-[14px] font-semibold text-brand-light">
                 Share
               </ButtonText>
@@ -119,16 +121,22 @@ export function ProfileHeader({
           <>
             <Button
               size="sm"
-              className={`h-9 flex-1 rounded-lg ${
+              className={`h-9 flex-1 flex-row items-center justify-center rounded-lg ${
                 isFollowing
-                  ? 'border border-[#333333] bg-transparent'
-                  : 'bg-white'
+                  ? 'border border-brand-border-secondary bg-transparent'
+                  : 'bg-brand-light'
               }`}
               onPress={onFollowToggle}
             >
+              <ButtonIcon 
+                as={isFollowing ? FollowingIcon : FollowIcon} 
+                size={"sm" as any} 
+                color={isFollowing ? "#f3f5f7" : "#101010"} 
+                className="mr-2" 
+              />
               <ButtonText
                 className={`text-[14px] font-semibold ${
-                  isFollowing ? 'text-brand-light' : 'text-black'
+                  isFollowing ? 'text-brand-light' : 'text-brand-dark'
                 }`}
               >
                 {isFollowing ? 'Following' : 'Follow'}
@@ -137,7 +145,7 @@ export function ProfileHeader({
             <Button
               variant="outline"
               size="sm"
-              className="h-9 flex-1 rounded-lg border-[#333333] bg-transparent"
+              className="h-9 flex-1 rounded-lg border-brand-border-secondary bg-transparent"
             >
               <ButtonText className="text-[14px] font-semibold text-brand-light">
                 Mention

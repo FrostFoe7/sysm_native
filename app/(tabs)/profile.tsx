@@ -11,10 +11,11 @@ import { ThreadOverflowMenu } from '@/components/ThreadOverflowMenu';
 import { FollowersModal } from '@/components/FollowersModal';
 import { AnimatedListItem } from '@/components/AnimatedListItem';
 import { AnimatedTabBar } from '@/components/AnimatedTabBar';
+import { DesktopRightColumn } from '@/components/DesktopRightColumn';
 import { Text } from '@/components/ui/text';
 import { HStack } from '@/components/ui/hstack';
 import { ThreadService } from '@/services/thread.service';
-import { Menu, Settings } from 'lucide-react-native';
+import { SettingsIcon, CommunityIcon } from '@/constants/icons';
 import { ProfileHeaderSkeleton, FeedSkeleton, TabBarSkeleton } from '@/components/skeletons';
 import type { ThreadWithAuthor } from '@/types/types';
 import { PROFILE_TABS } from '@/constants/app';
@@ -118,83 +119,96 @@ export default function ProfileScreen() {
     setFollowersModalOpen(true);
   }, []);
 
-  if (!profile) return null;
+  if (!profile && !isLoading) return null;
 
   if (isLoading) {
     return (
       <ScreenLayout>
-        <HStack className="h-[44px] items-center justify-between px-4">
-          <Pressable hitSlop={8} className="p-1 active:opacity-60">
-            <Menu size={24} color="brand-light" />
-          </Pressable>
-          <Pressable hitSlop={8} className="p-1 active:opacity-60">
-            <Settings size={24} color="brand-light" />
-          </Pressable>
-        </HStack>
-        <ProfileHeaderSkeleton isCurrentUser />
-        <TabBarSkeleton />
-        <FeedSkeleton count={4} />
+        <View className="flex-1 lg:flex-row lg:justify-center">
+          <View className="flex-1 lg:max-w-[600px]">
+            <HStack className="h-[44px] items-center justify-between px-4">
+              <View className="p-1"><CommunityIcon size={24} color="#f3f5f7" /></View>
+              <View className="p-1"><SettingsIcon size={24} color="#f3f5f7" /></View>
+            </HStack>
+            <ProfileHeaderSkeleton isCurrentUser />
+            <TabBarSkeleton />
+            <FeedSkeleton count={4} />
+          </View>
+          <View className="hidden lg:flex">
+            <DesktopRightColumn />
+          </View>
+        </View>
       </ScreenLayout>
     );
   }
 
-  const data = activeTab === 'threads' ? profile.threads : profile.replies;
+  const data = activeTab === 'threads' ? profile!.threads : profile!.replies;
 
   return (
     <ScreenLayout>
-      {/* Toolbar */}
-      <HStack className="h-[44px] items-center justify-between px-4">
-        <Pressable hitSlop={8} className="p-1 active:opacity-60">
-          <Menu size={24} color="brand-light" />
-        </Pressable>
-        <Pressable hitSlop={8} className="p-1 active:opacity-60">
-          <Settings size={24} color="brand-light" />
-        </Pressable>
-      </HStack>
+      <View className="flex-1 lg:flex-row lg:justify-center">
+        <View className="flex-1 lg:max-w-[600px]">
+          {/* Toolbar */}
+          <HStack className="h-[44px] items-center justify-between px-4">
+            <Pressable hitSlop={8} className="p-1 active:opacity-60">
+              <CommunityIcon size={24} color="#f3f5f7" />
+            </Pressable>
+            <Pressable hitSlop={8} className="p-1 active:opacity-60">
+              <SettingsIcon size={24} color="#f3f5f7" />
+            </Pressable>
+          </HStack>
 
-      <ProfileHeader
-        user={profile.user}
-        threadCount={profile.threads.length}
-        followerCount={profile.followersCount}
-        followingCount={profile.followingCount}
-        isCurrentUser
-        onEditProfile={() => router.push('/profile/edit')}
-        onFollowersPress={handleFollowersPress}
-        onFollowingPress={handleFollowingPress}
-      />
+          <ProfileHeader
+            user={profile!.user}
+            threadCount={profile!.threads.length}
+            followerCount={profile!.followersCount}
+            followingCount={profile!.followingCount}
+            isCurrentUser
+            onEditProfile={() => router.push('/profile/edit')}
+            onFollowersPress={handleFollowersPress}
+            onFollowingPress={handleFollowingPress}
+          />
 
-      <AnimatedTabBar tabs={PROFILE_TABS} activeKey={activeTab} onTabPress={setActiveTab} />
+          <AnimatedTabBar tabs={PROFILE_TABS} activeKey={activeTab} onTabPress={setActiveTab} />
 
-      <FlatList
-        data={data}
-        renderItem={({ item, index }) => (
-          <AnimatedListItem index={index}>
-            <ThreadCard
-              thread={item}
-              isLiked={likedMap[item.id] ?? false}
-              isReposted={repostMap[item.id] ?? false}
-              onLike={handleLike}
-              onReply={handleReply}
-              onRepost={handleRepost}
-              onShare={handleShare}
-              onMorePress={handleMore}
-              showDivider={index < data.length - 1}
-            />
-          </AnimatedListItem>
-        )}
-        keyExtractor={(item) => item.id}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 24 }}
-        scrollEnabled
-        nestedScrollEnabled
-        ListEmptyComponent={
-          <View className="items-center justify-center py-16">
-            <Text className="text-[15px] text-brand-muted">
-              {activeTab === 'threads' ? 'No threads yet' : 'No replies yet'}
-            </Text>
-          </View>
-        }
-      />
+          <FlatList
+            data={data}
+            renderItem={({ item, index }) => (
+              <AnimatedListItem index={index}>
+                <ThreadCard
+                  thread={item}
+                  isLiked={likedMap[item.id] ?? false}
+                  isReposted={repostMap[item.id] ?? false}
+                  onLike={handleLike}
+                  onReply={handleReply}
+                  onRepost={handleRepost}
+                  onShare={handleShare}
+                  onMorePress={handleMore}
+                  showDivider={index < data.length - 1}
+                />
+              </AnimatedListItem>
+            )}
+            keyExtractor={(item) => item.id}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 24 }}
+            scrollEnabled
+            nestedScrollEnabled
+            ListEmptyComponent={
+              <View className="items-center justify-center py-16">
+                <Text className="text-[15px] text-brand-muted">
+                  {activeTab === 'threads' ? 'No threads yet' : 'No replies yet'}
+                </Text>
+              </View>
+            }
+          />
+        </View>
+        
+        {/* Desktop Sidebar (lg: breakpoint) */}
+        <View className="hidden lg:flex">
+          <DesktopRightColumn />
+        </View>
+      </View>
+
       <ShareSheet
         isOpen={shareThreadId !== null}
         onClose={() => setShareThreadId(null)}
@@ -214,5 +228,6 @@ export default function ProfileScreen() {
         userId={userId ?? ''}
         initialTab={followersTab}
       />
-    </ScreenLayout>  );
+    </ScreenLayout>
+  );
 }

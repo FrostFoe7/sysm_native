@@ -12,7 +12,7 @@ import { BONE_COLOR } from '@/constants/ui';
 
 export function ThreadCardSkeleton({ showDivider = true, showMedia = false }: { showDivider?: boolean; showMedia?: boolean }) {
   return (
-    <View>
+    <View className="w-full">
       <HStack className="px-4 py-3" space="md">
         {/* Avatar */}
         <Skeleton variant="circular" className={`size-9 ${BONE_COLOR}`} />
@@ -50,7 +50,7 @@ export function ThreadCardSkeleton({ showDivider = true, showMedia = false }: { 
 
 export function FeedSkeleton({ count = 6 }: { count?: number }) {
   return (
-    <View>
+    <View className="w-full">
       {Array.from({ length: count }).map((_, i) => (
         <ThreadCardSkeleton key={`feed-sk-${i}`} showDivider={i < count - 1} showMedia={i % 3 === 1} />
       ))}
@@ -62,7 +62,7 @@ export function FeedSkeleton({ count = 6 }: { count?: number }) {
 
 export function ProfileHeaderSkeleton({ isCurrentUser = true }: { isCurrentUser?: boolean }) {
   return (
-    <VStack className="px-4 pb-2 pt-4">
+    <VStack className="w-full px-4 pb-2 pt-4">
       {/* Top row: name + avatar */}
       <HStack className="mb-3 items-start justify-between">
         <VStack className="mr-4 flex-1" space="sm">
@@ -102,7 +102,7 @@ export function ProfileHeaderSkeleton({ isCurrentUser = true }: { isCurrentUser?
 
 export function ActivityItemSkeleton() {
   return (
-    <View>
+    <View className="w-full">
       <HStack className="px-4 py-3" space="md">
         <Skeleton variant="circular" className={`size-9 ${BONE_COLOR}`} />
         <VStack className="flex-1" space="sm">
@@ -123,7 +123,7 @@ export function ActivityItemSkeleton() {
 
 export function ActivitySkeleton({ count = 8 }: { count?: number }) {
   return (
-    <View>
+    <View className="w-full">
       {Array.from({ length: count }).map((_, i) => (
         <ActivityItemSkeleton key={`act-sk-${i}`} />
       ))}
@@ -135,7 +135,7 @@ export function ActivitySkeleton({ count = 8 }: { count?: number }) {
 
 export function ExploreUserSkeleton() {
   return (
-    <View>
+    <View className="w-full">
       <HStack className="items-center px-4 py-3" space="md">
         <Skeleton variant="circular" className={`size-10 ${BONE_COLOR}`} />
         <VStack className="flex-1" space="sm">
@@ -153,7 +153,7 @@ export function ExploreUserSkeleton() {
 
 export function ExploreSkeleton() {
   return (
-    <View>
+    <View className="w-full">
       {/* Section header */}
       <View className="px-4 pb-2 pt-5">
         <Skeleton variant="rounded" className={`h-[16px] w-[80px] ${BONE_COLOR}`} />
@@ -178,7 +178,7 @@ export function ExploreSkeleton() {
 
 export function ThreadDetailSkeleton() {
   return (
-    <View>
+    <View className="w-full">
       {/* Main thread */}
       <HStack className="px-4 py-3" space="md">
         <Skeleton variant="circular" className={`size-9 ${BONE_COLOR}`} />
@@ -221,7 +221,7 @@ export function ThreadDetailSkeleton() {
 
 export function TabBarSkeleton() {
   return (
-    <HStack className="border-b border-brand-border">
+    <HStack className="w-full border-b border-brand-border">
       <View className="flex-1 items-center py-3">
         <Skeleton variant="rounded" className={`h-[14px] w-[60px] ${BONE_COLOR}`} />
       </View>
@@ -236,7 +236,7 @@ export function TabBarSkeleton() {
 
 export function ConversationRowSkeleton() {
   return (
-    <View>
+    <View className="w-full">
       <HStack className="px-4 py-3" space="md">
         <Skeleton variant="circular" className={`size-[52px] ${BONE_COLOR}`} />
         <VStack className="flex-1 justify-center" space="sm">
@@ -256,7 +256,7 @@ export function ConversationRowSkeleton() {
 
 export function InboxSkeleton({ count = 8 }: { count?: number }) {
   return (
-    <View>
+    <View className="w-full">
       {Array.from({ length: count }).map((_, i) => (
         <ConversationRowSkeleton key={`inbox-sk-${i}`} />
       ))}
@@ -268,7 +268,7 @@ export function InboxSkeleton({ count = 8 }: { count?: number }) {
 
 export function ChatMessageSkeleton({ isMe = false }: { isMe?: boolean }) {
   return (
-    <View className={`flex-row px-4 py-1 ${isMe ? 'justify-end' : 'justify-start'}`}>
+    <View className={`w-full flex-row px-4 py-1 ${isMe ? 'justify-end' : 'justify-start'}`}>
       {!isMe && <Skeleton variant="circular" className={`mr-2 size-[28px] ${BONE_COLOR}`} />}
       <VStack space="xs">
         <Skeleton
@@ -284,7 +284,7 @@ export function ChatMessageSkeleton({ isMe = false }: { isMe?: boolean }) {
 
 export function ChatSkeleton() {
   return (
-    <View className="flex-1 pt-4">
+    <View className="flex-1 w-full pt-4">
       <ChatMessageSkeleton isMe={false} />
       <ChatMessageSkeleton isMe={false} />
       <ChatMessageSkeleton isMe={true} />

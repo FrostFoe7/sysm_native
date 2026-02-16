@@ -5,7 +5,8 @@ import { Pressable } from 'react-native';
 import { HStack } from '@/components/ui/hstack';
 import { Text } from '@/components/ui/text';
 import { AnimatedHeart } from '@/components/AnimatedHeart';
-import { MessageCircle, Repeat2, Send } from 'lucide-react-native';
+import { ChatIcon, ShareIcon } from '@/constants/icons';
+import { Repeat2 } from 'lucide-react-native';
 import { formatCount } from '@/services/format';
 
 interface ActionRowProps {
@@ -55,7 +56,7 @@ export function ActionRow({
         className="flex-row items-center rounded-full p-2 active:bg-white/5"
         hitSlop={8}
       >
-        <MessageCircle size={19} color="#777777" strokeWidth={1.8} />
+        <ChatIcon size={19} color="#777777" />
         {replyCount > 0 && (
           <Text className="ml-1 text-[13px] text-brand-muted-alt">
             {formatCount(replyCount)}
@@ -83,7 +84,7 @@ export function ActionRow({
         className="rounded-full p-2 active:bg-white/5"
         hitSlop={8}
       >
-        <Send size={18} color="#777777" strokeWidth={1.8} />
+        <ShareIcon size={18} color="#777777" />
       </Pressable>
     </HStack>
   );

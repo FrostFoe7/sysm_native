@@ -93,7 +93,7 @@ function DesktopStepper() {
               </Text>
             )}
           </View>
-          <VStack space="none">
+          <VStack>
             <Text
               className={`text-[16px] ${
                 i === currentIdx ? 'font-bold text-brand-light' : 'text-brand-muted'

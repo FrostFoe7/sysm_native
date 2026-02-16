@@ -9,7 +9,8 @@ import { HStack } from '@/components/ui/hstack';
 import { Text } from '@/components/ui/text';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Divider } from '@/components/ui/divider';
-import { BadgeCheck, TrendingUp } from 'lucide-react-native';
+import { TrendingUp } from 'lucide-react-native';
+import { VerifiedIcon } from '@/constants/icons';
 import { UserService } from '@/services/user.service';
 import { ThreadService } from '@/services/thread.service';
 import { analytics } from '@/services/analytics.service';
@@ -117,7 +118,7 @@ export function DesktopRightColumn() {
                       {currentUser.display_name}
                     </Text>
                     {currentUser.verified && (
-                      <BadgeCheck size={12} color="#0095F6" fill="#0095F6" />
+                      <VerifiedIcon size={12} color="#0095F6" />
                     )}
                   </HStack>
                   <Text className="text-xs text-brand-muted">@{currentUser.username}</Text>
@@ -150,7 +151,7 @@ export function DesktopRightColumn() {
                       <Text className="text-[13px] font-semibold text-brand-light" numberOfLines={1} style={{ flexShrink: 1 }}>
                         {user.username}
                       </Text>
-                      {user.verified && <BadgeCheck size={11} color="#0095F6" fill="#0095F6" />}
+                      {user.verified && <VerifiedIcon size={11} color="#0095F6" />}
                     </HStack>
                     <Text className="text-[11px] text-brand-muted" numberOfLines={1}>
                       {user.display_name}

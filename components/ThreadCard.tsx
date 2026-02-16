@@ -14,7 +14,8 @@ import { MediaGallery } from '@/components/MediaGallery';
 import { FullscreenMediaViewer } from '@/components/FullscreenMediaViewer';
 import { formatRelativeTime, formatCount } from '@/services/format';
 import type { ThreadWithAuthor } from '@/types/types';
-import { BadgeCheck, MoreHorizontal, Repeat2 } from 'lucide-react-native';
+import { MoreHorizontal, Repeat2 } from 'lucide-react-native';
+import { VerifiedIcon } from '@/constants/icons';
 
 interface ThreadCardProps {
   thread: ThreadWithAuthor;
@@ -88,7 +89,7 @@ export function ThreadCard({
       {/* Reposted by header */}
       {thread.reposted_by && (
         <HStack className="items-center px-4 pl-[60px] pt-2" space="xs">
-          <Repeat2 size={13} color="brand-muted" strokeWidth={2} />
+          <Repeat2 size={13} color="#555555" strokeWidth={2} />
           <Text className="text-[13px] text-brand-muted" numberOfLines={1}>
             {thread.reposted_by.display_name} reposted
           </Text>
@@ -119,7 +120,7 @@ export function ThreadCard({
                 </Text>
               </Pressable>
               {thread.author.verified && (
-                <BadgeCheck size={14} color="brand-blue" fill="brand-blue" strokeWidth={0} />
+                <VerifiedIcon size={14} color="#0095f6" />
               )}
             </HStack>
             <HStack className="shrink-0 items-center" space="sm">
@@ -131,7 +132,7 @@ export function ThreadCard({
                 className="-mr-1 rounded-full p-1 active:bg-white/5"
                 onPress={handleMore}
               >
-                <MoreHorizontal size={16} color="brand-muted" />
+                <MoreHorizontal size={16} color="#555555" />
               </Pressable>
             </HStack>
           </HStack>

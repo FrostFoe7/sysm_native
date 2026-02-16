@@ -12,7 +12,7 @@ import { Button, ButtonText, ButtonSpinner } from '@/components/ui/button';
 import { useAuthStore } from '@/store/useAuthStore';
 import { supabase } from '@/services/supabase';
 import { UserService } from '@/services/user.service';
-import { Check, UserPlus } from 'lucide-react-native';
+import { VerifiedIcon, FollowIcon, FollowingIcon } from '@/constants/icons';
 import type { User } from '@/types/types';
 
 export default function FollowSuggestionsStep() {
@@ -109,7 +109,7 @@ export default function FollowSuggestionsStep() {
               return (
                 <HStack
                   key={user.id}
-                  className="items-center rounded-xl border border-brand-border bg-[#1a1a1a] px-4 py-3"
+                  className="items-center rounded-xl border border-brand-border bg-brand-elevated px-4 py-3"
                   space="md"
                 >
                   <Image
@@ -119,9 +119,12 @@ export default function FollowSuggestionsStep() {
                   />
 
                   <View className="min-w-0 flex-1">
-                    <Text className="text-[14px] font-semibold text-brand-light" numberOfLines={1}>
-                      {user.display_name || user.username}
-                    </Text>
+                    <HStack className="items-center" space="xs">
+                      <Text className="text-[14px] font-semibold text-brand-light" numberOfLines={1}>
+                        {user.display_name || user.username}
+                      </Text>
+                      {user.verified && <VerifiedIcon size={12} color="#0095f6" />}
+                    </HStack>
                     <Text className="text-[13px] text-brand-muted" numberOfLines={1}>
                       @{user.username}
                     </Text>
@@ -137,18 +140,18 @@ export default function FollowSuggestionsStep() {
                     className={`rounded-lg px-4 py-2 ${
                       isFollowed
                         ? 'bg-brand-border'
-                        : 'bg-brand-blue'
+                        : 'bg-brand-light'
                     }`}
                   >
                     {isFollowed ? (
                       <HStack className="items-center" space="xs">
-                        <Check size={14} color="#f5f5f5" />
+                        <FollowingIcon size={14} color="#f3f5f7" />
                         <Text className="text-[13px] font-semibold text-brand-light">Following</Text>
                       </HStack>
                     ) : (
                       <HStack className="items-center" space="xs">
-                        <UserPlus size={14} color="#fff" />
-                        <Text className="text-[13px] font-semibold text-white">Follow</Text>
+                        <FollowIcon size={14} color="#101010" />
+                        <Text className="text-[13px] font-semibold text-brand-dark">Follow</Text>
                       </HStack>
                     )}
                   </Pressable>

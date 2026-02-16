@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router';
 import { ScreenLayout } from '@/components/ScreenLayout';
 import { AnimatedListItem } from '@/components/AnimatedListItem';
 import { AnimatedPressable } from '@/components/AnimatedPressable';
+import { DesktopRightColumn } from '@/components/DesktopRightColumn';
 import { Text } from '@/components/ui/text';
 import { Heading } from '@/components/ui/heading';
 import { HStack } from '@/components/ui/hstack';
@@ -20,8 +21,8 @@ import {
   Heart,
   MessageCircle,
   UserPlus,
-  BadgeCheck,
 } from 'lucide-react-native';
+import { VerifiedIcon } from '@/constants/icons';
 import type { ActivityItem } from '@/types/types';
 import { ActivitySkeleton } from '@/components/skeletons';
 import { useActivity } from '@/hooks/use-user';
@@ -58,13 +59,13 @@ export default function ActivityScreen() {
   const getTypeMeta = (type: ActivityItem['type']) => {
     switch (type) {
       case 'like':
-        return { icon: Heart, color: 'brand-red', fill: 'brand-red', label: 'liked your thread' };
+        return { icon: Heart, color: '#ff3040', fill: '#ff3040', label: 'liked your thread' };
       case 'reply':
-        return { icon: MessageCircle, color: 'brand-blue', fill: undefined, label: 'replied to your thread' };
+        return { icon: MessageCircle, color: '#0095f6', fill: undefined, label: 'replied to your thread' };
       case 'follow':
         return { icon: UserPlus, color: '#bf5af2', fill: undefined, label: 'started following you' };
       default:
-        return { icon: Heart, color: 'brand-muted', fill: undefined, label: '' };
+        return { icon: Heart, color: '#555555', fill: undefined, label: '' };
     }
   };
 
@@ -116,7 +117,7 @@ export default function ActivityScreen() {
                     {item.actor.username}
                   </Text>
                   {item.actor.verified && (
-                    <BadgeCheck size={14} color="brand-blue" fill="brand-blue" />
+                    <VerifiedIcon size={14} color="#0095f6" />
                   )}
                   <Text className="shrink-0 text-[13px] text-brand-muted">
                     {formatRelativeTime(item.created_at)}
@@ -160,51 +161,60 @@ export default function ActivityScreen() {
 
   return (
     <ScreenLayout>
-      <Box className="px-4 pb-1 pt-3">
-        <Heading size="2xl" className="text-brand-light">
-          Activity
-        </Heading>
-      </Box>
+      <View className="flex-1 lg:flex-row lg:justify-center">
+        <View className="flex-1 lg:max-w-[600px]">
+          <Box className="px-4 pb-1 pt-3">
+            <Heading size="2xl" className="text-brand-light">
+              Activity
+            </Heading>
+          </Box>
 
-      {/* Animated pill tabs */}
-      <HStack className="overflow-hidden px-4 py-2" space="sm">
-        {tabs.map((tab) => (
-          <Pressable
-            key={tab.key}
-            onPress={() => setActiveTab(tab.key)}
-            className={`shrink-0 rounded-full border px-4 py-[6px] ${
-              activeTab === tab.key
-                ? 'border-brand-light bg-brand-light'
-                : 'border-[#333] bg-transparent'
-            }`}
-          >
-            <Text
-              className={`text-[13px] font-semibold ${
-                activeTab === tab.key ? 'text-brand-dark' : 'text-brand-muted'
-              }`}
-            >
-              {tab.label}
-            </Text>
-          </Pressable>
-        ))}
-      </HStack>
+          {/* Animated pill tabs */}
+          <HStack className="overflow-hidden px-4 py-2" space="sm">
+            {tabs.map((tab) => (
+              <Pressable
+                key={tab.key}
+                onPress={() => setActiveTab(tab.key)}
+                className={`shrink-0 rounded-full border px-4 py-[6px] ${
+                  activeTab === tab.key
+                    ? 'border-brand-light bg-brand-light'
+                    : 'border-[#333] bg-transparent'
+                }`}
+              >
+                <Text
+                  className={`text-[13px] font-semibold ${
+                    activeTab === tab.key ? 'text-brand-dark' : 'text-brand-muted'
+                  }`}
+                >
+                  {tab.label}
+                </Text>
+              </Pressable>
+            ))}
+          </HStack>
 
-      <FlatList
-        data={filteredActivity}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 24 }}
-        ListEmptyComponent={
-          isLoading ? (
-            <ActivitySkeleton />
-          ) : (
-            <View className="items-center justify-center py-16">
-              <Text className="text-[15px] text-brand-muted">No activity yet</Text>
-            </View>
-          )
-        }
-      />
+          <FlatList
+            data={filteredActivity}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 24 }}
+            ListEmptyComponent={
+              isLoading ? (
+                <ActivitySkeleton />
+              ) : (
+                <View className="items-center justify-center py-16">
+                  <Text className="text-[15px] text-brand-muted">No activity yet</Text>
+                </View>
+              )
+            }
+          />
+        </View>
+
+        {/* Desktop Sidebar (lg: breakpoint) */}
+        <View className="hidden lg:flex">
+          <DesktopRightColumn />
+        </View>
+      </View>
     </ScreenLayout>
   );
 }

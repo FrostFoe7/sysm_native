@@ -9,32 +9,29 @@ import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Divider } from '@/components/ui/divider';
 import { UserService } from '@/services/user.service';
 import type { User as UserType } from '@/types/types';
-import {
-  Home,
-  Search,
-  SquarePen,
-  Heart,
-  User,
-  Film,
-  AlignJustify,
-  Send,
-} from 'lucide-react-native';
+import { 
+  HomeIcon, 
+  ReelsIcon, 
+  NotificationsIcon, 
+  ChatIcon, 
+  EditIcon, 
+  SettingsIcon,
+} from '@/constants/icons';
+import { Search, User } from 'lucide-react-native';
 
 interface NavItem {
-  icon: typeof Home;
+  icon: any;
   label: string;
   path: string;
   matchPaths: string[];
-  fillWhenActive?: boolean;
 }
 
 const NAV_ITEMS: NavItem[] = [
   {
-    icon: Home,
+    icon: HomeIcon,
     label: 'Home',
     path: '/(tabs)',
     matchPaths: ['/', '/(tabs)', '/(tabs)/index'],
-    fillWhenActive: true,
   },
   {
     icon: Search,
@@ -43,38 +40,34 @@ const NAV_ITEMS: NavItem[] = [
     matchPaths: ['/(tabs)/explore', '/explore'],
   },
   {
-    icon: SquarePen,
+    icon: EditIcon,
     label: 'New Thread',
     path: '/modal',
     matchPaths: ['/modal', '/(tabs)/new'],
   },
   {
-    icon: Film,
+    icon: ReelsIcon,
     label: 'Reels',
     path: '/(tabs)/reels',
     matchPaths: ['/(tabs)/reels', '/reels'],
-    fillWhenActive: true,
   },
   {
-    icon: Heart,
+    icon: NotificationsIcon,
     label: 'Activity',
     path: '/(tabs)/activity',
     matchPaths: ['/(tabs)/activity', '/activity'],
-    fillWhenActive: true,
   },
   {
-    icon: Send,
+    icon: ChatIcon,
     label: 'Messages',
     path: '/(tabs)/inbox',
     matchPaths: ['/(tabs)/inbox', '/inbox'],
-    fillWhenActive: true,
   },
   {
     icon: User,
     label: 'Profile',
     path: '/(tabs)/profile',
     matchPaths: ['/(tabs)/profile', '/profile'],
-    fillWhenActive: true,
   },
 ];
 
@@ -88,7 +81,7 @@ function SidebarNavItem({
   onPress: () => void;
 }) {
   const Icon = item.icon;
-  const color = isActive ? 'brand-light' : 'brand-muted-alt';
+  const color = isActive ? '#f3f5f7' : '#777777';
 
   return (
     <Pressable
@@ -101,7 +94,6 @@ function SidebarNavItem({
           size={26}
           color={color}
           strokeWidth={isActive ? 2.5 : 1.8}
-          fill={isActive && item.fillWhenActive ? color : 'transparent'}
         />
       </View>
       <Text
@@ -153,7 +145,7 @@ export function DesktopSidebar() {
           onPress={() => router.replace('/(tabs)' as any)}
         >
           <Text className="text-[22px] font-bold tracking-tight text-brand-light">
-            Threads
+            𝕋𝕙𝕣𝕖𝕒𝕕𝕤
           </Text>
         </Pressable>
 
@@ -190,7 +182,7 @@ export function DesktopSidebar() {
               @{currentUser.username}
             </Text>
           </VStack>
-          <AlignJustify size={18} color="brand-muted" strokeWidth={1.8} />
+          <SettingsIcon size={18} color="#555555" />
         </Pressable>
         )}
       </VStack>

@@ -39,6 +39,39 @@ function rowToUser(row: any): User {
   };
 }
 
+// ─── Media Upload ──────────────────────────────────────────────────────────────
+
+async function uploadMedia(item: MediaItem): Promise<string> {
+  const userId = await getCachedUserId();
+  const fileExt = item.uri.split('.').pop()?.toLowerCase() ?? (item.type === 'video' ? 'mp4' : 'jpg');
+  const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+  const filePath = `${userId}/${fileName}`;
+
+  let blob: Blob;
+  if (item.uri.startsWith('blob:')) {
+    const response = await fetch(item.uri);
+    blob = await response.blob();
+  } else {
+    // For native or other URI formats, we might need a different approach
+    // but for web, fetch works for blob: and standard URLs.
+    const response = await fetch(item.uri);
+    blob = await response.blob();
+  }
+
+  const { error: uploadError } = await supabase.storage
+    .from('media')
+    .upload(filePath, blob, {
+      contentType: item.type === 'video' ? 'video/mp4' : 'image/jpeg',
+      cacheControl: '3600',
+      upsert: false,
+    });
+
+  if (uploadError) throw uploadError;
+
+  const { data } = supabase.storage.from('media').getPublicUrl(filePath);
+  return data.publicUrl;
+}
+
 // ─── Feed queries ────────────────────────────────────────────────────────────────
 
 async function getForYouFeed(limit = 25, offset = 0): Promise<ThreadWithAuthor[]> {
@@ -259,12 +292,21 @@ async function toggleBookmark(threadId: string): Promise<{ bookmarked: boolean }
 async function createThread(content: string, _images?: string[], media?: MediaItem[]): Promise<ThreadWithAuthor> {
   const userId = await getCachedUserId();
 
+  // Handle media uploads if any
+  const uploadedMedia: MediaItem[] = [];
+  if (media && media.length > 0) {
+    for (const item of media) {
+      const publicUrl = await uploadMedia(item);
+      uploadedMedia.push({ ...item, uri: publicUrl });
+    }
+  }
+
   const { data, error } = await supabase
     .from('threads')
     .insert({
       user_id: userId,
       content,
-      media: media ?? [],
+      media: uploadedMedia,
     })
     .select('*, users!threads_user_id_fkey(*)')
     .single();

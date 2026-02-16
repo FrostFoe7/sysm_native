@@ -14,7 +14,8 @@ import { Divider } from '@/components/ui/divider';
 import { Button, ButtonText } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserService } from '@/services/user.service';
-import { ImagePlus, Video, X, Hash, AtSign } from 'lucide-react-native';
+import { MediaIcon, ReelsIcon, ChatIcon, CommunityIcon } from '@/constants/icons';
+import { X } from 'lucide-react-native';
 import type { MediaItem, User } from '@/types/types';
 
 interface ComposerMedia {
@@ -204,7 +205,7 @@ export function Composer({
                     ? `Reply to ${replyToUsername}...`
                     : placeholder
                 }
-                placeholderTextColor="brand-muted"
+                placeholderTextColor="#555555"
                 multiline
                 autoFocus={autoFocus}
                 maxLength={maxLength}
@@ -234,7 +235,7 @@ export function Composer({
                           height: media.length === 1 ? 200 : 140,
                           borderRadius: 12,
                           overflow: 'hidden',
-                          backgroundColor: 'brand-border',
+                          backgroundColor: '#1e1e1e',
                         }}
                       >
                         {item.loading ? (
@@ -296,7 +297,7 @@ export function Composer({
                   disabled={media.length >= maxMedia}
                   style={{ opacity: media.length >= maxMedia ? 0.3 : 1 }}
                 >
-                  <ImagePlus size={20} color="brand-muted" strokeWidth={1.8} />
+                  <MediaIcon size={22} color="#777777" />
                 </Pressable>
                 <Pressable
                   hitSlop={8}
@@ -305,13 +306,13 @@ export function Composer({
                   disabled={media.length >= maxMedia}
                   style={{ opacity: media.length >= maxMedia ? 0.3 : 1 }}
                 >
-                  <Video size={20} color="brand-muted" strokeWidth={1.8} />
+                  <ReelsIcon size={22} color="#777777" />
                 </Pressable>
                 <Pressable hitSlop={8} className="active:opacity-60">
-                  <Hash size={20} color="brand-muted" strokeWidth={1.8} />
+                  <CommunityIcon size={22} color="#777777" />
                 </Pressable>
                 <Pressable hitSlop={8} className="active:opacity-60">
-                  <AtSign size={20} color="brand-muted" strokeWidth={1.8} />
+                  <ChatIcon size={22} color="#777777" />
                 </Pressable>
               </HStack>
             </VStack>
@@ -348,13 +349,13 @@ export function Composer({
               disabled={!isValid}
               className={`h-9 rounded-full px-5 ${
                 isValid
-                  ? 'bg-white'
-                  : 'bg-[#333333]'
+                  ? 'bg-brand-light'
+                  : 'bg-brand-border'
               }`}
             >
               <ButtonText
                 className={`text-[14px] font-semibold ${
-                  isValid ? 'text-black' : 'text-[#666666]'
+                  isValid ? 'text-brand-dark' : '#555555'
                 }`}
               >
                 Post

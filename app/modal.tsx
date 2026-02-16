@@ -1,8 +1,8 @@
 // app/modal.tsx
 
 import React, { useCallback } from 'react';
-import { View } from 'react-native';
-import { useRouter } from 'expo-router';
+import { View, Pressable } from 'react-native';
+import { useRouter, Stack } from 'expo-router';
 import { 
   SafeAnimatedView, 
   FadeInDown, 
@@ -10,6 +10,7 @@ import {
 } from '@/utils/animatedWebSafe';
 import { Composer } from '@/components/Composer';
 import { Box } from '@/components/ui/box';
+import { Text } from '@/components/ui/text';
 import { ThreadService } from '@/services/thread.service';
 import type { MediaItem } from '@/types/types';
 
@@ -18,11 +19,15 @@ export default function ComposerModal() {
 
   const handleSubmit = useCallback(
     async (content: string, media?: MediaItem[]) => {
-      await ThreadService.createThread(content, undefined, media);
-      if (router.canGoBack()) {
-        router.back();
-      } else {
-        router.navigate('/(tabs)');
+      try {
+        await ThreadService.createThread(content, undefined, media);
+        if (router.canGoBack()) {
+          router.back();
+        } else {
+          router.navigate('/(tabs)');
+        }
+      } catch (err) {
+        console.error('Failed to create thread:', err);
       }
     },
     [router],
@@ -30,6 +35,22 @@ export default function ComposerModal() {
 
   return (
     <View className="flex-1 bg-brand-elevated">
+      <Stack.Screen
+        options={{
+          headerTitle: 'New Thread',
+          headerTitleStyle: { color: '#f3f5f7', fontWeight: 'bold' },
+          headerStyle: { backgroundColor: '#181818' },
+          headerLeft: () => (
+            <Pressable
+              onPress={() => router.back()}
+              className="ml-2 p-2 active:opacity-60"
+              hitSlop={10}
+            >
+              <Text className="text-[16px] text-brand-light">Cancel</Text>
+            </Pressable>
+          ),
+        }}
+      />
       <SafeAnimatedView
         entering={FadeInDown?.duration(300).springify().damping(20).stiffness(200)}
         className="flex-1"

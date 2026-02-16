@@ -17,10 +17,11 @@ import { VStack } from '@/components/ui/vstack';
 import { Box } from '@/components/ui/box';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Divider } from '@/components/ui/divider';
-import { Button, ButtonText } from '@/components/ui/button';
+import { Button, ButtonText, ButtonIcon } from '@/components/ui/button';
 import { UserService } from '@/services/user.service';
 import { ThreadService } from '@/services/thread.service';
-import { Search, X, BadgeCheck } from 'lucide-react-native';
+import { Search, X } from 'lucide-react-native';
+import { VerifiedIcon, FollowIcon, FollowingIcon } from '@/constants/icons';
 import { ExploreSkeleton } from '@/components/skeletons';
 import type { User, ThreadWithAuthor } from '@/types/types';
 import { useInteractionStore } from '@/store/useInteractionStore';
@@ -228,7 +229,7 @@ export default function ExploreScreen() {
                       {item.user.display_name}
                     </Text>
                     {item.user.verified && (
-                      <BadgeCheck size={14} color="brand-blue" fill="brand-blue" />
+                      <VerifiedIcon size={14} color="#0095f6" />
                     )}
                   </HStack>
                   <Text className="text-[14px] text-brand-muted" numberOfLines={1}>
@@ -245,11 +246,17 @@ export default function ExploreScreen() {
                   variant={item.isFollowed ? 'outline' : 'solid'}
                   className={
                     item.isFollowed
-                      ? 'min-w-[90px] rounded-lg border-[#333] bg-transparent'
-                      : 'min-w-[90px] rounded-lg bg-brand-light'
+                      ? 'min-w-[110px] flex-row items-center justify-center rounded-lg border-brand-border-secondary bg-transparent'
+                      : 'min-w-[110px] flex-row items-center justify-center rounded-lg bg-brand-light'
                   }
                   onPress={() => handleFollow(item.user.id)}
                 >
+                  <ButtonIcon 
+                    as={item.isFollowed ? FollowingIcon : FollowIcon} 
+                    size={"sm" as any} 
+                    color={item.isFollowed ? "#f3f5f7" : "#101010"} 
+                    className="mr-1.5"
+                  />
                   <ButtonText
                     className={`text-[13px] font-semibold ${
                       item.isFollowed ? 'text-brand-muted' : 'text-brand-dark'
@@ -295,12 +302,12 @@ export default function ExploreScreen() {
           {/* Sticky Search bar */}
           <View className="sticky top-0 z-10 bg-brand-dark p-4 lg:pt-8">
             <HStack className="h-[48px] items-center rounded-xl bg-brand-border px-4" space="sm">
-              <Search size={18} color="brand-muted" />
+              <Search size={18} color="#555555" />
               <TextInput
                 value={query}
                 onChangeText={handleQueryChange}
                 placeholder="Search"
-                placeholderTextColor="brand-muted"
+                placeholderTextColor="#555555"
                 numberOfLines={1}
                 className="h-full flex-1 text-[15px] text-brand-light"
                 style={Platform.OS === 'web' ? { outlineStyle: 'none' as any } : undefined}
@@ -309,7 +316,7 @@ export default function ExploreScreen() {
               />
               {query.length > 0 && (
                 <Pressable onPress={() => setQuery('')} hitSlop={8}>
-                  <X size={16} color="brand-muted" />
+                  <X size={16} color="#555555" />
                 </Pressable>
               )}
             </HStack>

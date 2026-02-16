@@ -11,9 +11,10 @@ import { HStack } from '@/components/ui/hstack';
 import { VStack } from '@/components/ui/vstack';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { SafeAreaView } from '@/components/ui/safe-area-view';
-import { SquarePen, Search, Phone, Video, Info, BadgeCheck } from 'lucide-react-native';
+import { Search, Phone, Video, Info } from 'lucide-react-native';
+import { VerifiedIcon, EditIcon } from '@/constants/icons';
 import { InboxSkeleton } from '@/components/skeletons';
-import { DESKTOP_BREAKPOINT } from '@/constants/ui';
+import { BREAKPOINTS } from '@/constants/ui';
 import { MessageBubble, DateSeparator } from '@/components/MessageBubble';
 import { ChatComposer } from '@/components/ChatComposer';
 import { useChat } from '@/hooks/use-chat';
@@ -96,7 +97,7 @@ function InlineChatPanel({
         <VStack className="flex-1">
           <HStack className="items-center" space="xs">
             <Text className="text-[15px] font-bold text-brand-light">{displayName}</Text>
-            {isVerified && <BadgeCheck size={13} color="brand-blue" fill="brand-blue" />}
+            {isVerified && <VerifiedIcon size={13} color="#0095f6" />}
           </HStack>
           {isGroup ? (
             <Text className="text-[11px] text-brand-muted">{details.participants.length} members</Text>
@@ -108,17 +109,17 @@ function InlineChatPanel({
         </VStack>
         <HStack space="sm">
           <Pressable className="rounded-full p-2 active:bg-white/10">
-            <Phone size={18} color="brand-light" />
+            <Phone size={18} color="#f3f5f7" />
           </Pressable>
           <Pressable className="rounded-full p-2 active:bg-white/10">
-            <Video size={18} color="brand-light" />
+            <Video size={18} color="#f3f5f7" />
           </Pressable>
           {isGroup && (
             <Pressable
               onPress={() => router.push(`/group-info/${conversationId}` as any)}
               className="rounded-full p-2 active:bg-white/10"
             >
-              <Info size={18} color="brand-light" />
+              <Info size={18} color="#f3f5f7" />
             </Pressable>
           )}
         </HStack>
@@ -166,7 +167,7 @@ function InlineChatPanel({
 export default function InboxScreen() {
   const router = useRouter();
   const { width } = useWindowDimensions();
-  const isDesktop = Platform.OS === 'web' && width >= DESKTOP_BREAKPOINT;
+  const isDesktop = Platform.OS === 'web' && width >= BREAKPOINTS.lg;
 
   const { data: inbox, isLoading, isRefreshing, searchQuery, setSearchQuery, refresh } = useInbox();
   const [activeConvId, setActiveConvId] = useState<string | null>(null);
@@ -220,20 +221,21 @@ export default function InboxScreen() {
           onPress={handleNewChat}
           className="rounded-full p-2 active:bg-white/10"
         >
-          <SquarePen size={24} color="brand-light" />
+          <EditIcon size={24} color="#f3f5f7" />
         </Pressable>
       </HStack>
 
       {/* Search */}
       <View className="px-4 py-2">
         <View className="flex-row items-center rounded-xl bg-brand-border px-3 py-2">
-          <Search size={18} color="brand-muted" />
+          <Search size={18} color="#555555" />
           <TextInput
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholder="Search messages"
-            placeholderTextColor="brand-muted"
+            placeholderTextColor="#555555"
             className="ml-2 flex-1 text-[14px] text-brand-light"
+            style={Platform.OS === 'web' ? { outlineStyle: 'none' as any } : undefined}
           />
           {searchQuery.length > 0 && (
             <Pressable onPress={() => setSearchQuery('')}>
