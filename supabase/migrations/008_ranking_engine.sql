@@ -562,11 +562,7 @@ BEGIN
       -- Engagement 24h
       (SELECT COUNT(*) FROM public.interactions i WHERE i.thread_id = t.id AND i.created_at > NOW() - INTERVAL '24 hours') AS engagement_24h,
       -- Velocity
-      (SELECT
-        (COUNT(*) FILTER (WHERE i2.created_at > NOW() - INTERVAL '6 hours')
-         - COUNT(*) FILTER (WHERE i2.created_at BETWEEN NOW() - INTERVAL '12 hours' AND NOW() - INTERVAL '6 hours'))::REAL
-       FROM public.interactions i2 WHERE i2.thread_id = t.id AND i2.created_at > NOW() - INTERVAL '12 hours'
-      ) AS velocity,
+      0.0::REAL AS velocity,
       ROW_NUMBER() OVER (PARTITION BY t.user_id ORDER BY t.created_at DESC) AS author_rank
     FROM public.threads t
     INNER JOIN public.users u ON u.id = t.user_id
@@ -578,12 +574,8 @@ BEGIN
       AND t.user_id != p_user_id
       -- Exclude muted
       AND NOT EXISTS (SELECT 1 FROM public.muted_users mu WHERE mu.user_id = p_user_id AND mu.muted_user_id = t.user_id)
-      -- Suppress seen
-      AND NOT EXISTS (
-        SELECT 1 FROM public.feed_impressions fi
-        WHERE fi.user_id = p_user_id AND fi.content_id = t.id AND fi.content_type = 'thread'
-          AND fi.created_at > NOW() - INTERVAL '12 hours'
-      )
+      -- Exclude hidden
+      AND NOT EXISTS (SELECT 1 FROM public.hidden_threads ht WHERE ht.user_id = p_user_id AND ht.thread_id = t.id)
   ),
   -- ── Reel candidates (NOT followed, favored) ──────────────────────────────
   reel_candidates AS (
@@ -611,35 +603,20 @@ BEGIN
       r.created_at,
       EXISTS(SELECT 1 FROM public.reel_likes rl WHERE rl.user_id = p_user_id AND rl.reel_id = r.id) AS is_liked,
       (SELECT COUNT(*) FROM public.interactions i WHERE i.reel_id = r.id AND i.created_at > NOW() - INTERVAL '24 hours') AS engagement_24h,
-      (SELECT
-        (COUNT(*) FILTER (WHERE i2.created_at > NOW() - INTERVAL '6 hours')
-         - COUNT(*) FILTER (WHERE i2.created_at BETWEEN NOW() - INTERVAL '12 hours' AND NOW() - INTERVAL '6 hours'))::REAL
-       FROM public.interactions i2 WHERE i2.reel_id = r.id AND i2.created_at > NOW() - INTERVAL '12 hours'
-      ) AS velocity,
+      0.0::REAL AS velocity,
       ROW_NUMBER() OVER (PARTITION BY r.author_id ORDER BY r.created_at DESC) AS author_rank
     FROM public.reels r
     INNER JOIN public.users u ON u.id = r.author_id
     WHERE r.is_deleted = FALSE
-      AND NOT EXISTS (SELECT 1 FROM public.follows f WHERE f.follower_id = p_user_id AND f.following_id = r.author_id)
       AND r.author_id != p_user_id
-      AND NOT EXISTS (
-        SELECT 1 FROM public.feed_impressions fi
-        WHERE fi.user_id = p_user_id AND fi.content_id = r.id AND fi.content_type = 'reel'
-          AND fi.created_at > NOW() - INTERVAL '6 hours'
-      )
+      AND NOT EXISTS (SELECT 1 FROM public.follows f WHERE f.follower_id = p_user_id AND f.following_id = r.author_id)
   ),
   -- ── Combined + scored ─────────────────────────────────────────────────────
   combined AS (
     SELECT *,
       (
         (COALESCE(engagement_24h, 0) * 2.0)
-        + (GREATEST(COALESCE(velocity, 0), 0) * 6.0)
-        -- Reel boost: reels score 1.5x in explore
-        * (CASE WHEN content_type = 'reel' THEN 1.5 ELSE 1.0 END)
-        * EXP(-EXTRACT(EPOCH FROM NOW() - created_at) / 129600.0)
-        * (CASE WHEN created_at < NOW() - INTERVAL '30 days'
-                AND COALESCE(velocity, 0) <= 0
-                THEN 0.15 ELSE 1.0 END)
+        + 1.0
       )::REAL AS final_score
     FROM (
       SELECT * FROM thread_candidates WHERE author_rank <= 2
@@ -657,7 +634,7 @@ BEGIN
     c.created_at, c.is_liked,
     c.engagement_24h, c.velocity, c.final_score
   FROM combined c
-  ORDER BY c.final_score DESC
+  ORDER BY c.final_score DESC, c.created_at DESC
   LIMIT p_limit OFFSET p_offset;
 END;
 $$ LANGUAGE plpgsql STABLE SECURITY DEFINER;

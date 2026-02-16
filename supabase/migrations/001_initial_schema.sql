@@ -41,8 +41,8 @@ CREATE TABLE public.threads (
   user_id       UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
   content       TEXT NOT NULL CHECK (char_length(content) <= 500),
   media         JSONB DEFAULT '[]'::jsonb,  -- [{uri, type, width, height, thumbnailUri}]
-  parent_id     UUID REFERENCES public.threads(id) ON DELETE SET NULL,
-  root_id       UUID REFERENCES public.threads(id) ON DELETE SET NULL,
+  parent_id     UUID REFERENCES public.threads(id) ON DELETE CASCADE,
+  root_id       UUID REFERENCES public.threads(id) ON DELETE CASCADE,
   reply_count   INTEGER DEFAULT 0,
   like_count    INTEGER DEFAULT 0,
   repost_count  INTEGER DEFAULT 0,
