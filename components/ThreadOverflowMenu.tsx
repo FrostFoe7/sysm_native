@@ -1,7 +1,6 @@
 // components/ThreadOverflowMenu.tsx
 
 import React, { useCallback } from "react";
-import { Platform, Alert } from "react-native";
 import {
   Actionsheet,
   ActionsheetContent,
@@ -56,6 +55,7 @@ export function ThreadOverflowMenu({
   const isOwnThread = thread?.user_id === currentUserId;
   const [muted, setMuted] = React.useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
+  const deleteThreadIdRef = React.useRef<string | null>(null);
   const { showToast } = useAppToast();
 
   React.useEffect(() => {
@@ -91,6 +91,7 @@ export function ThreadOverflowMenu({
 
   const handleDelete = useCallback(() => {
     if (!thread) return;
+    deleteThreadIdRef.current = thread.id;
     onClose();
     // Wait for actionsheet to close before showing dialog
     setTimeout(() => {
@@ -99,10 +100,13 @@ export function ThreadOverflowMenu({
   }, [thread, onClose]);
 
   const confirmDelete = useCallback(async () => {
-    if (!thread) return;
-    onThreadDeleted?.(thread.id);
+    const threadId = deleteThreadIdRef.current;
+    if (!threadId) return;
+    
+    onThreadDeleted?.(threadId);
     setShowDeleteConfirm(false);
-  }, [thread, onThreadDeleted]);
+    deleteThreadIdRef.current = null;
+  }, [onThreadDeleted]);
 
   const handleReport = useCallback(() => {
     if (thread) {

@@ -13,7 +13,6 @@ import { AppToastProvider } from "@/components/AppToast";
 import { useAuthStore } from "@/store/useAuthStore";
 import { PushService } from "@/services/push.service";
 import { CryptoService } from "@/services/crypto.service";
-import { Text } from "@/components/ui/text";
 import { Image } from "@/components/ui/image";
 
 // Create a client

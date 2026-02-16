@@ -16,7 +16,7 @@ import { DesktopRightColumn } from "@/components/DesktopRightColumn";
 import { Text } from "@/components/ui/text";
 import { HStack } from "@/components/ui/hstack";
 import { ThreadService } from "@/services/thread.service";
-import { SettingsIcon, CommunityIcon, LogOutIcon } from "@/constants/icons";
+import { SettingsIcon, CommunityIcon, LogOutIcon, TOAST_ICONS } from "@/constants/icons";
 import { ConfirmationDialog } from "@/components/ConfirmationDialog";
 import type { ThreadWithAuthor } from "@/types/types";
 import { PROFILE_TABS } from "@/constants/app";
@@ -24,7 +24,6 @@ import { useCurrentUserProfile } from "@/hooks/use-user-profile";
 import { useInteractionStore } from "@/store/useInteractionStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useAppToast } from "@/components/AppToast";
-import { TOAST_ICONS } from "@/constants/icons";
 
 export default function ProfileScreen() {
   const router = useRouter();

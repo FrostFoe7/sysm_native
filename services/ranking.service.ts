@@ -229,13 +229,9 @@ async function getExploreFeed(limit = 30, offset = 0): Promise<ExploreItem[]> {
     return item;
   });
 
-  // Record impressions for both types
-  const threadIds = items
-    .filter((i) => i.content_type === "thread")
-    .map((i) => i.content_id);
-  const reelIds = items
-    .filter((i) => i.content_type === "reel")
-    .map((i) => i.content_id);
+  // Record impressions
+  const threadIds = items.filter((i) => i.content_type === "thread").map((i) => i.content_id);
+  const reelIds = items.filter((i) => i.content_type === "reel").map((i) => i.content_id);
   if (threadIds.length) recordImpressions(threadIds, "thread").catch(() => {});
   if (reelIds.length) recordImpressions(reelIds, "reel").catch(() => {});
 

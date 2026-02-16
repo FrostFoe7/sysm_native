@@ -267,8 +267,12 @@ export function useThreadsFeed(feedType: "foryou" | "following" = "foryou") {
 
   // Delete Mutation
   const deleteMutation = useMutation({
-    mutationFn: (threadId: string) => ThreadService.deleteThread(threadId),
+    mutationFn: (threadId: string) => {
+      console.log(`[useThreadsFeed] Mutation fn calling ThreadService.deleteThread for: ${threadId}`);
+      return ThreadService.deleteThread(threadId);
+    },
     onMutate: async (threadId) => {
+      console.log(`[useThreadsFeed] onMutate for thread: ${threadId}`);
       await queryClient.cancelQueries({ queryKey: ["threads-feed"] });
 
       const previousForYou = queryClient.getQueryData<ThreadWithAuthor[]>([
@@ -295,6 +299,7 @@ export function useThreadsFeed(feedType: "foryou" | "following" = "foryou") {
       return { previousForYou, previousFollowing };
     },
     onError: (err, threadId, context) => {
+      console.error(`[useThreadsFeed] Mutation error for thread: ${threadId}`, err);
       if (context?.previousForYou) {
         queryClient.setQueryData(
           ["threads-feed", "foryou"],
@@ -309,12 +314,14 @@ export function useThreadsFeed(feedType: "foryou" | "following" = "foryou") {
       }
       showToast("Failed to delete thread", TOAST_ICONS.reported, "brand-red");
     },
-    onSuccess: (success) => {
+    onSuccess: (success, threadId) => {
+      console.log(`[useThreadsFeed] Mutation success for thread: ${threadId}, result: ${success}`);
       if (success) {
         showToast("Thread deleted", TOAST_ICONS.deleted, "brand-red");
         queryClient.invalidateQueries({ queryKey: ["threads-feed"] });
         queryClient.invalidateQueries({ queryKey: ["user-profile"] });
       } else {
+        console.warn(`[useThreadsFeed] Mutation returned false for thread: ${threadId}`);
         showToast("Failed to delete thread", TOAST_ICONS.reported, "brand-red");
       }
     },

@@ -12,7 +12,6 @@ import {
   Pressable,
   KeyboardAvoidingView,
   Platform,
-  Alert,
   View,
 } from "react-native";
 import { useRouter, useNavigation } from "expo-router";

@@ -22,13 +22,12 @@ import { Button, ButtonText, ButtonIcon } from "@/components/ui/button";
 import { UserService } from "@/services/user.service";
 import { ThreadService } from "@/services/thread.service";
 import { Search, X } from "lucide-react-native";
-import { VerifiedIcon, FollowIcon, FollowingIcon } from "@/constants/icons";
+import { VerifiedIcon, FollowIcon, FollowingIcon, TOAST_ICONS } from "@/constants/icons";
 import type { User, ThreadWithAuthor } from "@/types/types";
 import { useInteractionStore } from "@/store/useInteractionStore";
 import { useExploreFeed } from "@/hooks/use-explore";
 import type { ExploreItem as RankedExploreItem } from "@/services/ranking.service";
 import { useAppToast } from "@/components/AppToast";
-import { TOAST_ICONS } from "@/constants/icons";
 
 type ExploreListItem =
   | { type: "section-header"; title: string }

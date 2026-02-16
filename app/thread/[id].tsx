@@ -30,10 +30,9 @@ import { Box } from "@/components/ui/box";
 import { ThreadService } from "@/services/thread.service";
 import { UserService } from "@/services/user.service";
 import { formatFullDate } from "@/services/format";
-import { SendIcon, ArrowLeftIcon } from "@/constants/icons";
+import { SendIcon, ArrowLeftIcon, TOAST_ICONS } from "@/constants/icons";
 import { SafeAreaView } from "@/components/ui/safe-area-view";
 import { useAppToast } from "@/components/AppToast";
-import { TOAST_ICONS } from "@/constants/icons";
 import type { ThreadWithAuthor, ThreadWithReplies } from "@/types/types";
 import { useInteractionStore } from "@/store/useInteractionStore";
 
