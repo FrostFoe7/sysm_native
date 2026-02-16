@@ -14,14 +14,14 @@ function TabsNavigator({ hideTabBar }: { hideTabBar: boolean }) {
       screenOptions={{
         headerShown: false,
         tabBarButton: HapticTab,
-        tabBarActiveTintColor: 'brand-light',
-        tabBarInactiveTintColor: 'brand-muted',
+        tabBarActiveTintColor: '#f3f5f7', // brand-light
+        tabBarInactiveTintColor: '#555555', // brand-muted
         tabBarShowLabel: false,
         tabBarStyle: hideTabBar
           ? { display: 'none' }
           : {
-              backgroundColor: 'brand-dark',
-              borderTopColor: 'brand-border',
+              backgroundColor: '#101010', // brand-dark
+              borderTopColor: '#1e1e1e', // brand-border
               borderTopWidth: 0.5,
               height: Platform.OS === 'web' ? 60 : 84,
               paddingTop: 8,

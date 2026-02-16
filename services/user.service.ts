@@ -97,6 +97,7 @@ async function getProfile(userId: string): Promise<{
 
 async function getCurrentUser(): Promise<User> {
   const userId = await getCachedUserId();
+  if (!userId) throw new Error('Not authenticated');
 
   const { data, error } = await supabase
     .from('users')
@@ -112,6 +113,7 @@ async function getCurrentUser(): Promise<User> {
 
 async function isFollowing(targetUserId: string): Promise<boolean> {
   const userId = await getCachedUserId();
+  if (!userId) return false;
 
   const { data } = await supabase
     .from('follows')
@@ -125,6 +127,8 @@ async function isFollowing(targetUserId: string): Promise<boolean> {
 
 async function toggleFollow(targetUserId: string): Promise<{ following: boolean; followersCount: number }> {
   const userId = await getCachedUserId();
+  if (!userId) throw new Error('Not authenticated');
+  if (userId === targetUserId) throw new Error('Cannot follow yourself');
 
   const { data: existing } = await supabase
     .from('follows')
@@ -179,6 +183,7 @@ async function getFollowing(userId: string): Promise<User[]> {
 
 async function getActivity(): Promise<ActivityItem[]> {
   const userId = await getCachedUserId();
+  if (!userId) return [];
 
   // Get user's thread IDs
   const { data: userThreads } = await supabase
@@ -268,6 +273,7 @@ async function updateProfile(updates: {
   avatar_url?: string;
 }): Promise<User> {
   const userId = await getCachedUserId();
+  if (!userId) throw new Error('Not authenticated');
 
   const { data, error } = await supabase
     .from('users')
@@ -284,6 +290,7 @@ async function updateProfile(updates: {
 
 async function getExploreUsers(): Promise<User[]> {
   const userId = await getCachedUserId();
+  if (!userId) return [];
 
   // Get user IDs the current user already follows
   const { data: followRows } = await supabase
@@ -306,6 +313,7 @@ async function getExploreUsers(): Promise<User[]> {
 
 async function getSuggestedFollows(): Promise<(User & { isFollowing: boolean })[]> {
   const userId = await getCachedUserId();
+  if (!userId) return [];
 
   const { data: followRows } = await supabase
     .from('follows')
@@ -409,6 +417,7 @@ async function getAllUsers(): Promise<User[]> {
 
 async function muteUser(targetUserId: string): Promise<void> {
   const userId = await getCachedUserId();
+  if (!userId) throw new Error('Not authenticated');
   await supabase.from('muted_users').insert({
     user_id: userId,
     muted_user_id: targetUserId,
@@ -417,6 +426,7 @@ async function muteUser(targetUserId: string): Promise<void> {
 
 async function unmuteUser(targetUserId: string): Promise<void> {
   const userId = await getCachedUserId();
+  if (!userId) throw new Error('Not authenticated');
   await supabase
     .from('muted_users')
     .delete()
@@ -426,6 +436,7 @@ async function unmuteUser(targetUserId: string): Promise<void> {
 
 async function isUserMuted(targetUserId: string): Promise<boolean> {
   const userId = await getCachedUserId();
+  if (!userId) return false;
   const { data } = await supabase
     .from('muted_users')
     .select('id')
