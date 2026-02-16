@@ -20,7 +20,6 @@ import { formatRelativeTime } from "@/services/format";
 import { Heart, MessageCircle, UserPlus } from "lucide-react-native";
 import { VerifiedIcon } from "@/constants/icons";
 import type { ActivityItem } from "@/types/types";
-import { ActivitySkeleton } from "@/components/skeletons";
 import { useActivity } from "@/hooks/use-user";
 import { useInteractionStore } from "@/store/useInteractionStore";
 
@@ -226,9 +225,7 @@ export default function ActivityScreen() {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 24 }}
             ListEmptyComponent={
-              isLoading ? (
-                <ActivitySkeleton />
-              ) : (
+              isLoading ? null : (
                 <View className="items-center justify-center py-16">
                   <Text className="text-[15px] text-brand-muted">
                     No activity yet

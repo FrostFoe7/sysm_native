@@ -16,7 +16,6 @@ import { VStack } from "@/components/ui/vstack";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { MessageBubble, DateSeparator } from "@/components/MessageBubble";
 import { ChatComposer } from "@/components/ChatComposer";
-import { ChatSkeleton } from "@/components/skeletons";
 import {
   ArrowLeftIcon,
   PhoneIcon,
@@ -226,9 +225,7 @@ export default function ChatScreen() {
       </View>
 
       {/* Messages */}
-      {isLoading ? (
-        <ChatSkeleton />
-      ) : (
+      {isLoading ? null : (
         <FlatList
           ref={flatListRef}
           data={chatItems}

@@ -22,7 +22,6 @@ import { UserService } from "@/services/user.service";
 import { ThreadService } from "@/services/thread.service";
 import { Search, X } from "lucide-react-native";
 import { VerifiedIcon, FollowIcon, FollowingIcon } from "@/constants/icons";
-import { ExploreSkeleton } from "@/components/skeletons";
 import type { User, ThreadWithAuthor } from "@/types/types";
 import { useInteractionStore } from "@/store/useInteractionStore";
 import { useExploreFeed } from "@/hooks/use-explore";
@@ -379,9 +378,7 @@ export default function ExploreScreen() {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 24 }}
             ListEmptyComponent={
-              isLoading ? (
-                <ExploreSkeleton />
-              ) : query.trim() ? (
+              isLoading ? null : query.trim() ? (
                 <View className="items-center justify-center py-16">
                   <Text className="text-[15px] text-brand-muted">
                     No results for &quot;{query}&quot;

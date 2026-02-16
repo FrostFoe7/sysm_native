@@ -29,7 +29,6 @@ import { ThreadService } from "@/services/thread.service";
 import { UserService } from "@/services/user.service";
 import { formatFullDate } from "@/services/format";
 import { SendIcon, ArrowLeftIcon } from "@/constants/icons";
-import { ThreadDetailSkeleton } from "@/components/skeletons";
 import { SafeAreaView } from "@/components/ui/safe-area-view";
 import type { ThreadWithAuthor, ThreadWithReplies } from "@/types/types";
 import { useInteractionStore } from "@/store/useInteractionStore";
@@ -272,7 +271,6 @@ export default function ThreadDetailScreen() {
         <Box
           className={`flex-1 ${Platform.OS === "web" ? "w-full max-w-[680px] self-center" : ""}`}
         >
-          <ThreadDetailSkeleton />
         </Box>
       </View>
     );

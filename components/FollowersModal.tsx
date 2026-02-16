@@ -12,8 +12,6 @@ import { Button, ButtonText } from "@/components/ui/button";
 import { Divider } from "@/components/ui/divider";
 import { AnimatedTabBar } from "@/components/AnimatedTabBar";
 import { BadgeCheck, X } from "lucide-react-native";
-import { Skeleton } from "@/components/ui/skeleton";
-import { BONE_COLOR } from "@/constants/ui";
 import { UserService } from "@/services/user.service";
 import { formatCount } from "@/services/format";
 import { analytics } from "@/services/analytics.service";
@@ -30,22 +28,6 @@ interface FollowersModalProps {
   onClose: () => void;
   userId: string;
   initialTab?: "followers" | "following";
-}
-
-function UserRowSkeleton() {
-  return (
-    <HStack className="items-center px-4 py-3" space="md">
-      <Skeleton variant="circular" className={`size-11 ${BONE_COLOR}`} />
-      <VStack className="flex-1" space="xs">
-        <Skeleton variant="rounded" className={`h-3.5 w-24 ${BONE_COLOR}`} />
-        <Skeleton variant="rounded" className={`h-3 w-16 ${BONE_COLOR}`} />
-      </VStack>
-      <Skeleton
-        variant="rounded"
-        className={`h-8 w-[80px] rounded-lg ${BONE_COLOR}`}
-      />
-    </HStack>
-  );
 }
 
 export function FollowersModal({
@@ -214,13 +196,7 @@ export function FollowersModal({
       </View>
 
       {/* List */}
-      {isLoading ? (
-        <VStack>
-          {[1, 2, 3, 4, 5].map((i) => (
-            <UserRowSkeleton key={i} />
-          ))}
-        </VStack>
-      ) : (
+      {isLoading ? null : (
         <FlatList
           data={data}
           keyExtractor={(item) => item.id}

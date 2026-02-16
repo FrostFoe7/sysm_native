@@ -20,7 +20,6 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { SafeAreaView } from "@/components/ui/safe-area-view";
 import { Search, Phone, Video, Info } from "lucide-react-native";
 import { VerifiedIcon, EditIcon } from "@/constants/icons";
-import { InboxSkeleton } from "@/components/skeletons";
 import { BREAKPOINTS } from "@/constants/ui";
 import { MessageBubble, DateSeparator } from "@/components/MessageBubble";
 import { ChatComposer } from "@/components/ChatComposer";
@@ -300,9 +299,7 @@ export default function InboxScreen() {
         refreshing={isRefreshing}
         onRefresh={handleRefresh}
         ListEmptyComponent={
-          isLoading ? (
-            <InboxSkeleton />
-          ) : (
+          isLoading ? null : (
             <View className="items-center justify-center py-16">
               <Text className="mb-2 text-[28px]">📬</Text>
               <Text className="text-[16px] font-semibold text-brand-light">

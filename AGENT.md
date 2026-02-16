@@ -56,7 +56,7 @@ This document tracks the setup and configuration of the `sysm_native` project.
   - Resolved `Failed to set an indexed property on 'CSSStyleDeclaration'` by moving `pointerEvents` from style objects to component props.
   - Audited and fixed all web-specific UI components (`*.web.tsx`) to ensure style flattening for standard DOM elements.
 - **Component Standardization**:
-  - Migrated `Skeleton`, `ThemedView`, and `ThemedText` to use the web-safe abstraction.
+  - Migrated `ThemedView` and `ThemedText` to use the web-safe abstraction.
   - Updated `Grid`, `VideoPlayer`, and `MediaGallery` for web stability.
 
 ### 4. Code Quality & Linting
@@ -89,7 +89,7 @@ This document tracks the setup and configuration of the `sysm_native` project.
 
 - **Semantic Tokens**: Defined a `brand` color palette in `tailwind.config.js` (e.g., `brand-dark`, `brand-primary`, `brand-muted`).
 - **Global Refactor**: Replaced over 500 instances of hardcoded hex codes with semantic Tailwind classes (e.g., `bg-[#101010]` → `bg-brand-dark`).
-- **Consistency**: Standardized color usage across all screens, components, and skeletons.
+- **Consistency**: Standardized color usage across all screens and components.
 
 ## Current Project State
 

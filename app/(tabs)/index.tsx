@@ -13,7 +13,6 @@ import { DesktopRightColumn } from "@/components/DesktopRightColumn";
 import { Text } from "@/components/ui/text";
 import { Fab, FabIcon } from "@/components/ui/fab";
 import { EditIcon } from "@/constants/icons";
-import { FeedSkeleton } from "@/components/skeletons";
 import { FEED_TABS } from "@/constants/app";
 import { useThreadsFeed } from "@/hooks/use-threads";
 import { useInteractionStore } from "@/store/useInteractionStore";
@@ -140,9 +139,7 @@ export default function HomeScreen() {
 
   const renderEmpty = useCallback(
     () =>
-      isLoading ? (
-        <FeedSkeleton />
-      ) : (
+      isLoading ? null : (
         <View className="flex-1 items-center justify-center py-20">
           <Text className="text-[15px] text-brand-muted">No threads yet</Text>
         </View>

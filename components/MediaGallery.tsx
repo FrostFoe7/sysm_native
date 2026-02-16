@@ -4,7 +4,6 @@ import React, { useCallback, useState, memo } from "react";
 import { View, Pressable } from "react-native";
 import { SafeView } from "@/utils/animatedWebSafe";
 import { Image } from "expo-image";
-import { Skeleton } from "@/components/ui/skeleton";
 import { VideoPlayer } from "@/components/VideoPlayer";
 import type { MediaItem } from "@/types/types";
 import { BORDER_RADIUS, GAP } from "@/constants/ui";
@@ -14,16 +13,6 @@ interface MediaGalleryProps {
   onMediaPress?: (index: number) => void;
   isVisible?: boolean;
   maxHeight?: number;
-}
-
-function MediaSkeleton({ style }: { style?: any }) {
-  return (
-    <Skeleton
-      variant="rounded"
-      className="bg-brand-border"
-      style={[{ borderRadius: BORDER_RADIUS }, style]}
-    />
-  );
 }
 
 function SingleMedia({
@@ -70,11 +59,7 @@ function SingleMedia({
         overflow: "hidden",
       }}
     >
-      {!loaded && (
-        <MediaSkeleton
-          style={{ position: "absolute", width: "100%", height: "100%" }}
-        />
-      )}
+      {!loaded && null}
       <Image
         source={{ uri: item.uri }}
         style={{ width: "100%", height: "100%", borderRadius: BORDER_RADIUS }}
@@ -122,15 +107,7 @@ function DuoMedia({
             </Pressable>
           ) : (
             <Pressable onPress={() => onPress?.(i)} style={{ flex: 1 }}>
-              {!loaded[i] && (
-                <MediaSkeleton
-                  style={{
-                    position: "absolute",
-                    width: "100%",
-                    height: "100%",
-                  }}
-                />
-              )}
+              {!loaded[i] && null}
               <Image
                 source={{ uri: item.uri }}
                 style={{ width: "100%", height: "100%" }}
@@ -174,11 +151,7 @@ function TriMedia({
     }
     return (
       <Pressable key={idx} onPress={() => onPress?.(idx)} style={style}>
-        {!loaded[idx] && (
-          <MediaSkeleton
-            style={{ position: "absolute", width: "100%", height: "100%" }}
-          />
-        )}
+        {!loaded[idx] && null}
         <Image
           source={{ uri: item.uri }}
           style={{ width: "100%", height: "100%" }}
@@ -236,11 +209,7 @@ function QuadMedia({
     }
     return (
       <Pressable key={idx} onPress={() => onPress?.(idx)} style={{ flex: 1 }}>
-        {!loaded[idx] && (
-          <MediaSkeleton
-            style={{ position: "absolute", width: "100%", height: "100%" }}
-          />
-        )}
+        {!loaded[idx] && null}
         <Image
           source={{ uri: item.uri }}
           style={{ width: "100%", height: "100%" }}

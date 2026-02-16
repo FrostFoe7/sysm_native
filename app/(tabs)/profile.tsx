@@ -16,11 +16,6 @@ import { Text } from "@/components/ui/text";
 import { HStack } from "@/components/ui/hstack";
 import { ThreadService } from "@/services/thread.service";
 import { SettingsIcon, CommunityIcon } from "@/constants/icons";
-import {
-  ProfileHeaderSkeleton,
-  FeedSkeleton,
-  TabBarSkeleton,
-} from "@/components/skeletons";
 import type { ThreadWithAuthor } from "@/types/types";
 import { PROFILE_TABS } from "@/constants/app";
 import { useCurrentUserProfile } from "@/hooks/use-user-profile";
@@ -148,30 +143,7 @@ export default function ProfileScreen() {
 
   if (!profile && !isLoading) return null;
 
-  if (isLoading) {
-    return (
-      <ScreenLayout>
-        <View className="flex-1 lg:flex-row lg:justify-center">
-          <View className="flex-1 lg:max-w-[600px]">
-            <HStack className="h-[44px] items-center justify-between px-4">
-              <View className="p-1">
-                <CommunityIcon size={24} color="#f3f5f7" />
-              </View>
-              <View className="p-1">
-                <SettingsIcon size={24} color="#f3f5f7" />
-              </View>
-            </HStack>
-            <ProfileHeaderSkeleton isCurrentUser />
-            <TabBarSkeleton />
-            <FeedSkeleton count={4} />
-          </View>
-          <View className="hidden lg:flex">
-            <DesktopRightColumn />
-          </View>
-        </View>
-      </ScreenLayout>
-    );
-  }
+  if (isLoading) return null;
 
   const data = activeTab === "threads" ? profile!.threads : profile!.replies;
 

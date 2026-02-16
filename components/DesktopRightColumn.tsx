@@ -16,40 +16,6 @@ import { ThreadService } from "@/services/thread.service";
 import { analytics } from "@/services/analytics.service";
 import { useAuthStore } from "@/store/useAuthStore";
 import type { User } from "@/types/types";
-import { Skeleton } from "@/components/ui/skeleton";
-import { BONE_COLOR } from "@/constants/ui";
-
-function RightColumnSkeleton() {
-  return (
-    <VStack space="lg" className="p-4">
-      <HStack className="items-center" space="md">
-        <Skeleton variant="circular" className={`size-11 ${BONE_COLOR}`} />
-        <VStack space="xs" className="flex-1">
-          <Skeleton variant="rounded" className={`h-3 w-24 ${BONE_COLOR}`} />
-          <Skeleton variant="rounded" className={`h-2.5 w-16 ${BONE_COLOR}`} />
-        </VStack>
-      </HStack>
-      <Divider className="bg-brand-border" />
-      <Skeleton variant="rounded" className={`h-3 w-32 ${BONE_COLOR}`} />
-      {[1, 2, 3].map((i) => (
-        <HStack key={i} className="items-center" space="md">
-          <Skeleton variant="circular" className={`size-9 ${BONE_COLOR}`} />
-          <VStack space="xs" className="flex-1">
-            <Skeleton variant="rounded" className={`h-3 w-20 ${BONE_COLOR}`} />
-            <Skeleton
-              variant="rounded"
-              className={`h-2.5 w-14 ${BONE_COLOR}`}
-            />
-          </VStack>
-          <Skeleton
-            variant="rounded"
-            className={`h-7 w-[72px] rounded-lg ${BONE_COLOR}`}
-          />
-        </HStack>
-      ))}
-    </VStack>
-  );
-}
 
 export function DesktopRightColumn() {
   const router = useRouter();
@@ -100,15 +66,7 @@ export function DesktopRightColumn() {
     })();
   }, [userId]);
 
-  if (isLoading) {
-    return (
-      <View className="w-[320px] shrink-0 pl-6">
-        <View className="sticky top-0">
-          <RightColumnSkeleton />
-        </View>
-      </View>
-    );
-  }
+  if (isLoading) return null;
 
   // If not logged in, don't show the column or show a simplified version
   if (!userId) {

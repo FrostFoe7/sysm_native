@@ -18,7 +18,5 @@ export const DESKTOP_BREAKPOINT = BREAKPOINTS.lg;
 export const BORDER_RADIUS = 12;
 export const GAP = 2;
 
-export const BONE_COLOR = "bg-brand-border";
-
 export const SPRING_CONFIG = { damping: 20, stiffness: 200 };
 export const BOUNCY_SPRING_CONFIG = { damping: 6, stiffness: 400, mass: 0.4 };

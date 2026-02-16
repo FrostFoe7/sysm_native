@@ -21,7 +21,6 @@ import { HeartFillIcon } from "@/constants/icons";
 import { Volume2, VolumeX } from "lucide-react-native";
 import { ReelOverlay } from "@/components/ReelOverlay";
 import { ReelCommentSheet } from "@/components/ReelCommentSheet";
-import { ReelSkeleton } from "@/components/ReelSkeleton";
 import { ReelService } from "@/services/reel.service";
 import type { ReelWithAuthor } from "@/types/types";
 
@@ -176,21 +175,7 @@ export function ReelPlayer({
         backgroundColor: "#000000",
       }}
     >
-      {/* Loading skeleton */}
-      {!isLoaded && (
-        <View
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            zIndex: 2,
-          }}
-        >
-          <ReelSkeleton />
-        </View>
-      )}
+    
 
       {/* Video */}
       <Pressable

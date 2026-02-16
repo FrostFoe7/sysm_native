@@ -19,7 +19,6 @@ import { VStack } from "@/components/ui/vstack";
 import { Box } from "@/components/ui/box";
 import { Divider } from "@/components/ui/divider";
 import { Button, ButtonText } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { UserService } from "@/services/user.service";
 import {
   MediaIcon,
@@ -268,12 +267,7 @@ export function Composer({
                           backgroundColor: "#1e1e1e",
                         }}
                       >
-                        {item.loading ? (
-                          <Skeleton
-                            variant="rounded"
-                            className="size-full bg-brand-border"
-                          />
-                        ) : (
+                        {item.loading ? null : (
                           <Image
                             source={{ uri: item.uri }}
                             style={{ width: "100%", height: "100%" }}

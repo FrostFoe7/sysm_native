@@ -14,11 +14,6 @@ import { Text } from "@/components/ui/text";
 import { ThreadService } from "@/services/thread.service";
 import { ChatService } from "@/services/chat.service";
 import type { ThreadWithAuthor } from "@/types/types";
-import {
-  ProfileHeaderSkeleton,
-  FeedSkeleton,
-  TabBarSkeleton,
-} from "@/components/skeletons";
 import { PROFILE_TABS } from "@/constants/app";
 import { useUserProfile } from "@/hooks/use-user";
 import { useInteractionStore } from "@/store/useInteractionStore";
@@ -126,15 +121,7 @@ export default function UserProfileScreen() {
     }
   }, [profile, router]);
 
-  if (isLoading) {
-    return (
-      <ScreenLayout>
-        <ProfileHeaderSkeleton isCurrentUser={false} />
-        <TabBarSkeleton />
-        <FeedSkeleton count={4} />
-      </ScreenLayout>
-    );
-  }
+  if (isLoading) return null;
 
   if (!profile) return null;
 
