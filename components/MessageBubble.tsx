@@ -6,7 +6,11 @@ import { HStack } from '@/components/ui/hstack';
 import { VStack } from '@/components/ui/vstack';
 import { Text } from '@/components/ui/text';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
-import { BadgeCheck, CornerUpLeft, Lock } from 'lucide-react-native';
+import { 
+  VerifiedFillIcon, 
+  ArrowLeftIcon, 
+  LockIcon 
+} from '@/constants/icons';
 import { formatRelativeTime } from '@/services/format';
 import { REACTION_EMOJIS } from '@/constants/app';
 import { VoiceService, type PlaybackState } from '@/services/voice.service';
@@ -138,7 +142,7 @@ export function MessageBubble({
                 {message.sender.display_name}
               </Text>
               {message.sender.verified && (
-                <BadgeCheck size={10} color="brand-blue" fill="brand-blue" />
+                <VerifiedFillIcon size={10} color="#0095f6" />
               )}
             </HStack>
           )}
@@ -275,7 +279,7 @@ export function MessageBubble({
             {/* E2EE indicator */}
             {(message as any).is_encrypted && (
               <HStack className="mt-1 items-center" space="xs">
-                <Lock size={10} color={isMe ? 'rgba(255,255,255,0.5)' : '#555'} />
+                <LockIcon size={10} color={isMe ? 'rgba(255,255,255,0.5)' : '#555'} />
                 <Text className={`text-2xs ${isMe ? 'text-white/50' : 'text-[#555]'}`}>
                   End-to-end encrypted
                 </Text>
@@ -339,7 +343,7 @@ export function MessageBubble({
             onPress={() => onReply?.(message.id)}
             className="mb-2 ml-2 opacity-0 active:opacity-100"
           >
-            <CornerUpLeft size={16} color="brand-muted" />
+            <ArrowLeftIcon size={16} color="#777777" />
           </Pressable>
         )}
       </View>

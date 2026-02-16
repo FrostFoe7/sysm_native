@@ -29,7 +29,6 @@ function MediaSkeleton({ style }: { style?: any }) {
 function SingleMedia({
   item,
   onPress,
-  isVisible,
   maxHeight,
 }: {
   item: MediaItem;
@@ -41,19 +40,15 @@ function SingleMedia({
 
   if (item.type === 'video') {
     return (
-      <View style={{ width: '100%', height: maxHeight, borderRadius: BORDER_RADIUS, overflow: 'hidden' }}>
+      <Pressable onPress={onPress} style={{ width: '100%', height: maxHeight, borderRadius: BORDER_RADIUS, overflow: 'hidden' }}>
         <VideoPlayer
           uri={item.uri}
           thumbnailUri={item.thumbnailUri}
-          width={item.width}
-          height={item.height}
           autoPlay
           muted
-          isVisible={isVisible}
-          onPress={onPress}
           style={{ width: '100%', height: '100%' }}
         />
-      </View>
+      </Pressable>
     );
   }
 
@@ -74,7 +69,6 @@ function SingleMedia({
 function DuoMedia({
   media,
   onPress,
-  isVisible,
   maxHeight,
 }: {
   media: MediaItem[];
@@ -89,15 +83,15 @@ function DuoMedia({
       {media.slice(0, 2).map((item, i) => (
         <View key={i} style={{ flex: 1, overflow: 'hidden' }}>
           {item.type === 'video' ? (
-            <VideoPlayer
-              uri={item.uri}
-              thumbnailUri={item.thumbnailUri}
-              autoPlay={i === 0}
-              muted
-              isVisible={isVisible}
-              onPress={() => onPress?.(i)}
-              style={{ width: '100%', height: '100%' }}
-            />
+            <Pressable onPress={() => onPress?.(i)} style={{ flex: 1 }}>
+              <VideoPlayer
+                uri={item.uri}
+                thumbnailUri={item.thumbnailUri}
+                autoPlay={i === 0}
+                muted
+                style={{ width: '100%', height: '100%' }}
+              />
+            </Pressable>
           ) : (
             <Pressable onPress={() => onPress?.(i)} style={{ flex: 1 }}>
               {!loaded[i] && <MediaSkeleton style={{ position: 'absolute', width: '100%', height: '100%' }} />}
@@ -119,7 +113,6 @@ function DuoMedia({
 function TriMedia({
   media,
   onPress,
-  isVisible,
   maxHeight,
 }: {
   media: MediaItem[];
@@ -132,16 +125,15 @@ function TriMedia({
   const renderItem = (item: MediaItem, idx: number, style: any) => {
     if (item.type === 'video') {
       return (
-        <VideoPlayer
-          key={idx}
-          uri={item.uri}
-          thumbnailUri={item.thumbnailUri}
-          autoPlay={idx === 0}
-          muted
-          isVisible={isVisible}
-          onPress={() => onPress?.(idx)}
-          style={style}
-        />
+        <Pressable key={idx} onPress={() => onPress?.(idx)} style={style}>
+          <VideoPlayer
+            uri={item.uri}
+            thumbnailUri={item.thumbnailUri}
+            autoPlay={idx === 0}
+            muted
+            style={{ width: '100%', height: '100%' }}
+          />
+        </Pressable>
       );
     }
     return (
@@ -172,7 +164,6 @@ function TriMedia({
 function QuadMedia({
   media,
   onPress,
-  isVisible,
   maxHeight,
 }: {
   media: MediaItem[];
@@ -185,16 +176,15 @@ function QuadMedia({
   const renderItem = (item: MediaItem, idx: number) => {
     if (item.type === 'video') {
       return (
-        <VideoPlayer
-          key={idx}
-          uri={item.uri}
-          thumbnailUri={item.thumbnailUri}
-          autoPlay={idx === 0}
-          muted
-          isVisible={isVisible}
-          onPress={() => onPress?.(idx)}
-          style={{ flex: 1 }}
-        />
+        <Pressable key={idx} onPress={() => onPress?.(idx)} style={{ flex: 1 }}>
+          <VideoPlayer
+            uri={item.uri}
+            thumbnailUri={item.thumbnailUri}
+            autoPlay={idx === 0}
+            muted
+            style={{ width: '100%', height: '100%' }}
+          />
+        </Pressable>
       );
     }
     return (

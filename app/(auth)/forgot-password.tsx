@@ -10,7 +10,7 @@ import { HStack } from '@/components/ui/hstack';
 import { AuthCard } from '@/components/AuthCard';
 import { FloatingInput } from '@/components/FloatingInput';
 import { useAuthStore } from '@/store/useAuthStore';
-import { Mail, ArrowLeft } from 'lucide-react-native';
+import { MailIcon, ArrowLeftIcon } from '@/constants/icons';
 
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');
@@ -63,7 +63,7 @@ export default function ForgotPasswordScreen() {
       >
         <View className="items-center py-6">
           <View className="mb-4 size-16 items-center justify-center rounded-full bg-brand-blue/10">
-            <Mail size={28} color="#0095f6" />
+            <MailIcon size={28} color="#0095f6" />
           </View>
           <Text className="max-w-[280px] text-center text-[14px] leading-[20px] text-brand-muted">
             Click the link in your email to reset your password. The link expires in 1 hour.
@@ -89,7 +89,7 @@ export default function ForgotPasswordScreen() {
         <View className="items-center">
           <Pressable onPress={() => router.push('/(auth)/login')}>
             <HStack className="items-center" space="xs">
-              <ArrowLeft size={14} color="#666" />
+              <ArrowLeftIcon size={14} color="#666666" />
               <Text className="text-[14px] text-brand-muted">Back to sign in</Text>
             </HStack>
           </Pressable>
@@ -106,7 +106,7 @@ export default function ForgotPasswordScreen() {
         label="Email"
         value={email}
         onChangeText={setEmail}
-        error=""
+        error={undefined}
         keyboardType="email-address"
         autoComplete="email"
         returnKeyType="go"

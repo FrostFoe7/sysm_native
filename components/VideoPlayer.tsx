@@ -1,16 +1,15 @@
 // components/VideoPlayer.tsx
 
-import React, { useRef, useState, useEffect } from 'react';
-import { View, Pressable, Platform, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Pressable, StyleSheet } from 'react-native';
 import { useVideoPlayer, VideoView, VideoPlayer as VideoPlayerType } from 'expo-video';
-import { Text } from '@/components/ui/text';
 import { PlayIcon } from '@/constants/icons';
 import { Volume2, VolumeX } from 'lucide-react-native';
 
 interface VideoPlayerProps {
   uri: string;
   thumbnailUri?: string;
-  autoplay?: boolean;
+  autoPlay?: boolean;
   loop?: boolean;
   muted?: boolean;
   style?: any;
@@ -18,19 +17,19 @@ interface VideoPlayerProps {
 
 export function VideoPlayer({
   uri,
-  autoplay = false,
+  thumbnailUri,
+  autoPlay = false,
   loop = true,
   muted: initialMuted = true,
   style,
 }: VideoPlayerProps) {
   const [isMuted, setIsMuted] = useState(initialMuted);
-  const [isPaused, setIsPaused] = useState(!autoplay);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isPaused, setIsPaused] = useState(!autoPlay);
 
   const player = useVideoPlayer(uri, (p: VideoPlayerType) => {
     p.loop = loop;
     p.muted = isMuted;
-    if (autoplay) {
+    if (autoPlay) {
       p.play();
     }
   });

@@ -174,7 +174,7 @@ export default function ReelsScreen() {
             }}
             hitSlop={8}
           >
-            <ArrowLeft size={24} color="brand-light" strokeWidth={2} />
+            <ArrowLeftIcon size={24} color="#f3f5f7" />
           </Pressable>
           <Text className="text-[20px] font-bold text-brand-light">Reels</Text>
         </View>
@@ -255,10 +255,9 @@ export default function ReelsScreen() {
             padding: 8,
           }}
           hitSlop={8}
-        >
-          <ArrowLeft size={24} color="brand-light" strokeWidth={2.2} />
-        </Pressable>
-        <Text className="text-[18px] font-bold tracking-tight text-brand-light">Reels</Text>
+                  >
+                    <ArrowLeftIcon size={24} color="#f3f5f7" />
+                  </Pressable>        <Text className="text-[18px] font-bold tracking-tight text-brand-light">Reels</Text>
       </View>
 
       <FlatList

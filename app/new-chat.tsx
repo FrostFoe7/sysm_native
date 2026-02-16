@@ -13,13 +13,13 @@ import { Box } from '@/components/ui/box';
 import { Divider } from '@/components/ui/divider';
 import { Button, ButtonText } from '@/components/ui/button';
 import {
-  ArrowLeft,
-  Search,
-  Users,
-  Check,
-  BadgeCheck,
-  X,
-} from 'lucide-react-native';
+  ArrowLeftIcon,
+  SearchIcon,
+  UsersIcon,
+  CheckIcon,
+  VerifiedFillIcon,
+  XIcon,
+} from '@/constants/icons';
 import { UserService } from '@/services/user.service';
 import { ChatService } from '@/services/chat.service';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -116,7 +116,7 @@ export default function NewChatScreen() {
         {/* Header */}
         <HStack className="items-center border-b border-brand-border px-3 py-2" space="sm">
           <Pressable onPress={handleBack} className="rounded-full p-1.5 active:bg-white/10">
-            <ArrowLeft size={24} color="brand-light" />
+            <ArrowLeftIcon size={24} color="#f3f5f7" />
           </Pressable>
           <Heading size="lg" className="flex-1 text-brand-light">
             New Group
@@ -136,7 +136,7 @@ export default function NewChatScreen() {
           {/* Group avatar placeholder */}
           <View className="mb-4 items-center">
             <View className="mb-2 size-[80px] items-center justify-center rounded-full bg-[#262626]">
-              <Users size={32} color="brand-muted" />
+              <UsersIcon size={32} color="#777777" />
             </View>
             <Text className="text-[12px] text-brand-muted">Tap to add group photo</Text>
           </View>
@@ -168,7 +168,7 @@ export default function NewChatScreen() {
                     <AvatarImage source={{ uri: user.avatar_url }} />
                   </Avatar>
                   <View className="absolute -right-0.5 -top-0.5 size-[16px] items-center justify-center rounded-full bg-[#333]">
-                    <X size={10} color="brand-light" />
+                    <XIcon size={10} color="#f3f5f7" />
                   </View>
                 </View>
                 <Text className="mt-1 text-center text-[11px] text-[#999]" numberOfLines={1}>
@@ -189,7 +189,7 @@ export default function NewChatScreen() {
       {/* Header */}
       <HStack className="items-center border-b border-brand-border px-3 py-2" space="sm">
         <Pressable onPress={handleBack} className="rounded-full p-1.5 active:bg-white/10">
-          <ArrowLeft size={24} color="brand-light" />
+          <ArrowLeftIcon size={24} color="#f3f5f7" />
         </Pressable>
         <Heading size="lg" className="flex-1 text-brand-light">
           New Message
@@ -209,7 +209,7 @@ export default function NewChatScreen() {
       {/* Search */}
       <View className="px-4 py-2">
         <View className="flex-row items-center rounded-xl bg-brand-border px-3 py-2">
-          <Search size={18} color="brand-muted" />
+          <SearchIcon size={18} color="#777777" />
           <TextInput
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -227,7 +227,7 @@ export default function NewChatScreen() {
         className="flex-row items-center px-4 py-3 active:bg-white/5"
       >
         <View className={`mr-3 size-[40px] items-center justify-center rounded-full ${isGroupMode ? 'bg-brand-blue' : 'bg-[#262626]'}`}>
-          <Users size={20} color={isGroupMode ? 'white' : '#999'} />
+          <UsersIcon size={20} color={isGroupMode ? 'white' : '#999'} />
         </View>
         <Text className="text-[15px] font-semibold text-brand-light">
           Create a group
@@ -251,7 +251,7 @@ export default function NewChatScreen() {
                 <Text className="text-[12px] font-medium text-brand-blue">
                   {user.display_name.split(' ')[0]}
                 </Text>
-                <X size={12} color="brand-blue" className="ml-1" />
+                <XIcon size={12} color="#0095f6" className="ml-1" />
               </Pressable>
             ))}
           </HStack>
@@ -287,7 +287,7 @@ export default function NewChatScreen() {
                       {item.display_name}
                     </Text>
                     {item.verified && (
-                      <BadgeCheck size={14} color="brand-blue" fill="brand-blue" />
+                      <VerifiedFillIcon size={14} color="#0095f6" />
                     )}
                   </HStack>
                   <Text className="text-[13px] text-brand-muted">@{item.username}</Text>
@@ -300,7 +300,7 @@ export default function NewChatScreen() {
                         : 'border-[#333]'
                     }`}
                   >
-                    {selected && <Check size={14} color="white" strokeWidth={3} />}
+                    {selected && <CheckIcon size={14} color="white" />}
                   </View>
                 )}
               </HStack>

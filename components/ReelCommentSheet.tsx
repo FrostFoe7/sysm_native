@@ -16,7 +16,12 @@ import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { HStack } from '@/components/ui/hstack';
 import { VStack } from '@/components/ui/vstack';
 import { Divider } from '@/components/ui/divider';
-import { X, Heart, Send } from 'lucide-react-native';
+import { 
+  HeartIcon, 
+  HeartFillIcon, 
+  CloseIcon, 
+  SendIcon 
+} from '@/constants/icons';
 import { ReelService } from '@/services/reel.service';
 import { UserService } from '@/services/user.service';
 import { formatRelativeTime, formatCount } from '@/services/format';
@@ -61,12 +66,11 @@ function CommentItem({ comment }: { comment: ReelCommentWithAuthor }) {
         <HStack space="md" style={{ alignItems: 'center', marginTop: 2 }}>
           <Pressable onPress={toggleLike} hitSlop={8}>
             <HStack space="xs" style={{ alignItems: 'center' }}>
-              <Heart
-                size={14}
-                color={liked ? 'brand-red' : 'brand-muted-alt'}
-                fill={liked ? 'brand-red' : 'transparent'}
-                strokeWidth={liked ? 0 : 1.8}
-              />
+              {liked ? (
+                <HeartFillIcon size={14} color="#ff3040" />
+              ) : (
+                <HeartIcon size={14} color="#777777" />
+              )}
               {likeCount > 0 && (
                 <Text className="text-[12px] text-brand-muted-alt">
                   {formatCount(likeCount)}
@@ -178,7 +182,7 @@ export function ReelCommentSheet({
                 Comments ({formatCount(count)})
               </Text>
               <Pressable onPress={onClose} hitSlop={8}>
-                <X size={22} color="brand-muted-alt" strokeWidth={2} />
+                <CloseIcon size={22} color="#777777" />
               </Pressable>
             </HStack>
 
@@ -223,14 +227,14 @@ export function ReelCommentSheet({
               style={{ alignItems: 'center' }}
             >
               <Avatar size="xs">
-                <AvatarImage source={{ uri: currentUser.avatar_url }} />
+                {currentUser && <AvatarImage source={{ uri: currentUser.avatar_url }} />}
               </Avatar>
               <View
                 style={{
                   flex: 1,
                   flexDirection: 'row',
                   alignItems: 'center',
-                  backgroundColor: 'brand-border-secondary',
+                  backgroundColor: '#2a2a2a',
                   borderRadius: 20,
                   paddingHorizontal: 14,
                   paddingVertical: Platform.OS === 'web' ? 8 : 6,
@@ -256,7 +260,7 @@ export function ReelCommentSheet({
                 />
                 {text.trim().length > 0 && (
                   <Pressable onPress={handleSend} hitSlop={8} style={{ marginLeft: 8 }}>
-                    <Send size={18} color="brand-blue" strokeWidth={2} />
+                    <SendIcon size={18} color="#0095f6" />
                   </Pressable>
                 )}
               </View>

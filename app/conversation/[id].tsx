@@ -12,12 +12,12 @@ import { MessageBubble, DateSeparator } from '@/components/MessageBubble';
 import { ChatComposer } from '@/components/ChatComposer';
 import { ChatSkeleton } from '@/components/skeletons';
 import {
-  ArrowLeft,
-  Phone,
-  Video,
-  Info,
-  BadgeCheck,
-} from 'lucide-react-native';
+  ArrowLeftIcon,
+  PhoneIcon,
+  VideoIcon,
+  InfoIcon,
+  VerifiedFillIcon,
+} from '@/constants/icons';
 import type { MessageWithSender, ChatItem } from '@/types/types';
 import { useChat } from '@/hooks/use-chat';
 
@@ -155,7 +155,7 @@ export default function ChatScreen() {
               onPress={handleBack}
               className="rounded-full p-1.5 active:bg-white/10"
             >
-              <ArrowLeft size={24} color="brand-light" />
+              <ArrowLeftIcon size={24} color="#f3f5f7" />
             </Pressable>
 
             <Pressable
@@ -175,7 +175,7 @@ export default function ChatScreen() {
                     {displayName}
                   </Text>
                   {isVerified && (
-                    <BadgeCheck size={14} color="brand-blue" fill="brand-blue" />
+                    <VerifiedFillIcon size={14} color="#0095f6" />
                   )}
                 </HStack>
                 {isGroup ? (
@@ -192,17 +192,17 @@ export default function ChatScreen() {
 
             <HStack space="sm">
               <Pressable className="rounded-full p-2 active:bg-white/10">
-                <Phone size={20} color="brand-light" />
+                <PhoneIcon size={20} color="#f3f5f7" />
               </Pressable>
               <Pressable className="rounded-full p-2 active:bg-white/10">
-                <Video size={20} color="brand-light" />
+                <VideoIcon size={20} color="#f3f5f7" />
               </Pressable>
               {isGroup && (
                 <Pressable
                   onPress={handleInfoPress}
                   className="rounded-full p-2 active:bg-white/10"
                 >
-                  <Info size={20} color="brand-light" />
+                  <InfoIcon size={20} color="#f3f5f7" />
                 </Pressable>
               )}
             </HStack>

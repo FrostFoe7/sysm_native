@@ -10,7 +10,7 @@ import { VStack } from '@/components/ui/vstack';
 import { Button, ButtonText, ButtonSpinner } from '@/components/ui/button';
 import { useAuthStore } from '@/store/useAuthStore';
 import { supabase } from '@/services/supabase';
-import { Check } from 'lucide-react-native';
+import { VerifiedIcon } from '@/constants/icons';
 
 const INTEREST_OPTIONS = [
   { id: 'tech', label: 'Technology', emoji: '💻' },
@@ -116,7 +116,7 @@ export default function InterestsStep() {
                 >
                   {option.label}
                 </Text>
-                {isSelected && <Check size={14} color="#0095f6" />}
+                {isSelected && <VerifiedIcon size={14} color="#0095f6" />}
               </Pressable>
             );
           })}

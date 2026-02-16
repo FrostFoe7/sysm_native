@@ -7,7 +7,7 @@ import { VStack } from '@/components/ui/vstack';
 import { Text } from '@/components/ui/text';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Divider } from '@/components/ui/divider';
-import { BadgeCheck, BellOff, Pin } from 'lucide-react-native';
+import { VerifiedIcon, BellOffIcon, PinIcon } from '@/constants/icons';
 import { formatRelativeTime, formatMessagePreview } from '@/services/format';
 import { useAuthStore } from '@/store/useAuthStore';
 import type { ConversationWithDetails } from '@/types/types';
@@ -92,13 +92,13 @@ export function ConversationRow({ conversation, onPress, onLongPress }: Conversa
                 {displayName}
               </Text>
               {isVerified && (
-                <BadgeCheck size={14} color="brand-blue" fill="brand-blue" />
+                <VerifiedIcon size={14} color="#0095f6" />
               )}
               {conv.is_muted && (
-                <BellOff size={12} color="brand-muted" />
+                <BellOffIcon size={12} color="#777777" />
               )}
               {conv.is_pinned && (
-                <Pin size={12} color="brand-muted" fill="brand-muted" />
+                <PinIcon size={12} color="#777777" />
               )}
             </HStack>
             <Text className="ml-2 shrink-0 text-[12px] text-brand-muted">

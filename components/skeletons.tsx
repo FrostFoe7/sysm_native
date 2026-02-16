@@ -284,7 +284,7 @@ export function ChatMessageSkeleton({ isMe = false }: { isMe?: boolean }) {
 
 export function ChatSkeleton() {
   return (
-    <View className="flex-1 w-full pt-4">
+    <View className="w-full flex-1 pt-4">
       <ChatMessageSkeleton isMe={false} />
       <ChatMessageSkeleton isMe={false} />
       <ChatMessageSkeleton isMe={true} />

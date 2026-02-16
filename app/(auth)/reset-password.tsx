@@ -10,7 +10,7 @@ import { AuthCard } from '@/components/AuthCard';
 import { FloatingInput } from '@/components/FloatingInput';
 import { PasswordStrength } from '@/components/PasswordStrength';
 import { useAuthStore } from '@/store/useAuthStore';
-import { CheckCircle } from 'lucide-react-native';
+import { CheckCircleIcon } from '@/constants/icons';
 
 export default function ResetPasswordScreen() {
   const [password, setPassword] = useState('');
@@ -55,7 +55,7 @@ export default function ResetPasswordScreen() {
       >
         <View className="items-center py-6">
           <View className="mb-4 size-16 items-center justify-center rounded-full bg-green-500/10">
-            <CheckCircle size={28} color="#22c55e" />
+            <CheckCircleIcon size={28} color="#22c55e" />
           </View>
           <Text className="text-center text-[14px] leading-[20px] text-brand-muted">
             You can now sign in with your new password.

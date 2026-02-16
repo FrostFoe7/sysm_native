@@ -12,7 +12,7 @@ import { FloatingInput } from '@/components/FloatingInput';
 import { useAuthStore } from '@/store/useAuthStore';
 import { supabase } from '@/services/supabase';
 import { MAX_USERNAME_LENGTH } from '@/constants/app';
-import { Check, X } from 'lucide-react-native';
+import { VerifiedIcon, CloseIcon } from '@/constants/icons';
 
 export default function UsernameStep() {
   const [username, setUsername] = useState('');
@@ -103,9 +103,9 @@ export default function UsernameStep() {
   }, [available, userId, username, updateOnboardingStep, refreshProfile]);
 
   const rightIcon = checking ? null : available === true ? (
-    <Check size={18} color="#22c55e" />
+    <VerifiedIcon size={18} color="#22c55e" />
   ) : available === false ? (
-    <X size={18} color="#ef4444" />
+    <CloseIcon size={18} color="#ef4444" />
   ) : null;
 
   return (

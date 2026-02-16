@@ -12,17 +12,17 @@ import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Divider } from '@/components/ui/divider';
 import { Button, ButtonText } from '@/components/ui/button';
 import {
-  ArrowLeft,
-  BadgeCheck,
-  Bell,
-  BellOff,
-  Pin,
-  UserPlus,
-  LogOut,
-  Trash2,
-  Image as ImageIcon,
-  MoreHorizontal,
-} from 'lucide-react-native';
+  ArrowLeftIcon,
+  VerifiedFillIcon,
+  BellIcon,
+  BellOffIcon,
+  PinIcon,
+  UserPlusIcon,
+  LogOutIcon,
+  TrashIcon,
+  MediaIcon,
+  MoreHorizontalIcon,
+} from '@/constants/icons';
 import { ChatService } from '@/services/chat.service';
 import { useAuthStore } from '@/store/useAuthStore';
 import type { ConversationWithDetails } from '@/types/types';
@@ -115,7 +115,7 @@ export default function GroupInfoScreen() {
       {/* Header */}
       <HStack className="items-center border-b border-brand-border px-3 py-2" space="sm">
         <Pressable onPress={handleBack} className="rounded-full p-1.5 active:bg-white/10">
-          <ArrowLeft size={24} color="brand-light" />
+          <ArrowLeftIcon size={24} color="#f3f5f7" />
         </Pressable>
         <Heading size="lg" className="flex-1 text-brand-light">
           Group Info
@@ -169,9 +169,9 @@ export default function GroupInfoScreen() {
           <Pressable onPress={handleToggleMute} className="items-center" style={{ width: 72 }}>
             <View className="mb-1.5 size-[44px] items-center justify-center rounded-full bg-[#262626]">
               {conv.is_muted ? (
-                <BellOff size={20} color="brand-light" />
+                <BellOffIcon size={20} color="#f3f5f7" />
               ) : (
-                <Bell size={20} color="brand-light" />
+                <BellIcon size={20} color="#f3f5f7" />
               )}
             </View>
             <Text className="text-center text-[11px] text-[#999]">
@@ -181,7 +181,7 @@ export default function GroupInfoScreen() {
 
           <Pressable onPress={handleTogglePin} className="items-center" style={{ width: 72 }}>
             <View className="mb-1.5 size-[44px] items-center justify-center rounded-full bg-[#262626]">
-              <Pin size={20} color="brand-light" fill={conv.is_pinned ? 'brand-light' : 'none'} />
+              <PinIcon size={20} color="#f3f5f7" />
             </View>
             <Text className="text-center text-[11px] text-[#999]">
               {conv.is_pinned ? 'Unpin' : 'Pin'}
@@ -190,7 +190,7 @@ export default function GroupInfoScreen() {
 
           <Pressable className="items-center" style={{ width: 72 }}>
             <View className="mb-1.5 size-[44px] items-center justify-center rounded-full bg-[#262626]">
-              <ImageIcon size={20} color="brand-light" />
+              <MediaIcon size={20} color="#f3f5f7" />
             </View>
             <Text className="text-center text-[11px] text-[#999]">Media</Text>
           </Pressable>
@@ -209,7 +209,7 @@ export default function GroupInfoScreen() {
                 onPress={handleAddMembers}
                 className="flex-row items-center rounded-full bg-[#262626] px-3 py-1.5 active:bg-white/10"
               >
-                <UserPlus size={14} color="brand-blue" />
+                <UserPlusIcon size={14} color="#0095f6" />
                 <Text className="ml-1.5 text-[12px] font-medium text-brand-blue">Add</Text>
               </Pressable>
             )}
@@ -234,7 +234,7 @@ export default function GroupInfoScreen() {
                       {p.user_id === currentUserId ? ' (You)' : ''}
                     </Text>
                     {p.user.verified && (
-                      <BadgeCheck size={13} color="brand-blue" fill="brand-blue" />
+                      <VerifiedFillIcon size={13} color="#0095f6" />
                     )}
                   </HStack>
                   <Text className="text-[12px] text-brand-muted">
@@ -258,7 +258,7 @@ export default function GroupInfoScreen() {
                     }}
                     className="rounded-full p-1.5 active:bg-white/10"
                   >
-                    <MoreHorizontal size={18} color="brand-muted" />
+                    <MoreHorizontalIcon size={18} color="#777777" />
                   </Pressable>
                 )}
               </HStack>
@@ -274,7 +274,7 @@ export default function GroupInfoScreen() {
           onPress={handleLeave}
           className="flex-row items-center p-4 active:bg-white/5"
         >
-          <LogOut size={20} color="brand-red" />
+          <LogOutIcon size={20} color="#ff3040" />
           <Text className="ml-3 text-[15px] font-medium text-brand-red">
             Leave Group
           </Text>
@@ -285,7 +285,7 @@ export default function GroupInfoScreen() {
         {/* Delete group (admin only) */}
         {isAdmin && (
           <Pressable className="flex-row items-center p-4 active:bg-white/5">
-            <Trash2 size={20} color="brand-red" />
+            <TrashIcon size={20} color="#ff3040" />
             <Text className="ml-3 text-[15px] font-medium text-brand-red">
               Delete Group
             </Text>
