@@ -216,7 +216,7 @@ export function Composer({
                     ? `Reply to ${replyToUsername}...`
                     : placeholder
                 }
-                placeholderTextColor="#555555"
+                placeholderTextColor="#999999"
                 multiline
                 autoFocus={autoFocus}
                 maxLength={maxLength}
@@ -308,7 +308,7 @@ export function Composer({
                   disabled={media.length >= maxMedia}
                   style={{ opacity: media.length >= maxMedia ? 0.3 : 1 }}
                 >
-                  <MediaIcon size={22} color="#777777" />
+                  <MediaIcon size={22} color="#999999" />
                 </Pressable>
                 <Pressable
                   hitSlop={8}
@@ -317,13 +317,13 @@ export function Composer({
                   disabled={media.length >= maxMedia}
                   style={{ opacity: media.length >= maxMedia ? 0.3 : 1 }}
                 >
-                  <ReelsIcon size={22} color="#777777" />
+                  <ReelsIcon size={22} color="#999999" />
                 </Pressable>
                 <Pressable hitSlop={8} className="active:opacity-60">
-                  <CommunityIcon size={22} color="#777777" />
+                  <CommunityIcon size={22} color="#999999" />
                 </Pressable>
                 <Pressable hitSlop={8} className="active:opacity-60">
-                  <ChatIcon size={22} color="#777777" />
+                  <ChatIcon size={22} color="#999999" />
                 </Pressable>
               </HStack>
             </VStack>

@@ -80,6 +80,9 @@ export const useAuthStore = create<AuthState>()(
       // ─── Initialize ─────────────────────────────────────────────────────────
 
       initialize: async () => {
+        // Prevent concurrent or double initialization
+        if (get().isInitialized && !get().isLoading) return;
+        
         try {
           // 1. Get initial session
           const { data: { session }, error } = await supabase.auth.getSession();

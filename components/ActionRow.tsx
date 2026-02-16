@@ -31,7 +31,7 @@ export function ActionRow({
   onRepost,
   onShare,
 }: ActionRowProps) {
-  const repostColor = isReposted ? '#00ba7c' : '#777777';
+  const repostColor = isReposted ? '#00ba7c' : '#999999';
 
   return (
     <HStack className="-ml-2 mr-[-8px] mt-1 items-center" space="xs">
@@ -55,7 +55,7 @@ export function ActionRow({
         className="flex-row items-center rounded-full p-2 active:bg-white/5"
         hitSlop={8}
       >
-        <ChatIcon size={19} color="#777777" />
+        <ChatIcon size={19} color="#999999" />
         {replyCount > 0 && (
           <Text className="ml-1 text-[13px] text-brand-muted-alt">
             {formatCount(replyCount)}
@@ -83,7 +83,7 @@ export function ActionRow({
         className="rounded-full p-2 active:bg-white/5"
         hitSlop={8}
       >
-        <ShareIcon size={18} color="#777777" />
+        <ShareIcon size={18} color="#999999" />
       </Pressable>
     </HStack>
   );

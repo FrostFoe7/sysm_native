@@ -9,9 +9,11 @@ interface CustomIconProps extends SvgProps {
   color?: string;
 }
 
+const DEFAULT_COLOR = "#f3f5f7";
+
 export const SettingsIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -34,7 +36,7 @@ export const SettingsIcon: React.FC<CustomIconProps> = ({
 
 export const VerifiedIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = "#0095f6", // Always blue
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -54,7 +56,7 @@ export const VerifiedIcon: React.FC<CustomIconProps> = ({
 
 export const EditIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -77,7 +79,7 @@ export const EditIcon: React.FC<CustomIconProps> = ({
 
 export const FollowIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -95,7 +97,7 @@ export const FollowIcon: React.FC<CustomIconProps> = ({
 
 export const FollowingIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -113,7 +115,7 @@ export const FollowingIcon: React.FC<CustomIconProps> = ({
 
 export const HeartIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   fill = "none",
   ...props
 }) => (
@@ -131,7 +133,7 @@ export const HeartIcon: React.FC<CustomIconProps> = ({
 
 export const HomeIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   fill = "none",
   ...props
 }) => (
@@ -150,7 +152,7 @@ export const HomeIcon: React.FC<CustomIconProps> = ({
 
 export const SearchIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -161,7 +163,7 @@ export const SearchIcon: React.FC<CustomIconProps> = ({
 
 export const ChatIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -177,7 +179,7 @@ export const ChatIcon: React.FC<CustomIconProps> = ({
 
 export const ReelsIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -188,7 +190,7 @@ export const ReelsIcon: React.FC<CustomIconProps> = ({
 
 export const NotificationsIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   fill = "none",
   ...props
 }) => (
@@ -207,7 +209,7 @@ export const NotificationsIcon: React.FC<CustomIconProps> = ({
 
 export const ShareIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -217,7 +219,7 @@ export const ShareIcon: React.FC<CustomIconProps> = ({
 
 export const MediaIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -229,7 +231,7 @@ export const MediaIcon: React.FC<CustomIconProps> = ({
 
 export const CommunityIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -241,7 +243,7 @@ export const CommunityIcon: React.FC<CustomIconProps> = ({
 
 export const CloseIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -251,7 +253,7 @@ export const CloseIcon: React.FC<CustomIconProps> = ({
 
 export const CameraIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -262,7 +264,7 @@ export const CameraIcon: React.FC<CustomIconProps> = ({
 
 export const ArrowLeftIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -272,7 +274,7 @@ export const ArrowLeftIcon: React.FC<CustomIconProps> = ({
 
 export const PlusIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -282,7 +284,7 @@ export const PlusIcon: React.FC<CustomIconProps> = ({
 
 export const HeartFillIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = "#ff3040", // Always red
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -295,7 +297,7 @@ export const HeartFillIcon: React.FC<CustomIconProps> = ({
 
 export const CameraFillIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -306,7 +308,7 @@ export const CameraFillIcon: React.FC<CustomIconProps> = ({
 
 export const SendIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = "#0095f6", // Default to blue for send
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -316,7 +318,7 @@ export const SendIcon: React.FC<CustomIconProps> = ({
 
 export const RepostIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -326,7 +328,7 @@ export const RepostIcon: React.FC<CustomIconProps> = ({
 
 export const MoreIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -338,7 +340,7 @@ export const MoreIcon: React.FC<CustomIconProps> = ({
 
 export const LockIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -349,7 +351,7 @@ export const LockIcon: React.FC<CustomIconProps> = ({
 
 export const HashIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -359,7 +361,7 @@ export const HashIcon: React.FC<CustomIconProps> = ({
 
 export const AtSignIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -370,7 +372,7 @@ export const AtSignIcon: React.FC<CustomIconProps> = ({
 
 export const MicIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -381,7 +383,7 @@ export const MicIcon: React.FC<CustomIconProps> = ({
 
 export const SmileIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -392,7 +394,7 @@ export const SmileIcon: React.FC<CustomIconProps> = ({
 
 export const TrashIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -402,7 +404,7 @@ export const TrashIcon: React.FC<CustomIconProps> = ({
 
 export const PlayIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -412,7 +414,7 @@ export const PlayIcon: React.FC<CustomIconProps> = ({
 
 export const LinkIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -422,7 +424,7 @@ export const LinkIcon: React.FC<CustomIconProps> = ({
 
 export const ExternalShareIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -432,7 +434,7 @@ export const ExternalShareIcon: React.FC<CustomIconProps> = ({
 
 export const MessageIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -442,7 +444,7 @@ export const MessageIcon: React.FC<CustomIconProps> = ({
 
 export const MessageCircleIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -452,7 +454,7 @@ export const MessageCircleIcon: React.FC<CustomIconProps> = ({
 
 export const BookmarkIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -462,7 +464,7 @@ export const BookmarkIcon: React.FC<CustomIconProps> = ({
 
 export const BookmarkFillIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -472,7 +474,7 @@ export const BookmarkFillIcon: React.FC<CustomIconProps> = ({
 
 export const FlagIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -482,7 +484,7 @@ export const FlagIcon: React.FC<CustomIconProps> = ({
 
 export const EyeIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -493,7 +495,7 @@ export const EyeIcon: React.FC<CustomIconProps> = ({
 
 export const EyeOffIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -503,7 +505,7 @@ export const EyeOffIcon: React.FC<CustomIconProps> = ({
 
 export const BellOffIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -513,7 +515,7 @@ export const BellOffIcon: React.FC<CustomIconProps> = ({
 
 export const BellIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -524,7 +526,7 @@ export const BellIcon: React.FC<CustomIconProps> = ({
 
 export const PinIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -534,7 +536,7 @@ export const PinIcon: React.FC<CustomIconProps> = ({
 
 export const MailIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -545,7 +547,7 @@ export const MailIcon: React.FC<CustomIconProps> = ({
 
 export const CheckCircleIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -556,7 +558,7 @@ export const CheckCircleIcon: React.FC<CustomIconProps> = ({
 
 export const PhoneIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -566,7 +568,7 @@ export const PhoneIcon: React.FC<CustomIconProps> = ({
 
 export const VideoIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -576,7 +578,7 @@ export const VideoIcon: React.FC<CustomIconProps> = ({
 
 export const InfoIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -587,7 +589,7 @@ export const InfoIcon: React.FC<CustomIconProps> = ({
 
 export const VerifiedFillIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = "#0095f6", // Always blue
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -598,7 +600,7 @@ export const VerifiedFillIcon: React.FC<CustomIconProps> = ({
 
 export const UserPlusIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -610,7 +612,7 @@ export const UserPlusIcon: React.FC<CustomIconProps> = ({
 
 export const LogOutIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -620,7 +622,7 @@ export const LogOutIcon: React.FC<CustomIconProps> = ({
 
 export const MoreHorizontalIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -632,7 +634,7 @@ export const MoreHorizontalIcon: React.FC<CustomIconProps> = ({
 
 export const UsersIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -644,7 +646,7 @@ export const UsersIcon: React.FC<CustomIconProps> = ({
 
 export const CheckIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -654,7 +656,7 @@ export const CheckIcon: React.FC<CustomIconProps> = ({
 
 export const XIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>
@@ -664,7 +666,7 @@ export const XIcon: React.FC<CustomIconProps> = ({
 
 export const MusicIcon: React.FC<CustomIconProps> = ({
   size = 24,
-  color = "currentColor",
+  color = DEFAULT_COLOR,
   ...props
 }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" {...props}>

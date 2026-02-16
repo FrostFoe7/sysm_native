@@ -206,7 +206,7 @@ export function ChatComposer({
             <Text className="text-[11px] font-semibold text-brand-blue">
               Replying to {replyingTo.sender.display_name}
             </Text>
-            <Text className="text-[12px] text-[#777]" numberOfLines={1}>
+            <Text className="text-[12px] text-[#999999]" numberOfLines={1}>
               {replyingTo.content}
             </Text>
           </VStack>
@@ -214,7 +214,7 @@ export function ChatComposer({
             onPress={onCancelReply}
             className="rounded-full p-1 active:bg-white/10"
           >
-            <CloseIcon size={16} color="#777777" />
+            <CloseIcon size={16} color="#999999" />
           </Pressable>
         </HStack>
       )}
@@ -260,7 +260,7 @@ export function ChatComposer({
             value={text}
             onChangeText={handleChangeText}
             placeholder="Message..."
-            placeholderTextColor="#555555"
+            placeholderTextColor="#999999"
             multiline
             maxLength={MAX_MESSAGE_LENGTH}
             className="max-h-[100px] flex-1 text-[15px] text-brand-light"
@@ -277,7 +277,7 @@ export function ChatComposer({
             className="ml-2 p-1 active:opacity-60"
             onPress={() => setShowEmojiPicker(!showEmojiPicker)}
           >
-            <SmileIcon size={20} color="#777777" />
+            <SmileIcon size={20} color="#999999" />
           </Pressable>
         </View>
 

@@ -88,7 +88,7 @@ export function ThreadCard({
       {/* Reposted by header */}
       {thread.reposted_by && (
         <HStack className="items-center px-4 pl-[60px] pt-2" space="xs">
-          <RepostIcon size={13} color="#555555" />
+          <RepostIcon size={13} color="#999999" />
           <Text className="text-[13px] text-brand-muted" numberOfLines={1}>
             {thread.reposted_by.display_name} reposted
           </Text>
@@ -131,7 +131,7 @@ export function ThreadCard({
                 className="-mr-1 rounded-full p-1 active:bg-white/5"
                 onPress={handleMore}
               >
-                <MoreIcon size={16} color="#555555" />
+                <MoreIcon size={16} color="#999999" />
               </Pressable>
             </HStack>
           </HStack>

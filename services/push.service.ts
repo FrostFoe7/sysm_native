@@ -80,8 +80,16 @@ async function registerForPushNotifications(): Promise<string | null> {
     const projectId = Constants.expoConfig?.extra?.eas?.projectId
       ?? Constants.easConfig?.projectId;
 
+    // Web requires VAPID key
+    const vapidPublicKey = Constants.expoConfig?.notification?.vapidPublicKey;
+    if (Platform.OS === 'web' && !vapidPublicKey) {
+      console.log('Push notifications on web require vapidPublicKey in app.json. Skipping registration.');
+      return null;
+    }
+
     const tokenData = await Notifications.getExpoPushTokenAsync({
       projectId: projectId ?? undefined,
+      vapidKey: vapidPublicKey,
     });
 
     const token = tokenData.data;

@@ -22,7 +22,7 @@ export default function HTML({ children }: { children: React.ReactNode }) {
         */}
         <meta
           httpEquiv="Content-Security-Policy"
-          content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com https://img1.wsimg.com; script-src-elem 'self' 'unsafe-inline' https://static.cloudflareinsights.com https://img1.wsimg.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co blob:; img-src 'self' data: https: blob:; media-src 'self' https: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:;"
+          content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; script-src-elem 'self' 'unsafe-inline'; connect-src 'self' https://*.supabase.co wss://*.supabase.co blob:; img-src 'self' data: https: blob:; media-src 'self' https: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:;"
         />
 
         <ScrollViewStyleReset />
