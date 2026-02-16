@@ -1,41 +1,44 @@
 // app/(tabs)/index.tsx
 
-import React, { useState, useCallback, useRef } from 'react';
-import { FlatList, RefreshControl, Platform, View } from 'react-native';
-import { useRouter } from 'expo-router';
-import { ScreenLayout } from '@/components/ScreenLayout';
-import { ThreadCard } from '@/components/ThreadCard';
-import { AnimatedListItem } from '@/components/AnimatedListItem';
-import { AnimatedTabBar } from '@/components/AnimatedTabBar';
-import { ShareSheet } from '@/components/ShareSheet';
-import { ThreadOverflowMenu } from '@/components/ThreadOverflowMenu';
-import { DesktopRightColumn } from '@/components/DesktopRightColumn';
-import { Text } from '@/components/ui/text';
-import { Fab, FabIcon } from '@/components/ui/fab';
-import { EditIcon } from '@/constants/icons';
-import { FeedSkeleton } from '@/components/skeletons';
-import { FEED_TABS } from '@/constants/app';
-import { useThreadsFeed } from '@/hooks/use-threads';
-import { useInteractionStore } from '@/store/useInteractionStore';
-import type { ThreadWithAuthor } from '@/types/types';
+import React, { useState, useCallback, useRef } from "react";
+import { FlatList, RefreshControl, Platform, View } from "react-native";
+import { useRouter } from "expo-router";
+import { ScreenLayout } from "@/components/ScreenLayout";
+import { ThreadCard } from "@/components/ThreadCard";
+import { AnimatedListItem } from "@/components/AnimatedListItem";
+import { AnimatedTabBar } from "@/components/AnimatedTabBar";
+import { ShareSheet } from "@/components/ShareSheet";
+import { ThreadOverflowMenu } from "@/components/ThreadOverflowMenu";
+import { DesktopRightColumn } from "@/components/DesktopRightColumn";
+import { Text } from "@/components/ui/text";
+import { Fab, FabIcon } from "@/components/ui/fab";
+import { EditIcon } from "@/constants/icons";
+import { FeedSkeleton } from "@/components/skeletons";
+import { FEED_TABS } from "@/constants/app";
+import { useThreadsFeed } from "@/hooks/use-threads";
+import { useInteractionStore } from "@/store/useInteractionStore";
+import type { ThreadWithAuthor } from "@/types/types";
 
 export default function HomeScreen() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'foryou' | 'following'>('foryou');
+  const [activeTab, setActiveTab] = useState<"foryou" | "following">("foryou");
 
-  const { 
-    data: feed, 
-    isLoading, 
-    isRefreshing, 
-    refresh, 
-    handleLike, 
-    handleRepost 
+  const {
+    data: feed,
+    isLoading,
+    isRefreshing,
+    refresh,
+    handleLike,
+    handleRepost,
   } = useThreadsFeed(activeTab);
 
-  const { likedThreads: likedMap, repostedThreads: repostMap } = useInteractionStore();
+  const { likedThreads: likedMap, repostedThreads: repostMap } =
+    useInteractionStore();
 
   const [shareThreadId, setShareThreadId] = useState<string | null>(null);
-  const [overflowThread, setOverflowThread] = useState<ThreadWithAuthor | null>(null);
+  const [overflowThread, setOverflowThread] = useState<ThreadWithAuthor | null>(
+    null,
+  );
   const flatListRef = useRef<FlatList>(null);
 
   const handleRefresh = useCallback(() => {
@@ -43,7 +46,7 @@ export default function HomeScreen() {
   }, [refresh]);
 
   const handleTabSwitch = useCallback((key: string) => {
-    setActiveTab(key as 'foryou' | 'following');
+    setActiveTab(key as "foryou" | "following");
     flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
   }, []);
 
@@ -66,17 +69,26 @@ export default function HomeScreen() {
     [feed],
   );
 
-  const handleThreadDeleted = useCallback((_threadId: string) => {
-    refresh();
-  }, [refresh]);
+  const handleThreadDeleted = useCallback(
+    (_threadId: string) => {
+      refresh();
+    },
+    [refresh],
+  );
 
-  const handleThreadHidden = useCallback((_threadId: string) => {
-    refresh();
-  }, [refresh]);
+  const handleThreadHidden = useCallback(
+    (_threadId: string) => {
+      refresh();
+    },
+    [refresh],
+  );
 
-  const handleUserMuted = useCallback((_userId: string) => {
-    refresh();
-  }, [refresh]);
+  const handleUserMuted = useCallback(
+    (_userId: string) => {
+      refresh();
+    },
+    [refresh],
+  );
 
   const renderItem = useCallback(
     ({ item, index }: { item: ThreadWithAuthor; index: number }) => (
@@ -94,7 +106,16 @@ export default function HomeScreen() {
         />
       </AnimatedListItem>
     ),
-    [likedMap, repostMap, handleLike, handleReply, handleRepost, handleShare, handleMore, feed.length],
+    [
+      likedMap,
+      repostMap,
+      handleLike,
+      handleReply,
+      handleRepost,
+      handleShare,
+      handleMore,
+      feed.length,
+    ],
   );
 
   const keyExtractor = useCallback((item: ThreadWithAuthor) => item.id, []);
@@ -118,13 +139,14 @@ export default function HomeScreen() {
   );
 
   const renderEmpty = useCallback(
-    () => (
-      isLoading ? <FeedSkeleton /> : (
+    () =>
+      isLoading ? (
+        <FeedSkeleton />
+      ) : (
         <View className="flex-1 items-center justify-center py-20">
           <Text className="text-[15px] text-brand-muted">No threads yet</Text>
         </View>
-      )
-    ),
+      ),
     [isLoading],
   );
 
@@ -144,17 +166,17 @@ export default function HomeScreen() {
                 refreshing={isRefreshing}
                 onRefresh={handleRefresh}
                 tintColor="#555555"
-                colors={['#555555']}
+                colors={["#555555"]}
               />
             }
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{
               paddingBottom: 24,
-              ...(Platform.OS === 'web' ? { minHeight: '100%' } : {}),
+              ...(Platform.OS === "web" ? { minHeight: "100%" } : {}),
             }}
           />
         </View>
-        
+
         {/* Desktop Sidebar (lg: breakpoint) */}
         <View className="hidden lg:flex">
           <DesktopRightColumn />
@@ -164,7 +186,7 @@ export default function HomeScreen() {
       <ShareSheet
         isOpen={shareThreadId !== null}
         onClose={() => setShareThreadId(null)}
-        threadId={shareThreadId ?? ''}
+        threadId={shareThreadId ?? ""}
       />
       <ThreadOverflowMenu
         isOpen={overflowThread !== null}
@@ -180,7 +202,7 @@ export default function HomeScreen() {
         <Fab
           size="lg"
           placement="bottom right"
-          onPress={() => router.push('/modal')}
+          onPress={() => router.push("/modal")}
           className="mb-[16px] mr-4 size-[56px] bg-brand-light"
         >
           <FabIcon as={EditIcon} size={"md" as any} color="#101010" />

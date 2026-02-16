@@ -1,9 +1,13 @@
 // components/ReelPlayer.tsx
 // Full-screen video player for a single Reel with gestures and overlays
 
-import React, { useCallback, useRef, useState, useEffect } from 'react';
-import { View, Pressable, Platform, useWindowDimensions } from 'react-native';
-import { useVideoPlayer, VideoView, VideoPlayer as VideoPlayerType } from 'expo-video';
+import React, { useCallback, useRef, useState, useEffect } from "react";
+import { View, Pressable, Platform, useWindowDimensions } from "react-native";
+import {
+  useVideoPlayer,
+  VideoView,
+  VideoPlayer as VideoPlayerType,
+} from "expo-video";
 import {
   isWeb,
   SafeAnimatedView,
@@ -12,14 +16,14 @@ import {
   withTiming,
   withSpring,
   withSequence,
-} from '@/utils/animatedWebSafe';
-import { HeartFillIcon } from '@/constants/icons';
-import { Volume2, VolumeX } from 'lucide-react-native';
-import { ReelOverlay } from '@/components/ReelOverlay';
-import { ReelCommentSheet } from '@/components/ReelCommentSheet';
-import { ReelSkeleton } from '@/components/ReelSkeleton';
-import { ReelService } from '@/services/reel.service';
-import type { ReelWithAuthor } from '@/types/types';
+} from "@/utils/animatedWebSafe";
+import { HeartFillIcon } from "@/constants/icons";
+import { Volume2, VolumeX } from "lucide-react-native";
+import { ReelOverlay } from "@/components/ReelOverlay";
+import { ReelCommentSheet } from "@/components/ReelCommentSheet";
+import { ReelSkeleton } from "@/components/ReelSkeleton";
+import { ReelService } from "@/services/reel.service";
+import type { ReelWithAuthor } from "@/types/types";
 
 interface ReelPlayerProps {
   reel: ReelWithAuthor;
@@ -28,7 +32,12 @@ interface ReelPlayerProps {
   onMuteToggle: () => void;
 }
 
-export function ReelPlayer({ reel, isActive, isMuted, onMuteToggle }: ReelPlayerProps) {
+export function ReelPlayer({
+  reel,
+  isActive,
+  isMuted,
+  onMuteToggle,
+}: ReelPlayerProps) {
   const { width: windowW, height: windowH } = useWindowDimensions();
   const [isLoaded, setIsLoaded] = useState(false);
   const [commentSheetOpen, setCommentSheetOpen] = useState(false);
@@ -85,11 +94,14 @@ export function ReelPlayer({ reel, isActive, isMuted, onMuteToggle }: ReelPlayer
   // Loading listener
   useEffect(() => {
     if (!player) return;
-    const sub = player.addListener('statusChange', (event: { status: string }) => {
-      if (event.status === 'readyToPlay') {
-        setIsLoaded(true);
-      }
-    });
+    const sub = player.addListener(
+      "statusChange",
+      (event: { status: string }) => {
+        if (event.status === "readyToPlay") {
+          setIsLoaded(true);
+        }
+      },
+    );
     return () => sub.remove();
   }, [player]);
 
@@ -150,7 +162,9 @@ export function ReelPlayer({ reel, isActive, isMuted, onMuteToggle }: ReelPlayer
   }, []);
 
   const heartAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: isWeb ? (showDoubleTapHeart ? 1 : 0) : heartScale.value }],
+    transform: [
+      { scale: isWeb ? (showDoubleTapHeart ? 1 : 0) : heartScale.value },
+    ],
     opacity: isWeb ? (showDoubleTapHeart ? 1 : 0) : heartOpacity.value,
   }));
 
@@ -159,12 +173,21 @@ export function ReelPlayer({ reel, isActive, isMuted, onMuteToggle }: ReelPlayer
       style={{
         width: windowW,
         height: windowH,
-        backgroundColor: '#000000',
+        backgroundColor: "#000000",
       }}
     >
       {/* Loading skeleton */}
       {!isLoaded && (
-        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 2 }}>
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 2,
+          }}
+        >
           <ReelSkeleton />
         </View>
       )}
@@ -178,7 +201,7 @@ export function ReelPlayer({ reel, isActive, isMuted, onMuteToggle }: ReelPlayer
       >
         <VideoView
           player={player}
-          style={{ width: '100%', height: '100%' }}
+          style={{ width: "100%", height: "100%" }}
           nativeControls={false}
           contentFit="cover"
         />
@@ -190,15 +213,19 @@ export function ReelPlayer({ reel, isActive, isMuted, onMuteToggle }: ReelPlayer
           pointerEvents="none"
           style={[
             {
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
+              position: "absolute",
+              top: "50%",
+              left: "50%",
               marginLeft: -44,
               marginTop: -44,
               zIndex: 100,
             },
             heartAnimatedStyle,
-            isWeb && ({ transition: 'transform 200ms ease-out, opacity 300ms ease-in-out' } as any),
+            isWeb &&
+              ({
+                transition:
+                  "transform 200ms ease-out, opacity 300ms ease-in-out",
+              } as any),
           ]}
         >
           <HeartFillIcon size={88} color="#ff3040" />
@@ -210,17 +237,17 @@ export function ReelPlayer({ reel, isActive, isMuted, onMuteToggle }: ReelPlayer
         <View
           pointerEvents="none"
           style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
+            position: "absolute",
+            top: "50%",
+            left: "50%",
             marginTop: -30,
             marginLeft: -30,
             width: 60,
             height: 60,
             borderRadius: 30,
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            alignItems: 'center',
-            justifyContent: 'center',
+            backgroundColor: "rgba(0,0,0,0.5)",
+            alignItems: "center",
+            justifyContent: "center",
             zIndex: 50,
           }}
         >
@@ -231,9 +258,9 @@ export function ReelPlayer({ reel, isActive, isMuted, onMuteToggle }: ReelPlayer
               borderLeftWidth: 18,
               borderTopWidth: 11,
               borderBottomWidth: 11,
-              borderLeftColor: '#ffffff',
-              borderTopColor: 'transparent',
-              borderBottomColor: 'transparent',
+              borderLeftColor: "#ffffff",
+              borderTopColor: "transparent",
+              borderBottomColor: "transparent",
               marginLeft: 4,
             }}
           />
@@ -244,15 +271,15 @@ export function ReelPlayer({ reel, isActive, isMuted, onMuteToggle }: ReelPlayer
       <Pressable
         onPress={onMuteToggle}
         style={{
-          position: 'absolute',
-          top: Platform.OS === 'ios' ? 60 : 40,
+          position: "absolute",
+          top: Platform.OS === "ios" ? 60 : 40,
           right: 16,
           width: 32,
           height: 32,
           borderRadius: 16,
-          backgroundColor: 'rgba(38,38,38,0.8)',
-          alignItems: 'center',
-          justifyContent: 'center',
+          backgroundColor: "rgba(38,38,38,0.8)",
+          alignItems: "center",
+          justifyContent: "center",
           zIndex: 30,
         }}
         hitSlop={8}
@@ -265,10 +292,7 @@ export function ReelPlayer({ reel, isActive, isMuted, onMuteToggle }: ReelPlayer
       </Pressable>
 
       {/* Reel overlay (action buttons + caption) */}
-      <ReelOverlay
-        reel={reel}
-        onCommentPress={handleCommentOpen}
-      />
+      <ReelOverlay reel={reel} onCommentPress={handleCommentOpen} />
 
       {/* Comment sheet */}
       <ReelCommentSheet

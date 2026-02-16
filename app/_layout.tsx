@@ -1,19 +1,19 @@
 // app/_layout.tsx
 
-import React, { useEffect } from 'react';
-import { View, ActivityIndicator } from 'react-native';
-import { DarkTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack, useRouter, useSegments } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import '@/global.css';
+import React, { useEffect } from "react";
+import { View, ActivityIndicator } from "react-native";
+import { DarkTheme, ThemeProvider } from "@react-navigation/native";
+import { Stack, useRouter, useSegments } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import "@/global.css";
 
-import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
-import { AppToastProvider } from '@/components/AppToast';
-import { useAuthStore } from '@/store/useAuthStore';
-import { PushService } from '@/services/push.service';
-import { CryptoService } from '@/services/crypto.service';
-import { Text } from '@/components/ui/text';
+import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
+import { AppToastProvider } from "@/components/AppToast";
+import { useAuthStore } from "@/store/useAuthStore";
+import { PushService } from "@/services/push.service";
+import { CryptoService } from "@/services/crypto.service";
+import { Text } from "@/components/ui/text";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -22,17 +22,17 @@ const ThreadsDark = {
   ...DarkTheme,
   colors: {
     ...DarkTheme.colors,
-    primary: '#ffffff',
-    background: '#101010',
-    card: '#101010',
-    text: '#f5f5f5',
-    border: '#2a2a2a',
-    notification: '#ff3b30',
+    primary: "#ffffff",
+    background: "#101010",
+    card: "#101010",
+    text: "#f5f5f5",
+    border: "#2a2a2a",
+    notification: "#ff3b30",
   },
 };
 
 export const unstable_settings = {
-  anchor: '(tabs)',
+  anchor: "(tabs)",
 };
 
 // ─── Auth gate — redirects based on auth + onboarding state ─────────────────
@@ -47,13 +47,13 @@ function useProtectedRoute() {
   useEffect(() => {
     if (!isInitialized) return;
 
-    const inAuth = segments[0] === '(auth)';
-    const inOnboarding = segments[0] === '(onboarding)';
+    const inAuth = segments[0] === "(auth)";
+    const inOnboarding = segments[0] === "(onboarding)";
 
     // No session → must be on auth screens
     if (!session) {
       if (!inAuth) {
-        router.replace('/(auth)/login');
+        router.replace("/(auth)/login");
       }
       return;
     }
@@ -62,7 +62,13 @@ function useProtectedRoute() {
     if (user && !user.is_onboarded) {
       if (!inOnboarding) {
         // Resume at correct step
-        const stepRoutes = ['username', 'avatar', 'bio', 'interests', 'follow-suggestions'] as const;
+        const stepRoutes = [
+          "username",
+          "avatar",
+          "bio",
+          "interests",
+          "follow-suggestions",
+        ] as const;
         const step = Math.min(user.onboarding_step, stepRoutes.length - 1);
         router.replace(`/(onboarding)/${stepRoutes[step]}`);
       }
@@ -71,7 +77,7 @@ function useProtectedRoute() {
 
     // Session + onboarded → should be in main app
     if (inAuth || inOnboarding) {
-      router.replace('/(tabs)');
+      router.replace("/(tabs)");
     }
   }, [isInitialized, session, user, segments, router]);
 }
@@ -97,7 +103,7 @@ export default function RootLayout() {
 
     // Register push token
     PushService.registerForPushNotifications().catch((e) =>
-      console.warn('Push registration failed:', e),
+      console.warn("Push registration failed:", e),
     );
 
     // Setup notification response listener (tap → deep link)
@@ -108,7 +114,7 @@ export default function RootLayout() {
     CryptoService.hasLocalKeys().then((hasKeys) => {
       if (!hasKeys) {
         CryptoService.registerKeys().catch((e) =>
-          console.warn('E2EE key registration failed:', e),
+          console.warn("E2EE key registration failed:", e),
         );
       }
     });
@@ -140,89 +146,95 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <GluestackUIProvider mode="dark">
         <AppToastProvider>
-        <ThemeProvider value={ThreadsDark}>
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              contentStyle: { backgroundColor: '#101010' },
-              animation: 'fade',
-            }}
-          >
-            {/* Auth & onboarding groups */}
-            <Stack.Screen name="(auth)" options={{ headerShown: false, animation: 'fade' }} />
-            <Stack.Screen name="(onboarding)" options={{ headerShown: false, animation: 'fade' }} />
+          <ThemeProvider value={ThreadsDark}>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                contentStyle: { backgroundColor: "#101010" },
+                animation: "fade",
+              }}
+            >
+              {/* Auth & onboarding groups */}
+              <Stack.Screen
+                name="(auth)"
+                options={{ headerShown: false, animation: "fade" }}
+              />
+              <Stack.Screen
+                name="(onboarding)"
+                options={{ headerShown: false, animation: "fade" }}
+              />
 
-            {/* Main app */}
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen
-              name="thread/[id]"
-              options={{
-                headerShown: true,
-                headerTitle: 'Thread',
-                headerTintColor: '#f5f5f5',
-                headerStyle: { backgroundColor: '#101010' },
-                headerShadowVisible: false,
-                animation: 'slide_from_right',
-              }}
-            />
-            <Stack.Screen
-              name="profile/[id]"
-              options={{
-                headerShown: true,
-                headerTitle: '',
-                headerTintColor: '#f5f5f5',
-                headerStyle: { backgroundColor: '#101010' },
-                headerShadowVisible: false,
-                animation: 'slide_from_right',
-              }}
-            />
-            <Stack.Screen
-              name="profile/edit"
-              options={{
-                headerShown: true,
-                headerTitle: 'Edit Profile',
-                headerTintColor: '#f5f5f5',
-                headerStyle: { backgroundColor: '#101010' },
-                headerShadowVisible: false,
-                animation: 'slide_from_right',
-              }}
-            />
-            <Stack.Screen
-              name="conversation/[id]"
-              options={{
-                headerShown: false,
-                animation: 'slide_from_right',
-              }}
-            />
-            <Stack.Screen
-              name="new-chat"
-              options={{
-                headerShown: false,
-                animation: 'slide_from_right',
-              }}
-            />
-            <Stack.Screen
-              name="group-info/[id]"
-              options={{
-                headerShown: false,
-                animation: 'slide_from_right',
-              }}
-            />
-            <Stack.Screen
-              name="modal"
-              options={{
-                presentation: 'modal',
-                headerShown: true,
-                headerTitle: 'New Thread',
-                headerTintColor: '#f5f5f5',
-                headerStyle: { backgroundColor: '#1a1a1a' },
-                headerShadowVisible: false,
-                animation: 'slide_from_bottom',
-              }}
-            />
-          </Stack>
-          <StatusBar style="light" />
-        </ThemeProvider>
+              {/* Main app */}
+              <Stack.Screen name="(tabs)" />
+              <Stack.Screen
+                name="thread/[id]"
+                options={{
+                  headerShown: true,
+                  headerTitle: "Thread",
+                  headerTintColor: "#f5f5f5",
+                  headerStyle: { backgroundColor: "#101010" },
+                  headerShadowVisible: false,
+                  animation: "slide_from_right",
+                }}
+              />
+              <Stack.Screen
+                name="profile/[id]"
+                options={{
+                  headerShown: true,
+                  headerTitle: "",
+                  headerTintColor: "#f5f5f5",
+                  headerStyle: { backgroundColor: "#101010" },
+                  headerShadowVisible: false,
+                  animation: "slide_from_right",
+                }}
+              />
+              <Stack.Screen
+                name="profile/edit"
+                options={{
+                  headerShown: true,
+                  headerTitle: "Edit Profile",
+                  headerTintColor: "#f5f5f5",
+                  headerStyle: { backgroundColor: "#101010" },
+                  headerShadowVisible: false,
+                  animation: "slide_from_right",
+                }}
+              />
+              <Stack.Screen
+                name="conversation/[id]"
+                options={{
+                  headerShown: false,
+                  animation: "slide_from_right",
+                }}
+              />
+              <Stack.Screen
+                name="new-chat"
+                options={{
+                  headerShown: false,
+                  animation: "slide_from_right",
+                }}
+              />
+              <Stack.Screen
+                name="group-info/[id]"
+                options={{
+                  headerShown: false,
+                  animation: "slide_from_right",
+                }}
+              />
+              <Stack.Screen
+                name="modal"
+                options={{
+                  presentation: "modal",
+                  headerShown: true,
+                  headerTitle: "New Thread",
+                  headerTintColor: "#f5f5f5",
+                  headerStyle: { backgroundColor: "#1a1a1a" },
+                  headerShadowVisible: false,
+                  animation: "slide_from_bottom",
+                }}
+              />
+            </Stack>
+            <StatusBar style="light" />
+          </ThemeProvider>
         </AppToastProvider>
       </GluestackUIProvider>
     </QueryClientProvider>

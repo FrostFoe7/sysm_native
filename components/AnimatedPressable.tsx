@@ -1,16 +1,16 @@
 // components/AnimatedPressable.tsx
 // Scale-down press feedback (like iOS press-and-hold)
 
-import React, { useCallback, useState } from 'react';
-import { type PressableProps, type ViewStyle } from 'react-native';
-import { 
-  useAnimatedStyle, 
-  SafeAnimatedPressable, 
+import React, { useCallback, useState } from "react";
+import { type PressableProps, type ViewStyle } from "react-native";
+import {
+  useAnimatedStyle,
+  SafeAnimatedPressable,
   isWeb,
   useSharedValue,
   withTiming,
-  Easing
-} from '@/utils/animatedWebSafe';
+  Easing,
+} from "@/utils/animatedWebSafe";
 
 interface AnimatedPressableComponentProps extends PressableProps {
   scaleValue?: number;
@@ -67,9 +67,9 @@ export function AnimatedPressable({
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
       style={[
-        animatedStyle, 
+        animatedStyle,
         style as ViewStyle,
-        isWeb && ({ transition: 'transform 150ms ease-out' } as any)
+        isWeb && ({ transition: "transform 150ms ease-out" } as any),
       ]}
       {...rest}
     >

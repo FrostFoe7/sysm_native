@@ -1,12 +1,12 @@
 // components/ReelOverlay.tsx
 // Right-side action stack + bottom caption overlay for a single Reel
 
-import React, { useState, useCallback } from 'react';
-import { View, Pressable, Platform } from 'react-native';
-import { useRouter } from 'expo-router';
-import { Text } from '@/components/ui/text';
-import { Avatar, AvatarImage } from '@/components/ui/avatar';
-import { HStack } from '@/components/ui/hstack';
+import React, { useState, useCallback } from "react";
+import { View, Pressable, Platform } from "react-native";
+import { useRouter } from "expo-router";
+import { Text } from "@/components/ui/text";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { HStack } from "@/components/ui/hstack";
 import {
   Heart,
   MoreHorizontal,
@@ -15,13 +15,19 @@ import {
   Flag,
   Link2,
   EyeOff,
-} from 'lucide-react-native';
-import { VerifiedIcon, ChatIcon, ShareIcon, PlusIcon, TOAST_ICONS } from '@/constants/icons';
-import { formatCount } from '@/services/format';
-import { ReelService } from '@/services/reel.service';
-import { UserService } from '@/services/user.service';
-import { useAppToast } from '@/components/AppToast';
-import type { ReelWithAuthor } from '@/types/types';
+} from "lucide-react-native";
+import {
+  VerifiedIcon,
+  ChatIcon,
+  ShareIcon,
+  PlusIcon,
+  TOAST_ICONS,
+} from "@/constants/icons";
+import { formatCount } from "@/services/format";
+import { ReelService } from "@/services/reel.service";
+import { UserService } from "@/services/user.service";
+import { useAppToast } from "@/components/AppToast";
+import type { ReelWithAuthor } from "@/types/types";
 
 interface ReelOverlayProps {
   reel: ReelWithAuthor;
@@ -29,7 +35,11 @@ interface ReelOverlayProps {
   onSharePress?: () => void;
 }
 
-export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayProps) {
+export function ReelOverlay({
+  reel,
+  onCommentPress,
+  onSharePress,
+}: ReelOverlayProps) {
   const router = useRouter();
   const { showToast } = useAppToast();
   const [liked, setLiked] = useState(false);
@@ -39,8 +49,12 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
   const [following, setFollowing] = useState(false);
 
   React.useEffect(() => {
-    ReelService.isReelLiked(reel.id).then(setLiked).catch(() => {});
-    UserService.isFollowing(reel.author.id).then(setFollowing).catch(() => {});
+    ReelService.isReelLiked(reel.id)
+      .then(setLiked)
+      .catch(() => {});
+    UserService.isFollowing(reel.author.id)
+      .then(setFollowing)
+      .catch(() => {});
   }, [reel.id, reel.author.id]);
   const [showMenu, setShowMenu] = useState(false);
   const [captionExpanded, setCaptionExpanded] = useState(false);
@@ -60,7 +74,9 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
     const result = await UserService.toggleFollow(reel.author.id);
     setFollowing(result.following);
     showToast(
-      result.following ? `Following ${reel.author.username}` : `Unfollowed ${reel.author.username}`,
+      result.following
+        ? `Following ${reel.author.username}`
+        : `Unfollowed ${reel.author.username}`,
     );
   }, [reel.author, showToast]);
 
@@ -69,23 +85,23 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
   }, [reel.author.id, router]);
 
   const handleCopyLink = useCallback(() => {
-    showToast('Link copied', TOAST_ICONS.copied);
+    showToast("Link copied", TOAST_ICONS.copied);
     setShowMenu(false);
   }, [showToast]);
 
   const handleSave = useCallback(() => {
-    showToast('Reel saved', TOAST_ICONS.saved);
+    showToast("Reel saved", TOAST_ICONS.saved);
     setShowMenu(false);
   }, [showToast]);
 
   const handleReport = useCallback(() => {
-    showToast('Report submitted', TOAST_ICONS.reported);
+    showToast("Report submitted", TOAST_ICONS.reported);
     setShowMenu(false);
   }, [showToast]);
 
   const captionTruncated =
     !captionExpanded && reel.caption.length > 80
-      ? reel.caption.slice(0, 80) + '...'
+      ? reel.caption.slice(0, 80) + "..."
       : reel.caption;
 
   return (
@@ -94,9 +110,9 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
       {showLikeHeart && (
         <View
           style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
+            position: "absolute",
+            top: "50%",
+            left: "50%",
             marginLeft: -40,
             marginTop: -40,
             zIndex: 100,
@@ -115,18 +131,21 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
       {/* Right side action stack */}
       <View
         style={{
-          position: 'absolute',
+          position: "absolute",
           right: 12,
-          bottom: Platform.OS === 'ios' ? 140 : 110,
-          alignItems: 'center',
+          bottom: Platform.OS === "ios" ? 140 : 110,
+          alignItems: "center",
           gap: 18,
           zIndex: 20,
         }}
       >
         {/* Creator avatar + follow */}
-        <View style={{ alignItems: 'center', marginBottom: 6 }}>
+        <View style={{ alignItems: "center", marginBottom: 6 }}>
           <Pressable onPress={handleAvatarPress}>
-            <Avatar size="sm" style={{ borderWidth: 2, borderColor: '#f3f5f7' }}>
+            <Avatar
+              size="sm"
+              style={{ borderWidth: 2, borderColor: "#f3f5f7" }}
+            >
               <AvatarImage source={{ uri: reel.author.avatar_url }} />
             </Avatar>
           </Pressable>
@@ -134,16 +153,16 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
             <Pressable
               onPress={handleFollow}
               style={{
-                position: 'absolute',
+                position: "absolute",
                 bottom: -8,
-                backgroundColor: '#0095f6',
+                backgroundColor: "#0095f6",
                 borderRadius: 10,
                 width: 20,
                 height: 20,
-                alignItems: 'center',
-                justifyContent: 'center',
+                alignItems: "center",
+                justifyContent: "center",
                 borderWidth: 2,
-                borderColor: '#0a0a0a',
+                borderColor: "#0a0a0a",
               }}
             >
               <PlusIcon size={12} color="#ffffff" />
@@ -154,13 +173,13 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
         {/* Like */}
         <Pressable
           onPress={handleLike}
-          style={{ alignItems: 'center' }}
+          style={{ alignItems: "center" }}
           hitSlop={6}
         >
           <Heart
             size={28}
-            color={liked ? '#ff3040' : '#ffffff'}
-            fill={liked ? '#ff3040' : 'transparent'}
+            color={liked ? "#ff3040" : "#ffffff"}
+            fill={liked ? "#ff3040" : "transparent"}
             strokeWidth={liked ? 0 : 2}
           />
           <Text className="mt-1 text-[12px] font-medium text-white">
@@ -171,7 +190,7 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
         {/* Comment */}
         <Pressable
           onPress={onCommentPress}
-          style={{ alignItems: 'center' }}
+          style={{ alignItems: "center" }}
           hitSlop={6}
         >
           <ChatIcon size={28} color="#ffffff" />
@@ -186,7 +205,7 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
             handleCopyLink();
             onSharePress?.();
           }}
-          style={{ alignItems: 'center' }}
+          style={{ alignItems: "center" }}
           hitSlop={6}
         >
           <ShareIcon size={26} color="#ffffff" />
@@ -198,7 +217,7 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
         {/* Three-dot menu */}
         <Pressable
           onPress={() => setShowMenu(!showMenu)}
-          style={{ alignItems: 'center' }}
+          style={{ alignItems: "center" }}
           hitSlop={6}
         >
           <MoreHorizontal size={24} color="#ffffff" strokeWidth={2} />
@@ -209,7 +228,7 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
       {showMenu && (
         <Pressable
           style={{
-            position: 'absolute',
+            position: "absolute",
             top: 0,
             left: 0,
             right: 0,
@@ -220,14 +239,14 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
         >
           <View
             style={{
-              position: 'absolute',
+              position: "absolute",
               right: 56,
-              bottom: Platform.OS === 'ios' ? 140 : 110,
-              backgroundColor: '#2a2a2a',
+              bottom: Platform.OS === "ios" ? 140 : 110,
+              backgroundColor: "#2a2a2a",
               borderRadius: 12,
               paddingVertical: 4,
               minWidth: 180,
-              shadowColor: '#000',
+              shadowColor: "#000",
               shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.5,
               shadowRadius: 8,
@@ -237,8 +256,8 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
             <Pressable
               onPress={handleSave}
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
+                flexDirection: "row",
+                alignItems: "center",
                 paddingHorizontal: 16,
                 paddingVertical: 12,
                 gap: 12,
@@ -250,8 +269,8 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
             <Pressable
               onPress={handleCopyLink}
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
+                flexDirection: "row",
+                alignItems: "center",
                 paddingHorizontal: 16,
                 paddingVertical: 12,
                 gap: 12,
@@ -262,25 +281,27 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
             </Pressable>
             <Pressable
               onPress={() => {
-                showToast('Reel hidden');
+                showToast("Reel hidden");
                 setShowMenu(false);
               }}
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
+                flexDirection: "row",
+                alignItems: "center",
                 paddingHorizontal: 16,
                 paddingVertical: 12,
                 gap: 12,
               }}
             >
               <EyeOff size={18} color="#f3f5f7" strokeWidth={1.8} />
-              <Text className="text-[14px] text-brand-light">Not interested</Text>
+              <Text className="text-[14px] text-brand-light">
+                Not interested
+              </Text>
             </Pressable>
             <Pressable
               onPress={handleReport}
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
+                flexDirection: "row",
+                alignItems: "center",
                 paddingHorizontal: 16,
                 paddingVertical: 12,
                 gap: 12,
@@ -296,8 +317,8 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
       {/* Bottom overlay: username + caption + music */}
       <View
         style={{
-          position: 'absolute',
-          bottom: Platform.OS === 'ios' ? 40 : 16,
+          position: "absolute",
+          bottom: Platform.OS === "ios" ? 40 : 16,
           left: 12,
           right: 72,
           zIndex: 10,
@@ -305,16 +326,16 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
       >
         {/* Username */}
         <Pressable onPress={handleAvatarPress}>
-          <HStack space="sm" style={{ alignItems: 'center', marginBottom: 6 }}>
+          <HStack space="sm" style={{ alignItems: "center", marginBottom: 6 }}>
             <Text className="text-[15px] font-bold text-white">
               {reel.author.username}
             </Text>
-            {reel.author.verified && (
-              <VerifiedIcon size={14} color="#0095f6" />
-            )}
+            {reel.author.verified && <VerifiedIcon size={14} color="#0095f6" />}
             {!following && (
               <Pressable onPress={handleFollow}>
-                <Text className="text-[13px] font-semibold text-brand-blue">Follow</Text>
+                <Text className="text-[13px] font-semibold text-brand-blue">
+                  Follow
+                </Text>
               </Pressable>
             )}
           </HStack>
@@ -334,7 +355,7 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
         </Pressable>
 
         {/* Music label */}
-        <HStack space="sm" style={{ alignItems: 'center', marginTop: 8 }}>
+        <HStack space="sm" style={{ alignItems: "center", marginTop: 8 }}>
           <Music size={12} color="#ffffff" strokeWidth={2} />
           <Text className="text-[12px] text-white" numberOfLines={1}>
             {reel.author.display_name} · Original audio
@@ -345,20 +366,22 @@ export function ReelOverlay({ reel, onCommentPress, onSharePress }: ReelOverlayP
       {/* Gradient overlay at bottom for text readability */}
       <View
         style={{
-          position: 'absolute',
+          position: "absolute",
           bottom: 0,
           left: 0,
           right: 0,
           height: 200,
           zIndex: 5,
-          pointerEvents: 'none',
+          pointerEvents: "none",
         }}
       >
         <View
-          style={{
-            flex: 1,
-            background: 'linear-gradient(transparent, rgba(0,0,0,0.7))',
-          } as any}
+          style={
+            {
+              flex: 1,
+              background: "linear-gradient(transparent, rgba(0,0,0,0.7))",
+            } as any
+          }
         />
       </View>
     </>

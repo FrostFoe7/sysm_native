@@ -1,23 +1,23 @@
 // components/DesktopRightColumn.tsx
 // Right sidebar for desktop: profile card, suggested follows, trending threads
 
-import React, { useEffect, useState } from 'react';
-import { View, Pressable } from 'react-native';
-import { useRouter } from 'expo-router';
-import { VStack } from '@/components/ui/vstack';
-import { HStack } from '@/components/ui/hstack';
-import { Text } from '@/components/ui/text';
-import { Avatar, AvatarImage } from '@/components/ui/avatar';
-import { Divider } from '@/components/ui/divider';
-import { TrendingUp } from 'lucide-react-native';
-import { VerifiedIcon } from '@/constants/icons';
-import { UserService } from '@/services/user.service';
-import { ThreadService } from '@/services/thread.service';
-import { analytics } from '@/services/analytics.service';
-import { useAuthStore } from '@/store/useAuthStore';
-import type { User } from '@/types/types';
-import { Skeleton } from '@/components/ui/skeleton';
-import { BONE_COLOR } from '@/constants/ui';
+import React, { useEffect, useState } from "react";
+import { View, Pressable } from "react-native";
+import { useRouter } from "expo-router";
+import { VStack } from "@/components/ui/vstack";
+import { HStack } from "@/components/ui/hstack";
+import { Text } from "@/components/ui/text";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Divider } from "@/components/ui/divider";
+import { TrendingUp } from "lucide-react-native";
+import { VerifiedIcon } from "@/constants/icons";
+import { UserService } from "@/services/user.service";
+import { ThreadService } from "@/services/thread.service";
+import { analytics } from "@/services/analytics.service";
+import { useAuthStore } from "@/store/useAuthStore";
+import type { User } from "@/types/types";
+import { Skeleton } from "@/components/ui/skeleton";
+import { BONE_COLOR } from "@/constants/ui";
 
 function RightColumnSkeleton() {
   return (
@@ -36,9 +36,15 @@ function RightColumnSkeleton() {
           <Skeleton variant="circular" className={`size-9 ${BONE_COLOR}`} />
           <VStack space="xs" className="flex-1">
             <Skeleton variant="rounded" className={`h-3 w-20 ${BONE_COLOR}`} />
-            <Skeleton variant="rounded" className={`h-2.5 w-14 ${BONE_COLOR}`} />
+            <Skeleton
+              variant="rounded"
+              className={`h-2.5 w-14 ${BONE_COLOR}`}
+            />
           </VStack>
-          <Skeleton variant="rounded" className={`h-7 w-[72px] rounded-lg ${BONE_COLOR}`} />
+          <Skeleton
+            variant="rounded"
+            className={`h-7 w-[72px] rounded-lg ${BONE_COLOR}`}
+          />
         </HStack>
       ))}
     </VStack>
@@ -49,8 +55,17 @@ export function DesktopRightColumn() {
   const router = useRouter();
   const { userId } = useAuthStore();
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [suggestions, setSuggestions] = useState<(User & { isFollowing: boolean })[]>([]);
-  const [trending, setTrending] = useState<{ id: string; content: string; author_username: string; category?: string }[]>([]);
+  const [suggestions, setSuggestions] = useState<
+    (User & { isFollowing: boolean })[]
+  >([]);
+  const [trending, setTrending] = useState<
+    {
+      id: string;
+      content: string;
+      author_username: string;
+      category?: string;
+    }[]
+  >([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -69,14 +84,16 @@ export function DesktopRightColumn() {
         ]);
         setCurrentUser(user);
         setSuggestions(suggestedUsers);
-        setTrending(trendingThreads.slice(0, 5).map((t: any) => ({
-          id: t.id,
-          content: t.content ?? '',
-          author_username: t.author?.username ?? '',
-          category: t.category,
-        })));
+        setTrending(
+          trendingThreads.slice(0, 5).map((t: any) => ({
+            id: t.id,
+            content: t.content ?? "",
+            author_username: t.author?.username ?? "",
+            category: t.category,
+          })),
+        );
       } catch (e) {
-        console.error('Failed to load right column:', e);
+        console.error("Failed to load right column:", e);
       } finally {
         setIsLoading(false);
       }
@@ -105,7 +122,7 @@ export function DesktopRightColumn() {
           {/* Current User Card */}
           {currentUser && (
             <Pressable
-              onPress={() => router.push('/(tabs)/profile')}
+              onPress={() => router.push("/(tabs)/profile")}
               className="active:opacity-80"
             >
               <HStack className="items-center px-2" space="md">
@@ -114,14 +131,19 @@ export function DesktopRightColumn() {
                 </Avatar>
                 <VStack className="flex-1">
                   <HStack className="items-center" space="xs">
-                    <Text className="text-sm font-semibold text-brand-light" numberOfLines={1}>
+                    <Text
+                      className="text-sm font-semibold text-brand-light"
+                      numberOfLines={1}
+                    >
                       {currentUser.display_name}
                     </Text>
                     {currentUser.verified && (
                       <VerifiedIcon size={12} color="#0095F6" />
                     )}
                   </HStack>
-                  <Text className="text-xs text-brand-muted">@{currentUser.username}</Text>
+                  <Text className="text-xs text-brand-muted">
+                    @{currentUser.username}
+                  </Text>
                 </VStack>
               </HStack>
             </Pressable>
@@ -132,9 +154,13 @@ export function DesktopRightColumn() {
           {/* Suggested Follows */}
           <VStack space="md" className="px-2">
             <HStack className="items-center justify-between">
-              <Text className="text-sm font-semibold text-brand-muted">Suggested for you</Text>
-              <Pressable onPress={() => router.push('/(tabs)/explore')}>
-                <Text className="text-xs font-semibold text-brand-blue">See All</Text>
+              <Text className="text-sm font-semibold text-brand-muted">
+                Suggested for you
+              </Text>
+              <Pressable onPress={() => router.push("/(tabs)/explore")}>
+                <Text className="text-xs font-semibold text-brand-blue">
+                  See All
+                </Text>
               </Pressable>
             </HStack>
 
@@ -148,12 +174,21 @@ export function DesktopRightColumn() {
                 <VStack className="min-w-0 flex-1">
                   <Pressable onPress={() => handleProfilePress(user.id)}>
                     <HStack className="items-center" space="xs">
-                      <Text className="text-[13px] font-semibold text-brand-light" numberOfLines={1} style={{ flexShrink: 1 }}>
+                      <Text
+                        className="text-[13px] font-semibold text-brand-light"
+                        numberOfLines={1}
+                        style={{ flexShrink: 1 }}
+                      >
                         {user.username}
                       </Text>
-                      {user.verified && <VerifiedIcon size={11} color="#0095F6" />}
+                      {user.verified && (
+                        <VerifiedIcon size={11} color="#0095F6" />
+                      )}
                     </HStack>
-                    <Text className="text-[11px] text-brand-muted" numberOfLines={1}>
+                    <Text
+                      className="text-[11px] text-brand-muted"
+                      numberOfLines={1}
+                    >
                       {user.display_name}
                     </Text>
                   </Pressable>
@@ -161,11 +196,15 @@ export function DesktopRightColumn() {
                 <Pressable
                   onPress={() => handleFollow(user.id)}
                   className={`rounded-lg px-3 py-1.5 ${
-                    user.isFollowing ? 'border border-brand-border' : 'bg-brand-blue'
+                    user.isFollowing
+                      ? "border border-brand-border"
+                      : "bg-brand-blue"
                   }`}
                 >
-                  <Text className={`text-xs font-semibold ${user.isFollowing ? 'text-brand-light' : 'text-white'}`}>
-                    {user.isFollowing ? 'Following' : 'Follow'}
+                  <Text
+                    className={`text-xs font-semibold ${user.isFollowing ? "text-brand-light" : "text-white"}`}
+                  >
+                    {user.isFollowing ? "Following" : "Follow"}
                   </Text>
                 </Pressable>
               </HStack>
@@ -179,38 +218,47 @@ export function DesktopRightColumn() {
             <VStack space="sm" className="px-2">
               <HStack className="items-center" space="xs">
                 <TrendingUp size={14} color="#999999" />
-                <Text className="text-sm font-semibold text-brand-muted">Trending</Text>
+                <Text className="text-sm font-semibold text-brand-muted">
+                  Trending
+                </Text>
               </HStack>
 
               {trending.map((item, idx) => (
-                  <Pressable
-                    key={item.id}
-                    onPress={() => router.push(`/thread/${item.id}`)}
-                    className="rounded-lg p-2 active:bg-white/5"
-                  >
-                    <HStack className="items-start" space="sm">
-                      <Text className="text-xs font-bold text-brand-muted">{idx + 1}</Text>
-                      <VStack className="min-w-0 flex-1" space="xs">
-                        <Text className="text-[13px] text-brand-light" numberOfLines={2}>
-                          {item.content.slice(0, 80)}
-                          {item.content.length > 80 ? '...' : ''}
+                <Pressable
+                  key={item.id}
+                  onPress={() => router.push(`/thread/${item.id}`)}
+                  className="rounded-lg p-2 active:bg-white/5"
+                >
+                  <HStack className="items-start" space="sm">
+                    <Text className="text-xs font-bold text-brand-muted">
+                      {idx + 1}
+                    </Text>
+                    <VStack className="min-w-0 flex-1" space="xs">
+                      <Text
+                        className="text-[13px] text-brand-light"
+                        numberOfLines={2}
+                      >
+                        {item.content.slice(0, 80)}
+                        {item.content.length > 80 ? "..." : ""}
+                      </Text>
+                      <HStack className="items-center" space="xs">
+                        <Text className="text-[11px] text-brand-muted">
+                          @{item.author_username}
                         </Text>
-                        <HStack className="items-center" space="xs">
-                          <Text className="text-[11px] text-brand-muted">
-                            @{item.author_username}
-                          </Text>
-                          {item.category && (
-                            <>
-                              <Text className="text-[11px] text-brand-muted">·</Text>
-                              <Text className="text-[11px] text-brand-muted">
-                                {item.category}
-                              </Text>
-                            </>
-                          )}
-                        </HStack>
-                      </VStack>
-                    </HStack>
-                  </Pressable>
+                        {item.category && (
+                          <>
+                            <Text className="text-[11px] text-brand-muted">
+                              ·
+                            </Text>
+                            <Text className="text-[11px] text-brand-muted">
+                              {item.category}
+                            </Text>
+                          </>
+                        )}
+                      </HStack>
+                    </VStack>
+                  </HStack>
+                </Pressable>
               ))}
             </VStack>
           )}
@@ -235,15 +283,23 @@ export function DesktopRightColumn() {
     UserService.toggleFollow(userId).then((result) => {
       setSuggestions((prev) =>
         prev.map((u) =>
-          u.id === userId ? { ...u, isFollowing: result.following, followers_count: result.followersCount } : u,
+          u.id === userId
+            ? {
+                ...u,
+                isFollowing: result.following,
+                followers_count: result.followersCount,
+              }
+            : u,
         ),
       );
-      analytics.track(result.following ? 'follow' : 'unfollow', { contentId: userId });
+      analytics.track(result.following ? "follow" : "unfollow", {
+        contentId: userId,
+      });
     });
   }
 
   function handleProfilePress(userId: string) {
-    analytics.track('profile_visit', { profileId: userId });
+    analytics.track("profile_visit", { profileId: userId });
     router.push(`/profile/${userId}`);
   }
 }

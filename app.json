@@ -26,9 +26,7 @@
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "plugins": [
       "expo-router",
       [

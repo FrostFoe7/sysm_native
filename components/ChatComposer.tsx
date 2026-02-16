@@ -1,21 +1,21 @@
 // components/ChatComposer.tsx
 
-import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { Pressable, TextInput, View, Platform, Animated } from 'react-native';
-import { HStack } from '@/components/ui/hstack';
-import { VStack } from '@/components/ui/vstack';
-import { Text } from '@/components/ui/text';
-import { 
-  SendIcon, 
-  MicIcon, 
-  SmileIcon, 
-  CloseIcon, 
-  CameraIcon, 
-  TrashIcon 
-} from '@/constants/icons';
-import { MAX_MESSAGE_LENGTH, REACTION_EMOJIS } from '@/constants/app';
-import { VoiceService } from '@/services/voice.service';
-import type { MessageWithSender } from '@/types/types';
+import React, { useState, useCallback, useRef, useEffect } from "react";
+import { Pressable, TextInput, View, Platform, Animated } from "react-native";
+import { HStack } from "@/components/ui/hstack";
+import { VStack } from "@/components/ui/vstack";
+import { Text } from "@/components/ui/text";
+import {
+  SendIcon,
+  MicIcon,
+  SmileIcon,
+  CloseIcon,
+  CameraIcon,
+  TrashIcon,
+} from "@/constants/icons";
+import { MAX_MESSAGE_LENGTH, REACTION_EMOJIS } from "@/constants/app";
+import { VoiceService } from "@/services/voice.service";
+import type { MessageWithSender } from "@/types/types";
 
 interface ChatComposerProps {
   onSend: (text: string) => void;
@@ -36,7 +36,7 @@ export function ChatComposer({
   onCancelReply,
   disabled,
 }: ChatComposerProps) {
-  const [text, setText] = useState('');
+  const [text, setText] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [recordingDuration, setRecordingDuration] = useState(0);
@@ -51,8 +51,16 @@ export function ChatComposer({
     if (isRecording) {
       const pulse = Animated.loop(
         Animated.sequence([
-          Animated.timing(pulseAnim, { toValue: 1.3, duration: 600, useNativeDriver: true }),
-          Animated.timing(pulseAnim, { toValue: 1, duration: 600, useNativeDriver: true }),
+          Animated.timing(pulseAnim, {
+            toValue: 1.3,
+            duration: 600,
+            useNativeDriver: true,
+          }),
+          Animated.timing(pulseAnim, {
+            toValue: 1,
+            duration: 600,
+            useNativeDriver: true,
+          }),
         ]),
       );
       pulse.start();
@@ -66,7 +74,7 @@ export function ChatComposer({
     const trimmed = text.trim();
     if (!trimmed) return;
     onSend(trimmed);
-    setText('');
+    setText("");
     setShowEmojiPicker(false);
   }, [text, onSend]);
 
@@ -81,9 +89,9 @@ export function ChatComposer({
   // Desktop: Enter sends, Shift+Enter inserts newline
   const handleKeyPress = useCallback(
     (e: any) => {
-      if (Platform.OS !== 'web') return;
+      if (Platform.OS !== "web") return;
       const nativeEvent = e.nativeEvent;
-      if (nativeEvent.key === 'Enter' && !nativeEvent.shiftKey) {
+      if (nativeEvent.key === "Enter" && !nativeEvent.shiftKey) {
         e.preventDefault();
         handleSend();
       }
@@ -91,14 +99,11 @@ export function ChatComposer({
     [handleSend],
   );
 
-  const handleEmojiSelect = useCallback(
-    (emoji: string) => {
-      setText((prev) => prev + emoji);
-      setShowEmojiPicker(false);
-      inputRef.current?.focus();
-    },
-    [],
-  );
+  const handleEmojiSelect = useCallback((emoji: string) => {
+    setText((prev) => prev + emoji);
+    setShowEmojiPicker(false);
+    inputRef.current?.focus();
+  }, []);
 
   // ─── Voice Recording ───────────────────────────────────────────────────────
 
@@ -167,7 +172,10 @@ export function ChatComposer({
               style={{ transform: [{ scale: pulseAnim }] }}
               className="mr-2 size-3 rounded-full bg-red-500"
             />
-            <View className="mr-2 flex-1 flex-row items-center" style={{ height: 24 }}>
+            <View
+              className="mr-2 flex-1 flex-row items-center"
+              style={{ height: 24 }}
+            >
               {waveformLevels.map((level, i) => (
                 <View
                   key={i}
@@ -200,7 +208,10 @@ export function ChatComposer({
     <View className="border-t border-brand-border bg-brand-dark">
       {/* Reply preview bar */}
       {replyingTo && (
-        <HStack className="items-center border-b border-brand-border px-4 py-2" space="sm">
+        <HStack
+          className="items-center border-b border-brand-border px-4 py-2"
+          space="sm"
+        >
           <View className="h-full w-[3px] rounded-full bg-brand-blue" />
           <VStack className="flex-1">
             <Text className="text-[11px] font-semibold text-brand-blue">
@@ -231,7 +242,7 @@ export function ChatComposer({
               <Text className="text-[22px]">{emoji}</Text>
             </Pressable>
           ))}
-          {['😊', '🎉', '💀', '👀', '✨', '💜'].map((emoji) => (
+          {["😊", "🎉", "💀", "👀", "✨", "💜"].map((emoji) => (
             <Pressable
               key={emoji}
               onPress={() => handleEmojiSelect(emoji)}
@@ -265,12 +276,12 @@ export function ChatComposer({
             maxLength={MAX_MESSAGE_LENGTH}
             className="max-h-[100px] flex-1 text-[15px] text-brand-light"
             style={{
-              paddingTop: Platform.OS === 'ios' ? 8 : 4,
-              paddingBottom: Platform.OS === 'ios' ? 8 : 4,
-              ...(Platform.OS === 'web' ? { outlineStyle: 'none' as any } : {}),
+              paddingTop: Platform.OS === "ios" ? 8 : 4,
+              paddingBottom: Platform.OS === "ios" ? 8 : 4,
+              ...(Platform.OS === "web" ? { outlineStyle: "none" as any } : {}),
             }}
             editable={!disabled}
-            onKeyPress={Platform.OS === 'web' ? handleKeyPress : undefined}
+            onKeyPress={Platform.OS === "web" ? handleKeyPress : undefined}
             blurOnSubmit={false}
           />
           <Pressable

@@ -1,8 +1,8 @@
-import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
-import { ChatService } from '@/services/chat.service';
-import { useAuthStore } from '@/store/useAuthStore';
-import type { ConversationWithDetails } from '@/types/types';
+import { useState, useCallback, useEffect, useRef, useMemo } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import { ChatService } from "@/services/chat.service";
+import { useAuthStore } from "@/store/useAuthStore";
+import type { ConversationWithDetails } from "@/types/types";
 
 /**
  * Hook for managing the user's inbox (conversations list).
@@ -14,7 +14,7 @@ export function useInbox() {
   const [data, setData] = useState<ConversationWithDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const userId = useAuthStore((s) => s.userId);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -25,7 +25,7 @@ export function useInbox() {
       const conversations = await ChatService.getConversations();
       setData(conversations);
     } catch (error) {
-      console.error('Failed to load inbox:', error);
+      console.error("Failed to load inbox:", error);
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -67,7 +67,7 @@ export function useInbox() {
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter((c) => {
-        const name = (c.conversation.name ?? '').toLowerCase();
+        const name = (c.conversation.name ?? "").toLowerCase();
         const participantMatch = c.participants.some(
           (p) =>
             p.user?.display_name?.toLowerCase().includes(q) ||
@@ -79,8 +79,8 @@ export function useInbox() {
 
     // Pinned first, then by latest message time descending
     return [...result].sort((a, b) => {
-      if (a.conversation.is_pinned && !b.conversation.is_pinned) return -1;
-      if (!a.conversation.is_pinned && b.conversation.is_pinned) return 1;
+      if (a.is_pinned && !b.is_pinned) return -1;
+      if (!a.is_pinned && b.is_pinned) return 1;
       const aTime = a.lastMessage?.created_at ?? a.conversation.created_at;
       const bTime = b.lastMessage?.created_at ?? b.conversation.created_at;
       return new Date(bTime).getTime() - new Date(aTime).getTime();

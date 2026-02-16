@@ -3,31 +3,31 @@
 // Private keys stored in AsyncStorage (encrypted at rest by OS keychain on device).
 // Server never sees plaintext message content.
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { supabase, getCachedUserId } from './supabase';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { supabase, getCachedUserId } from "./supabase";
 
-const PRIVATE_KEY_STORAGE_KEY = '@sysm:e2ee_private_key';
-const KEY_PAIR_VERSION_KEY = '@sysm:e2ee_key_version';
+const PRIVATE_KEY_STORAGE_KEY = "@sysm:e2ee_private_key";
+const KEY_PAIR_VERSION_KEY = "@sysm:e2ee_key_version";
 
 // ─── Types ──────────────────────────────────────────────────────────────────────
 
 export interface EncryptedPayload {
-  ciphertext: string;    // base64-encoded AES-GCM ciphertext
-  iv: string;            // base64-encoded AES-GCM IV (12 bytes)
-  encryptedKey: string;  // base64-encoded RSA-OAEP encrypted AES key
+  ciphertext: string; // base64-encoded AES-GCM ciphertext
+  iv: string; // base64-encoded AES-GCM IV (12 bytes)
+  encryptedKey: string; // base64-encoded RSA-OAEP encrypted AES key
   keyVersion: number;
 }
 
 export interface KeyPair {
-  publicKey: string;     // base64 SPKI-exported public key
-  privateKey: string;    // base64 PKCS8-exported private key
+  publicKey: string; // base64 SPKI-exported public key
+  privateKey: string; // base64 PKCS8-exported private key
 }
 
 // ─── Encoding Helpers ───────────────────────────────────────────────────────────
 
 function arrayBufferToBase64(buffer: ArrayBuffer | Uint8Array): string {
   const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
-  let binary = '';
+  let binary = "";
   for (let i = 0; i < bytes.byteLength; i++) {
     binary += String.fromCharCode(bytes[i]);
   }
@@ -63,17 +63,23 @@ function arrayBufferToString(buffer: ArrayBuffer): string {
 async function generateKeyPair(): Promise<KeyPair> {
   const keyPair = await crypto.subtle.generateKey(
     {
-      name: 'RSA-OAEP',
+      name: "RSA-OAEP",
       modulusLength: 2048,
       publicExponent: new Uint8Array([1, 0, 1]),
-      hash: 'SHA-256',
+      hash: "SHA-256",
     },
     true, // extractable
-    ['encrypt', 'decrypt'],
+    ["encrypt", "decrypt"],
   );
 
-  const publicKeyBuffer = await crypto.subtle.exportKey('spki', keyPair.publicKey);
-  const privateKeyBuffer = await crypto.subtle.exportKey('pkcs8', keyPair.privateKey);
+  const publicKeyBuffer = await crypto.subtle.exportKey(
+    "spki",
+    keyPair.publicKey,
+  );
+  const privateKeyBuffer = await crypto.subtle.exportKey(
+    "pkcs8",
+    keyPair.privateKey,
+  );
 
   return {
     publicKey: arrayBufferToBase64(publicKeyBuffer),
@@ -83,11 +89,10 @@ async function generateKeyPair(): Promise<KeyPair> {
 
 /** Generate a random AES-256-GCM symmetric key */
 async function generateSymmetricKey(): Promise<CryptoKey> {
-  return crypto.subtle.generateKey(
-    { name: 'AES-GCM', length: 256 },
-    true,
-    ['encrypt', 'decrypt'],
-  );
+  return crypto.subtle.generateKey({ name: "AES-GCM", length: 256 }, true, [
+    "encrypt",
+    "decrypt",
+  ]);
 }
 
 // ─── Key Import ─────────────────────────────────────────────────────────────────
@@ -95,32 +100,32 @@ async function generateSymmetricKey(): Promise<CryptoKey> {
 async function importPublicKey(base64: string): Promise<CryptoKey> {
   const buffer = base64ToArrayBuffer(base64);
   return crypto.subtle.importKey(
-    'spki',
+    "spki",
     buffer,
-    { name: 'RSA-OAEP', hash: 'SHA-256' },
+    { name: "RSA-OAEP", hash: "SHA-256" },
     false,
-    ['encrypt'],
+    ["encrypt"],
   );
 }
 
 async function importPrivateKey(base64: string): Promise<CryptoKey> {
   const buffer = base64ToArrayBuffer(base64);
   return crypto.subtle.importKey(
-    'pkcs8',
+    "pkcs8",
     buffer,
-    { name: 'RSA-OAEP', hash: 'SHA-256' },
+    { name: "RSA-OAEP", hash: "SHA-256" },
     false,
-    ['decrypt'],
+    ["decrypt"],
   );
 }
 
 async function importSymmetricKey(raw: ArrayBuffer): Promise<CryptoKey> {
   return crypto.subtle.importKey(
-    'raw',
+    "raw",
     raw,
-    { name: 'AES-GCM', length: 256 },
+    { name: "AES-GCM", length: 256 },
     false,
-    ['encrypt', 'decrypt'],
+    ["encrypt", "decrypt"],
   );
 }
 
@@ -144,16 +149,16 @@ async function encryptMessage(
   // 2. Encrypt plaintext
   const plaintextBuffer = stringToArrayBuffer(plaintext);
   const ciphertext = await crypto.subtle.encrypt(
-    { name: 'AES-GCM', iv },
+    { name: "AES-GCM", iv },
     aesKey,
     plaintextBuffer,
   );
 
   // 3. Export AES key and encrypt with recipient's public key
-  const rawAesKey = await crypto.subtle.exportKey('raw', aesKey);
+  const rawAesKey = await crypto.subtle.exportKey("raw", aesKey);
   const recipientPubKey = await importPublicKey(recipientPublicKeyBase64);
   const encryptedAesKey = await crypto.subtle.encrypt(
-    { name: 'RSA-OAEP' },
+    { name: "RSA-OAEP" },
     recipientPubKey,
     rawAesKey,
   );
@@ -172,29 +177,37 @@ async function encryptMessage(
  */
 async function encryptMessageForGroup(
   plaintext: string,
-  recipientKeys: Array<{ userId: string; publicKey: string; keyVersion: number }>,
+  recipientKeys: Array<{
+    userId: string;
+    publicKey: string;
+    keyVersion: number;
+  }>,
 ): Promise<{
   ciphertext: string;
   iv: string;
-  encryptedKeys: Array<{ userId: string; encryptedKey: string; keyVersion: number }>;
+  encryptedKeys: Array<{
+    userId: string;
+    encryptedKey: string;
+    keyVersion: number;
+  }>;
 }> {
   const aesKey = await generateSymmetricKey();
   const iv = crypto.getRandomValues(new Uint8Array(12));
 
   const plaintextBuffer = stringToArrayBuffer(plaintext);
   const ciphertext = await crypto.subtle.encrypt(
-    { name: 'AES-GCM', iv },
+    { name: "AES-GCM", iv },
     aesKey,
     plaintextBuffer,
   );
 
-  const rawAesKey = await crypto.subtle.exportKey('raw', aesKey);
+  const rawAesKey = await crypto.subtle.exportKey("raw", aesKey);
 
   const encryptedKeys = await Promise.all(
     recipientKeys.map(async ({ userId, publicKey, keyVersion }) => {
       const pubKey = await importPublicKey(publicKey);
       const encryptedAesKey = await crypto.subtle.encrypt(
-        { name: 'RSA-OAEP' },
+        { name: "RSA-OAEP" },
         pubKey,
         rawAesKey,
       );
@@ -226,15 +239,15 @@ async function encryptBinary(
   const iv = crypto.getRandomValues(new Uint8Array(12));
 
   const ciphertext = await crypto.subtle.encrypt(
-    { name: 'AES-GCM', iv },
+    { name: "AES-GCM", iv },
     aesKey,
     data,
   );
 
-  const rawAesKey = await crypto.subtle.exportKey('raw', aesKey);
+  const rawAesKey = await crypto.subtle.exportKey("raw", aesKey);
   const recipientPubKey = await importPublicKey(recipientPublicKeyBase64);
   const encryptedAesKey = await crypto.subtle.encrypt(
-    { name: 'RSA-OAEP' },
+    { name: "RSA-OAEP" },
     recipientPubKey,
     rawAesKey,
   );
@@ -257,7 +270,7 @@ async function encryptBinary(
 async function decryptMessage(payload: EncryptedPayload): Promise<string> {
   const privateKeyBase64 = await getPrivateKey();
   if (!privateKeyBase64) {
-    throw new Error('E2EE_NO_PRIVATE_KEY');
+    throw new Error("E2EE_NO_PRIVATE_KEY");
   }
 
   try {
@@ -266,7 +279,7 @@ async function decryptMessage(payload: EncryptedPayload): Promise<string> {
     // Decrypt AES key
     const encryptedAesKeyBuffer = base64ToArrayBuffer(payload.encryptedKey);
     const rawAesKey = await crypto.subtle.decrypt(
-      { name: 'RSA-OAEP' },
+      { name: "RSA-OAEP" },
       privateKey,
       encryptedAesKeyBuffer,
     );
@@ -277,15 +290,15 @@ async function decryptMessage(payload: EncryptedPayload): Promise<string> {
     const ciphertext = base64ToArrayBuffer(payload.ciphertext);
 
     const plaintext = await crypto.subtle.decrypt(
-      { name: 'AES-GCM', iv: new Uint8Array(iv) },
+      { name: "AES-GCM", iv: new Uint8Array(iv) },
       aesKey,
       ciphertext,
     );
 
     return arrayBufferToString(plaintext);
   } catch (error) {
-    console.error('E2EE decryption failed:', error);
-    throw new Error('E2EE_DECRYPT_FAILED');
+    console.error("E2EE decryption failed:", error);
+    throw new Error("E2EE_DECRYPT_FAILED");
   }
 }
 
@@ -295,19 +308,19 @@ async function decryptMessage(payload: EncryptedPayload): Promise<string> {
 async function decryptBinary(payload: EncryptedPayload): Promise<ArrayBuffer> {
   const privateKeyBase64 = await getPrivateKey();
   if (!privateKeyBase64) {
-    throw new Error('E2EE_NO_PRIVATE_KEY');
+    throw new Error("E2EE_NO_PRIVATE_KEY");
   }
 
   const privateKey = await importPrivateKey(privateKeyBase64);
   const rawAesKey = await crypto.subtle.decrypt(
-    { name: 'RSA-OAEP' },
+    { name: "RSA-OAEP" },
     privateKey,
     base64ToArrayBuffer(payload.encryptedKey),
   );
 
   const aesKey = await importSymmetricKey(rawAesKey);
   return crypto.subtle.decrypt(
-    { name: 'AES-GCM', iv: new Uint8Array(base64ToArrayBuffer(payload.iv)) },
+    { name: "AES-GCM", iv: new Uint8Array(base64ToArrayBuffer(payload.iv)) },
     aesKey,
     base64ToArrayBuffer(payload.ciphertext),
   );
@@ -333,7 +346,10 @@ async function getKeyVersion(): Promise<number> {
 }
 
 async function clearLocalKeys(): Promise<void> {
-  await AsyncStorage.multiRemove([PRIVATE_KEY_STORAGE_KEY, KEY_PAIR_VERSION_KEY]);
+  await AsyncStorage.multiRemove([
+    PRIVATE_KEY_STORAGE_KEY,
+    KEY_PAIR_VERSION_KEY,
+  ]);
 }
 
 // ─── Key Registration with Supabase ─────────────────────────────────────────────
@@ -342,29 +358,32 @@ async function clearLocalKeys(): Promise<void> {
  * Generate keypair, store private locally, upload public to Supabase.
  * Called on signup or when key rotation is needed.
  */
-async function registerKeys(): Promise<{ publicKey: string; keyVersion: number }> {
+async function registerKeys(): Promise<{
+  publicKey: string;
+  keyVersion: number;
+}> {
   const userId = await getCachedUserId();
   const keyPair = await generateKeyPair();
 
   // Get current key version
   const { data: existingKeys } = await supabase
-    .from('user_keys')
-    .select('key_version')
-    .eq('user_id', userId)
-    .eq('is_active', true)
-    .order('key_version', { ascending: false })
+    .from("user_keys")
+    .select("key_version")
+    .eq("user_id", userId)
+    .eq("is_active", true)
+    .order("key_version", { ascending: false })
     .limit(1);
 
   const newVersion = ((existingKeys?.[0]?.key_version as number) ?? 0) + 1;
 
   // Deactivate old keys
   await supabase
-    .from('user_keys')
+    .from("user_keys")
     .update({ is_active: false })
-    .eq('user_id', userId);
+    .eq("user_id", userId);
 
   // Store new public key
-  const { error } = await supabase.from('user_keys').insert({
+  const { error } = await supabase.from("user_keys").insert({
     user_id: userId,
     public_key: keyPair.publicKey,
     key_version: newVersion,
@@ -395,11 +414,11 @@ async function getRecipientPublicKey(
   userId: string,
 ): Promise<{ publicKey: string; keyVersion: number } | null> {
   const { data, error } = await supabase
-    .from('user_keys')
-    .select('public_key, key_version')
-    .eq('user_id', userId)
-    .eq('is_active', true)
-    .order('key_version', { ascending: false })
+    .from("user_keys")
+    .select("public_key, key_version")
+    .eq("user_id", userId)
+    .eq("is_active", true)
+    .order("key_version", { ascending: false })
     .limit(1)
     .maybeSingle();
 
@@ -414,13 +433,14 @@ async function getConversationParticipantKeys(
   conversationId: string,
 ): Promise<Array<{ userId: string; publicKey: string; keyVersion: number }>> {
   const { data: participants } = await supabase
-    .from('conversation_participants')
-    .select('user_id')
-    .eq('conversation_id', conversationId);
+    .from("conversation_participants")
+    .select("user_id")
+    .eq("conversation_id", conversationId);
 
   if (!participants) return [];
 
-  const keys: Array<{ userId: string; publicKey: string; keyVersion: number }> = [];
+  const keys: Array<{ userId: string; publicKey: string; keyVersion: number }> =
+    [];
   for (const p of participants) {
     const key = await getRecipientPublicKey(p.user_id);
     if (key) {
@@ -439,14 +459,14 @@ async function storeConversationKey(
   encryptedKey: string,
   keyVersion: number,
 ): Promise<void> {
-  await supabase.from('conversation_keys').upsert(
+  await supabase.from("conversation_keys").upsert(
     {
       conversation_id: conversationId,
       user_id: userId,
       encrypted_key: encryptedKey,
       key_version: keyVersion,
     },
-    { onConflict: 'conversation_id,user_id,key_version' },
+    { onConflict: "conversation_id,user_id,key_version" },
   );
 }
 
@@ -458,11 +478,11 @@ async function getMyConversationKey(
 ): Promise<{ encryptedKey: string; keyVersion: number } | null> {
   const userId = await getCachedUserId();
   const { data } = await supabase
-    .from('conversation_keys')
-    .select('encrypted_key, key_version')
-    .eq('conversation_id', conversationId)
-    .eq('user_id', userId)
-    .order('key_version', { ascending: false })
+    .from("conversation_keys")
+    .select("encrypted_key, key_version")
+    .eq("conversation_id", conversationId)
+    .eq("user_id", userId)
+    .order("key_version", { ascending: false })
     .limit(1)
     .maybeSingle();
 
@@ -479,14 +499,14 @@ async function rotateConversationKey(conversationId: string): Promise<void> {
   if (participantKeys.length === 0) return;
 
   const aesKey = await generateSymmetricKey();
-  const rawAesKey = await crypto.subtle.exportKey('raw', aesKey);
+  const rawAesKey = await crypto.subtle.exportKey("raw", aesKey);
 
   // Get current max version
   const { data: existing } = await supabase
-    .from('conversation_keys')
-    .select('key_version')
-    .eq('conversation_id', conversationId)
-    .order('key_version', { ascending: false })
+    .from("conversation_keys")
+    .select("key_version")
+    .eq("conversation_id", conversationId)
+    .order("key_version", { ascending: false })
     .limit(1);
 
   const newVersion = ((existing?.[0]?.key_version as number) ?? 0) + 1;
@@ -495,7 +515,7 @@ async function rotateConversationKey(conversationId: string): Promise<void> {
   for (const { userId, publicKey } of participantKeys) {
     const pubKey = await importPublicKey(publicKey);
     const encryptedAesKey = await crypto.subtle.encrypt(
-      { name: 'RSA-OAEP' },
+      { name: "RSA-OAEP" },
       pubKey,
       rawAesKey,
     );

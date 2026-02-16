@@ -1,19 +1,25 @@
 // app/(onboarding)/follow-suggestions.tsx
 // Step 5: Suggested accounts to follow — final onboarding step
 
-import React, { useState, useCallback, useEffect } from 'react';
-import { View, ScrollView, Image, Pressable, ActivityIndicator } from 'react-native';
-import { router } from 'expo-router';
-import { Text } from '@/components/ui/text';
-import { Heading } from '@/components/ui/heading';
-import { VStack } from '@/components/ui/vstack';
-import { HStack } from '@/components/ui/hstack';
-import { Button, ButtonText, ButtonSpinner } from '@/components/ui/button';
-import { useAuthStore } from '@/store/useAuthStore';
-import { supabase } from '@/services/supabase';
-import { UserService } from '@/services/user.service';
-import { VerifiedIcon, FollowIcon, FollowingIcon } from '@/constants/icons';
-import type { User } from '@/types/types';
+import React, { useState, useCallback, useEffect } from "react";
+import {
+  View,
+  ScrollView,
+  Image,
+  Pressable,
+  ActivityIndicator,
+} from "react-native";
+import { router } from "expo-router";
+import { Text } from "@/components/ui/text";
+import { Heading } from "@/components/ui/heading";
+import { VStack } from "@/components/ui/vstack";
+import { HStack } from "@/components/ui/hstack";
+import { Button, ButtonText, ButtonSpinner } from "@/components/ui/button";
+import { useAuthStore } from "@/store/useAuthStore";
+import { supabase } from "@/services/supabase";
+import { UserService } from "@/services/user.service";
+import { VerifiedIcon, FollowIcon, FollowingIcon } from "@/constants/icons";
+import type { User } from "@/types/types";
 
 export default function FollowSuggestionsStep() {
   const [suggestions, setSuggestions] = useState<User[]>([]);
@@ -31,25 +37,28 @@ export default function FollowSuggestionsStep() {
       try {
         // Get users who are verified or popular, excluding current user
         const { data, error } = await supabase
-          .from('users')
-          .select('*')
-          .neq('id', userId ?? '')
-          .eq('is_onboarded', true)
-          .order('followers_count', { ascending: false })
+          .from("users")
+          .select("*")
+          .neq("id", userId ?? "")
+          .eq("is_onboarded", true)
+          .order("followers_count", { ascending: false })
           .limit(15);
 
         if (!error && data) {
-          setSuggestions(data.map((d: any) => ({
-            id: d.id,
-            username: d.username,
-            display_name: d.display_name ?? '',
-            avatar_url: d.avatar_url ?? '',
-            bio: d.bio ?? '',
-            verified: d.verified ?? false,
-            followers_count: d.followers_count ?? 0,
-            following_count: d.following_count ?? 0,
-            created_at: d.created_at,
-          })));
+          setSuggestions(
+            data.map((d: any) => ({
+              id: d.id,
+              username: d.username,
+              display_name: d.display_name ?? "",
+              avatar_url: d.avatar_url ?? "",
+              bio: d.bio ?? "",
+              verified: d.verified ?? false,
+              is_private: d.is_private ?? false,
+              followers_count: d.followers_count ?? 0,
+              following_count: d.following_count ?? 0,
+              created_at: d.created_at,
+            })),
+          );
         }
       } catch {
         // Silently fail — just show empty
@@ -77,20 +86,27 @@ export default function FollowSuggestionsStep() {
     await completeOnboarding();
     await refreshProfile();
     // Navigation will be handled by root layout watching is_onboarded
-    router.replace('/(tabs)');
+    router.replace("/(tabs)");
     setSaving(false);
   }, [completeOnboarding, refreshProfile]);
 
   return (
     <ScrollView
-      contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingVertical: 32 }}
+      contentContainerStyle={{
+        flexGrow: 1,
+        paddingHorizontal: 24,
+        paddingVertical: 32,
+      }}
       keyboardShouldPersistTaps="handled"
     >
       <VStack className="w-full" space="lg">
         <VStack space="xs">
-          <Heading size="xl" className="text-brand-light">Suggested for you</Heading>
+          <Heading size="xl" className="text-brand-light">
+            Suggested for you
+          </Heading>
           <Text className="text-[14px] leading-[20px] text-brand-muted">
-            Follow accounts to build your feed. You can always change this later.
+            Follow accounts to build your feed. You can always change this
+            later.
           </Text>
         </VStack>
 
@@ -100,7 +116,9 @@ export default function FollowSuggestionsStep() {
           </View>
         ) : suggestions.length === 0 ? (
           <View className="items-center py-12">
-            <Text className="text-[14px] text-brand-muted">No suggestions available yet.</Text>
+            <Text className="text-[14px] text-brand-muted">
+              No suggestions available yet.
+            </Text>
           </View>
         ) : (
           <VStack space="sm">
@@ -113,23 +131,36 @@ export default function FollowSuggestionsStep() {
                   space="md"
                 >
                   <Image
-                    source={{ uri: user.avatar_url || 'https://i.pravatar.cc/100' }}
+                    source={{
+                      uri: user.avatar_url || "https://i.pravatar.cc/100",
+                    }}
                     className="size-12 rounded-full"
-                    style={{ backgroundColor: '#2a2a2a' }}
+                    style={{ backgroundColor: "#2a2a2a" }}
                   />
 
                   <View className="min-w-0 flex-1">
                     <HStack className="items-center" space="xs">
-                      <Text className="text-[14px] font-semibold text-brand-light" numberOfLines={1}>
+                      <Text
+                        className="text-[14px] font-semibold text-brand-light"
+                        numberOfLines={1}
+                      >
                         {user.display_name || user.username}
                       </Text>
-                      {user.verified && <VerifiedIcon size={12} color="#0095f6" />}
+                      {user.verified && (
+                        <VerifiedIcon size={12} color="#0095f6" />
+                      )}
                     </HStack>
-                    <Text className="text-[13px] text-brand-muted" numberOfLines={1}>
+                    <Text
+                      className="text-[13px] text-brand-muted"
+                      numberOfLines={1}
+                    >
                       @{user.username}
                     </Text>
                     {user.bio ? (
-                      <Text className="mt-0.5 text-[12px] text-brand-muted" numberOfLines={1}>
+                      <Text
+                        className="mt-0.5 text-[12px] text-brand-muted"
+                        numberOfLines={1}
+                      >
                         {user.bio}
                       </Text>
                     ) : null}
@@ -138,20 +169,22 @@ export default function FollowSuggestionsStep() {
                   <Pressable
                     onPress={() => toggleFollow(user.id)}
                     className={`rounded-lg px-4 py-2 ${
-                      isFollowed
-                        ? 'bg-brand-border'
-                        : 'bg-brand-light'
+                      isFollowed ? "bg-brand-border" : "bg-brand-light"
                     }`}
                   >
                     {isFollowed ? (
                       <HStack className="items-center" space="xs">
                         <FollowingIcon size={14} color="#f3f5f7" />
-                        <Text className="text-[13px] font-semibold text-brand-light">Following</Text>
+                        <Text className="text-[13px] font-semibold text-brand-light">
+                          Following
+                        </Text>
                       </HStack>
                     ) : (
                       <HStack className="items-center" space="xs">
                         <FollowIcon size={14} color="#101010" />
-                        <Text className="text-[13px] font-semibold text-brand-dark">Follow</Text>
+                        <Text className="text-[13px] font-semibold text-brand-dark">
+                          Follow
+                        </Text>
                       </HStack>
                     )}
                   </Pressable>
@@ -172,7 +205,7 @@ export default function FollowSuggestionsStep() {
               <ButtonSpinner color="#fff" />
             ) : (
               <ButtonText className="text-[15px] font-semibold text-white">
-                {followed.size > 0 ? 'Finish' : 'Skip & finish'}
+                {followed.size > 0 ? "Finish" : "Skip & finish"}
               </ButtonText>
             )}
           </Button>

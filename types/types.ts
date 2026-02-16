@@ -1,4 +1,4 @@
-import { ViewProps, TextProps } from 'react-native';
+import { ViewProps, TextProps } from "react-native";
 
 /**
  * User related types
@@ -10,6 +10,7 @@ export interface User {
   avatar_url: string;
   bio: string;
   verified: boolean;
+  is_private: boolean;
   followers_count: number;
   following_count: number;
   created_at: string;
@@ -20,7 +21,7 @@ export interface User {
  */
 export interface MediaItem {
   uri: string;
-  type: 'image' | 'video';
+  type: "image" | "video";
   width?: number;
   height?: number;
   thumbnailUri?: string;
@@ -86,13 +87,13 @@ export interface Bookmark {
  */
 export interface ActivityItem {
   id: string;
-  type: 'like' | 'reply' | 'follow';
+  type: "like" | "reply" | "follow";
   actor: User;
   thread?: ThreadWithAuthor;
   created_at: string;
 }
 
-export type ModeType = 'light' | 'dark' | 'system';
+export type ModeType = "light" | "dark" | "system";
 
 /**
  * Reel types (Instagram-style short video)
@@ -106,6 +107,7 @@ export interface Reel {
   likeCount: number;
   commentCount: number;
   shareCount: number;
+  viewCount: number;
   isLiked: boolean;
   createdAt: string;
   aspectRatio: number; // width / height (e.g. 9/16 = 0.5625)
@@ -128,21 +130,26 @@ export type ReelCommentWithAuthor = ReelComment & { author: User };
 /**
  * Direct Message types
  */
-export type ConversationType = 'direct' | 'group';
-export type MessageType = 'text' | 'image' | 'video' | 'reel_share' | 'thread_share' | 'voice_note' | 'system';
-export type MessageStatus = 'sending' | 'sent' | 'delivered' | 'seen';
-export type ParticipantRole = 'admin' | 'member';
+export type ConversationType = "direct" | "group";
+export type MessageType =
+  | "text"
+  | "image"
+  | "video"
+  | "reel_share"
+  | "thread_share"
+  | "voice_note"
+  | "system";
+export type MessageStatus = "sending" | "sent" | "delivered" | "seen";
+export type ParticipantRole = "admin" | "member";
 
 export interface Conversation {
   id: string;
   type: ConversationType;
-  name: string | null;           // null for 1:1, group name for groups
-  avatar_url: string | null;     // null for 1:1 (use other user's avatar), custom for groups
+  name: string | null; // null for 1:1, group name for groups
+  avatar_url: string | null; // null for 1:1 (use other user's avatar), custom for groups
   created_by: string;
   created_at: string;
   updated_at: string;
-  is_muted: boolean;
-  is_pinned: boolean;
   last_message_id: string | null;
 }
 
@@ -153,7 +160,10 @@ export interface ConversationParticipant {
   role: ParticipantRole;
   joined_at: string;
   last_read_message_id: string | null;
+  last_read_at: string | null;
   is_typing: boolean;
+  is_muted: boolean;
+  is_pinned: boolean;
 }
 
 export interface DirectMessage {
@@ -164,9 +174,9 @@ export interface DirectMessage {
   content: string;
   media_url: string | null;
   media_thumbnail: string | null;
-  reply_to_id: string | null;     // reply to another message
+  reply_to_id: string | null; // reply to another message
   shared_thread_id: string | null; // for thread_share
-  shared_reel_id: string | null;   // for reel_share
+  shared_reel_id: string | null; // for reel_share
   reactions: MessageReaction[];
   status: MessageStatus;
   created_at: string;
@@ -192,8 +202,11 @@ export interface ConversationWithDetails {
   participants: (ConversationParticipant & { user: User })[];
   lastMessage: (DirectMessage & { sender: User }) | null;
   unreadCount: number;
-  otherUsers: User[];           // for display convenience
+  otherUsers: User[]; // for display convenience
   typingUsers: User[];
+  /** Derived from current user's participant row (not from conversations table) */
+  is_muted: boolean;
+  is_pinned: boolean;
 }
 
 export interface MessageWithSender extends DirectMessage {
@@ -207,8 +220,14 @@ export interface MessageWithSender extends DirectMessage {
  * Chat UI types
  */
 export type ChatItem =
-  | { type: 'date'; date: string; key: string }
-  | { type: 'message'; message: MessageWithSender; showAvatar: boolean; showTimestamp: boolean; key: string };
+  | { type: "date"; date: string; key: string }
+  | {
+      type: "message";
+      message: MessageWithSender;
+      showAvatar: boolean;
+      showTimestamp: boolean;
+      key: string;
+    };
 
 /**
  * Ranking & Personalization types
@@ -218,7 +237,7 @@ export type ChatItem =
 export interface EngagementSignal {
   id: string;
   user_id: string;
-  content_type: 'thread' | 'reel';
+  content_type: "thread" | "reel";
   content_id: string;
   signal_type: SignalType;
   value: number; // e.g. dwell time in ms, completion %, 1 for binary signals
@@ -226,22 +245,22 @@ export interface EngagementSignal {
 }
 
 export type SignalType =
-  | 'like'
-  | 'comment'
-  | 'repost'
-  | 'save'
-  | 'share'
-  | 'dwell'           // time spent viewing thread (ms)
-  | 'profile_visit'   // visited author's profile after seeing content
-  | 'follow_after'    // followed author after seeing content
-  | 'click_expand'    // expanded "see more" on content
-  | 'reel_watch'      // watch time in ms
-  | 'reel_complete'   // 1 if watched >90%
-  | 'reel_replay'     // number of replays
-  | 'reel_skip'       // 1 if skipped within 2s
-  | 'report'
-  | 'hide'
-  | 'mute';
+  | "like"
+  | "comment"
+  | "repost"
+  | "save"
+  | "share"
+  | "dwell" // time spent viewing thread (ms)
+  | "profile_visit" // visited author's profile after seeing content
+  | "follow_after" // followed author after seeing content
+  | "click_expand" // expanded "see more" on content
+  | "reel_watch" // watch time in ms
+  | "reel_complete" // 1 if watched >90%
+  | "reel_replay" // number of replays
+  | "reel_skip" // 1 if skipped within 2s
+  | "report"
+  | "hide"
+  | "mute";
 
 /** Per-user interest vector: topic → affinity score (0–1) */
 export interface InterestVector {
@@ -254,14 +273,14 @@ export interface InterestVector {
 export interface CreatorAffinity {
   user_id: string;
   creator_id: string;
-  score: number;        // 0–1 normalized
-  interactions: number;  // total interaction count
+  score: number; // 0–1 normalized
+  interactions: number; // total interaction count
   last_interaction: string;
 }
 
 /** Topic embedding for content items */
 export interface TopicEmbedding {
-  content_type: 'thread' | 'reel';
+  content_type: "thread" | "reel";
   content_id: string;
   topics: Record<string, number>; // e.g. { "react": 0.95, "mobile": 0.6 }
 }
@@ -274,10 +293,10 @@ export interface RankingWeights {
   saveWeight: number;
   dwellWeight: number;
   shareWeight: number;
-  relationshipBoost: number;   // multiplier for followed users
-  freshnessDecay: number;      // hours until score halves
-  verifiedBoost: number;       // multiplier for verified creators
-  diversityPenalty: number;    // penalty for same-author consecutive items
+  relationshipBoost: number; // multiplier for followed users
+  freshnessDecay: number; // hours until score halves
+  verifiedBoost: number; // multiplier for verified creators
+  diversityPenalty: number; // penalty for same-author consecutive items
 }
 
 /** Reel-specific ranking weights */
@@ -289,8 +308,8 @@ export interface ReelRankingWeights {
   followAfterWeight: number;
   skipPenalty: number;
   freshnessDecay: number;
-  discoveryBoost: number;      // boost for new creators user hasn't seen
-  coldStartBoost: number;      // boost for new content with few signals
+  discoveryBoost: number; // boost for new creators user hasn't seen
+  coldStartBoost: number; // boost for new content with few signals
 }
 
 /** Scored item ready for feed ordering */
@@ -320,11 +339,11 @@ export interface ScoredReel {
 
 /** Trending item with velocity tracking */
 export interface TrendingItem {
-  content_type: 'thread' | 'reel';
+  content_type: "thread" | "reel";
   content_id: string;
-  velocity: number;       // engagement growth rate
+  velocity: number; // engagement growth rate
   total_engagement: number;
-  time_window: 'hourly' | 'daily' | 'weekly';
+  time_window: "hourly" | "daily" | "weekly";
   category: string;
   rank: number;
 }
@@ -340,30 +359,30 @@ export interface AnalyticsEvent {
 }
 
 export type AnalyticsEventType =
-  | 'thread_view'
-  | 'thread_dwell'
-  | 'thread_like'
-  | 'thread_comment'
-  | 'thread_repost'
-  | 'thread_share'
-  | 'thread_save'
-  | 'reel_view'
-  | 'reel_watch'
-  | 'reel_complete'
-  | 'reel_skip'
-  | 'reel_like'
-  | 'reel_comment'
-  | 'reel_share'
-  | 'message_open'
-  | 'message_send'
-  | 'profile_visit'
-  | 'follow'
-  | 'unfollow'
-  | 'search'
-  | 'app_open'
-  | 'app_background'
-  | 'feed_refresh'
-  | 'tab_switch';
+  | "thread_view"
+  | "thread_dwell"
+  | "thread_like"
+  | "thread_comment"
+  | "thread_repost"
+  | "thread_share"
+  | "thread_save"
+  | "reel_view"
+  | "reel_watch"
+  | "reel_complete"
+  | "reel_skip"
+  | "reel_like"
+  | "reel_comment"
+  | "reel_share"
+  | "message_open"
+  | "message_send"
+  | "profile_visit"
+  | "follow"
+  | "unfollow"
+  | "search"
+  | "app_open"
+  | "app_background"
+  | "feed_refresh"
+  | "tab_switch";
 
 /**
  * Component Props
@@ -376,5 +395,5 @@ export type ThemedViewProps = ViewProps & {
 export type ThemedTextProps = TextProps & {
   lightColor?: string;
   darkColor?: string;
-  type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link';
+  type?: "default" | "title" | "defaultSemiBold" | "subtitle" | "link";
 };

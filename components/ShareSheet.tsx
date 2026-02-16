@@ -1,7 +1,7 @@
 // components/ShareSheet.tsx
 
-import React, { useCallback } from 'react';
-import { Platform } from 'react-native';
+import React, { useCallback } from "react";
+import { Platform } from "react-native";
 import {
   Actionsheet,
   ActionsheetContent,
@@ -10,23 +10,23 @@ import {
   ActionsheetDragIndicator,
   ActionsheetDragIndicatorWrapper,
   ActionsheetBackdrop,
-} from '@/components/ui/actionsheet';
-import { HStack } from '@/components/ui/hstack';
-import { VStack } from '@/components/ui/vstack';
-import { Text } from '@/components/ui/text';
-import { Divider } from '@/components/ui/divider';
-import { useAppToast } from '@/components/AppToast';
-import { 
-  TOAST_ICONS, 
-  LinkIcon, 
-  ExternalShareIcon, 
-  MessageIcon, 
-  BookmarkIcon, 
-  BookmarkFillIcon, 
-  FlagIcon 
-} from '@/constants/icons';
-import { ThreadService } from '@/services/thread.service';
-import { analytics } from '@/services/analytics.service';
+} from "@/components/ui/actionsheet";
+import { HStack } from "@/components/ui/hstack";
+import { VStack } from "@/components/ui/vstack";
+import { Text } from "@/components/ui/text";
+import { Divider } from "@/components/ui/divider";
+import { useAppToast } from "@/components/AppToast";
+import {
+  TOAST_ICONS,
+  LinkIcon,
+  ExternalShareIcon,
+  MessageIcon,
+  BookmarkIcon,
+  BookmarkFillIcon,
+  FlagIcon,
+} from "@/constants/icons";
+import { ThreadService } from "@/services/thread.service";
+import { analytics } from "@/services/analytics.service";
 
 interface ShareSheetProps {
   isOpen: boolean;
@@ -40,33 +40,44 @@ export function ShareSheet({ isOpen, onClose, threadId }: ShareSheetProps) {
 
   React.useEffect(() => {
     if (threadId) {
-      ThreadService.isBookmarkedByCurrentUser(threadId).then(setIsBookmarked).catch(() => {});
+      ThreadService.isBookmarkedByCurrentUser(threadId)
+        .then(setIsBookmarked)
+        .catch(() => {});
     }
   }, [threadId]);
 
   const handleCopyLink = useCallback(() => {
     const url = `https://threads.net/t/${threadId}`;
-    if (Platform.OS === 'web' && typeof navigator !== 'undefined' && navigator.clipboard) {
+    if (
+      Platform.OS === "web" &&
+      typeof navigator !== "undefined" &&
+      navigator.clipboard
+    ) {
       navigator.clipboard.writeText(url);
     }
     onClose();
-    showToast('Link copied', TOAST_ICONS.copied);
+    showToast("Link copied", TOAST_ICONS.copied);
   }, [threadId, onClose, showToast]);
 
   const handleShareExternal = useCallback(() => {
     const url = `https://threads.net/t/${threadId}`;
-    analytics.track('thread_share', { contentId: threadId, method: 'external' });
-    if (Platform.OS === 'web' && typeof navigator !== 'undefined' && navigator.share) {
-      navigator
-        .share({ title: 'Thread', url })
-        .catch(() => {});
+    analytics.track("thread_share", {
+      contentId: threadId,
+      method: "external",
+    });
+    if (
+      Platform.OS === "web" &&
+      typeof navigator !== "undefined" &&
+      navigator.share
+    ) {
+      navigator.share({ title: "Thread", url }).catch(() => {});
     }
     onClose();
   }, [threadId, onClose]);
 
   const handleSendVia = useCallback(() => {
     onClose();
-    showToast('Coming soon', TOAST_ICONS.success);
+    showToast("Coming soon", TOAST_ICONS.success);
   }, [onClose, showToast]);
 
   const handleBookmark = useCallback(async () => {
@@ -74,19 +85,19 @@ export function ShareSheet({ isOpen, onClose, threadId }: ShareSheetProps) {
     const result = await ThreadService.toggleBookmark(threadId);
     onClose();
     if (result.bookmarked) {
-      analytics.track('thread_save', { contentId: threadId });
+      analytics.track("thread_save", { contentId: threadId });
     }
     showToast(
-      result.bookmarked ? 'Saved to bookmarks' : 'Removed from bookmarks',
+      result.bookmarked ? "Saved to bookmarks" : "Removed from bookmarks",
       TOAST_ICONS.saved,
     );
   }, [threadId, onClose, showToast]);
 
   const handleReport = useCallback(() => {
     onClose();
-    analytics.track('thread_share', { contentId: threadId, action: 'report' });
-    analytics.recordSignal('thread', threadId, 'report');
-    showToast('Thread reported', TOAST_ICONS.reported, 'brand-red');
+    analytics.track("thread_share", { contentId: threadId, action: "report" });
+    analytics.recordSignal("thread", threadId, "report");
+    showToast("Thread reported", TOAST_ICONS.reported, "brand-red");
   }, [threadId, onClose, showToast]);
 
   return (
@@ -150,7 +161,7 @@ export function ShareSheet({ isOpen, onClose, threadId }: ShareSheetProps) {
                 <BookmarkIcon size={22} color="#f3f5f7" />
               )}
               <ActionsheetItemText className="text-[16px] text-brand-light">
-                {isBookmarked ? 'Unsave' : 'Save'}
+                {isBookmarked ? "Unsave" : "Save"}
               </ActionsheetItemText>
             </HStack>
           </ActionsheetItem>

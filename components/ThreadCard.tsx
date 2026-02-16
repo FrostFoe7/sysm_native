@@ -1,20 +1,20 @@
 // components/ThreadCard.tsx
 
-import React, { useCallback, useState } from 'react';
-import { Pressable, View } from 'react-native';
-import { useRouter } from 'expo-router';
-import { Avatar, AvatarImage } from '@/components/ui/avatar';
-import { Text } from '@/components/ui/text';
-import { HStack } from '@/components/ui/hstack';
-import { VStack } from '@/components/ui/vstack';
-import { Divider } from '@/components/ui/divider';
-import { ActionRow } from '@/components/ActionRow';
-import { AnimatedPressable } from '@/components/AnimatedPressable';
-import { MediaGallery } from '@/components/MediaGallery';
-import { FullscreenMediaViewer } from '@/components/FullscreenMediaViewer';
-import { formatRelativeTime, formatCount } from '@/services/format';
-import type { ThreadWithAuthor } from '@/types/types';
-import { VerifiedIcon, RepostIcon, MoreIcon } from '@/constants/icons';
+import React, { useCallback, useState } from "react";
+import { Pressable, View } from "react-native";
+import { useRouter } from "expo-router";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Text } from "@/components/ui/text";
+import { HStack } from "@/components/ui/hstack";
+import { VStack } from "@/components/ui/vstack";
+import { Divider } from "@/components/ui/divider";
+import { ActionRow } from "@/components/ActionRow";
+import { AnimatedPressable } from "@/components/AnimatedPressable";
+import { MediaGallery } from "@/components/MediaGallery";
+import { FullscreenMediaViewer } from "@/components/FullscreenMediaViewer";
+import { formatRelativeTime, formatCount } from "@/services/format";
+import type { ThreadWithAuthor } from "@/types/types";
+import { VerifiedIcon, RepostIcon, MoreIcon } from "@/constants/icons";
 
 interface ThreadCardProps {
   thread: ThreadWithAuthor;
@@ -112,9 +112,18 @@ export function ThreadCard({
         <VStack className="flex-1 shrink" space="xs">
           {/* Header row */}
           <HStack className="items-center justify-between">
-            <HStack className="mr-2 flex-1 items-center overflow-hidden" space="xs">
-              <Pressable onPress={handleUsernamePress} style={{ flexShrink: 1 }}>
-                <Text className="text-[15px] font-semibold text-brand-light" numberOfLines={1}>
+            <HStack
+              className="mr-2 flex-1 items-center overflow-hidden"
+              space="xs"
+            >
+              <Pressable
+                onPress={handleUsernamePress}
+                style={{ flexShrink: 1 }}
+              >
+                <Text
+                  className="text-[15px] font-semibold text-brand-light"
+                  numberOfLines={1}
+                >
                   {thread.author.username}
                 </Text>
               </Pressable>
@@ -140,7 +149,7 @@ export function ThreadCard({
           <Text
             className="text-[15px] leading-[21px] text-brand-light"
             numberOfLines={isDetailView ? undefined : 12}
-            style={{ overflow: 'hidden' }}
+            style={{ overflow: "hidden" }}
           >
             {thread.content}
           </Text>
@@ -176,16 +185,16 @@ export function ThreadCard({
           {isDetailView && (
             <HStack className="mt-1" space="md">
               <Text className="text-[13px] text-brand-muted">
-                {formatCount(thread.reply_count)}{' '}
+                {formatCount(thread.reply_count)}{" "}
                 <Text className="text-[13px] text-brand-muted">
-                  {thread.reply_count === 1 ? 'reply' : 'replies'}
+                  {thread.reply_count === 1 ? "reply" : "replies"}
                 </Text>
               </Text>
               <Text className="text-[13px] text-brand-muted">·</Text>
               <Text className="text-[13px] text-brand-muted">
-                {formatCount(thread.like_count)}{' '}
+                {formatCount(thread.like_count)}{" "}
                 <Text className="text-[13px] text-brand-muted">
-                  {thread.like_count === 1 ? 'like' : 'likes'}
+                  {thread.like_count === 1 ? "like" : "likes"}
                 </Text>
               </Text>
             </HStack>

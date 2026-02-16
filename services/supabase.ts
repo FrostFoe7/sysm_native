@@ -1,13 +1,13 @@
-import { createClient } from '@supabase/supabase-js';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createClient } from "@supabase/supabase-js";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Hardcoded environment variables from .env
-const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL ?? '';
-const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? '';
+const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL ?? "";
+const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? "";
 
 // SSR-safe no-op storage — AsyncStorage accesses `window` which doesn't exist
 // during Expo's static rendering / server-side export.
-const _isSSR = typeof window === 'undefined';
+const _isSSR = typeof window === "undefined";
 const _ssrStorage = {
   getItem: (_key: string) => Promise.resolve(null),
   setItem: (_key: string, _value: string) => Promise.resolve(),
@@ -28,16 +28,18 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 
 /** Get the current authenticated user's profile UUID (from users table). */
 export async function getCurrentUserId(): Promise<string> {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Not authenticated');
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
 
   const { data, error } = await supabase
-    .from('users')
-    .select('id')
-    .eq('auth_id', user.id)
+    .from("users")
+    .select("id")
+    .eq("auth_id", user.id)
     .single();
 
-  if (error || !data) throw new Error('Profile not found');
+  if (error || !data) throw new Error("Profile not found");
   return data.id;
 }
 

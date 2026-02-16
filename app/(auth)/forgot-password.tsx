@@ -1,20 +1,20 @@
 // app/(auth)/forgot-password.tsx
 // Request a password reset email
 
-import React, { useState, useCallback } from 'react';
-import { View, Pressable } from 'react-native';
-import { router } from 'expo-router';
-import { Text } from '@/components/ui/text';
-import { Button, ButtonText, ButtonSpinner } from '@/components/ui/button';
-import { HStack } from '@/components/ui/hstack';
-import { AuthCard } from '@/components/AuthCard';
-import { FloatingInput } from '@/components/FloatingInput';
-import { useAuthStore } from '@/store/useAuthStore';
-import { MailIcon, ArrowLeftIcon } from '@/constants/icons';
+import React, { useState, useCallback } from "react";
+import { View, Pressable } from "react-native";
+import { router } from "expo-router";
+import { Text } from "@/components/ui/text";
+import { Button, ButtonText, ButtonSpinner } from "@/components/ui/button";
+import { HStack } from "@/components/ui/hstack";
+import { AuthCard } from "@/components/AuthCard";
+import { FloatingInput } from "@/components/FloatingInput";
+import { useAuthStore } from "@/store/useAuthStore";
+import { MailIcon, ArrowLeftIcon } from "@/constants/icons";
 
 export default function ForgotPasswordScreen() {
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
 
@@ -22,16 +22,16 @@ export default function ForgotPasswordScreen() {
 
   const handleSend = useCallback(async () => {
     if (!email.trim()) {
-      setError('Email is required');
+      setError("Email is required");
       return;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError('Enter a valid email');
+      setError("Enter a valid email");
       return;
     }
 
     setLoading(true);
-    setError('');
+    setError("");
 
     const { error: authError } = await sendPasswordReset(email.trim());
 
@@ -53,10 +53,14 @@ export default function ForgotPasswordScreen() {
         footer={
           <View className="items-center gap-3">
             <Pressable onPress={() => setSent(false)}>
-              <Text className="text-[14px] font-semibold text-brand-blue">Use a different email</Text>
+              <Text className="text-[14px] font-semibold text-brand-blue">
+                Use a different email
+              </Text>
             </Pressable>
-            <Pressable onPress={() => router.push('/(auth)/login')}>
-              <Text className="text-[14px] text-brand-muted">Back to sign in</Text>
+            <Pressable onPress={() => router.push("/(auth)/login")}>
+              <Text className="text-[14px] text-brand-muted">
+                Back to sign in
+              </Text>
             </Pressable>
           </View>
         }
@@ -66,7 +70,8 @@ export default function ForgotPasswordScreen() {
             <MailIcon size={28} color="#0095f6" />
           </View>
           <Text className="max-w-[280px] text-center text-[14px] leading-[20px] text-brand-muted">
-            Click the link in your email to reset your password. The link expires in 1 hour.
+            Click the link in your email to reset your password. The link
+            expires in 1 hour.
           </Text>
         </View>
 
@@ -75,7 +80,9 @@ export default function ForgotPasswordScreen() {
           onPress={handleSend}
           className="h-[50px] rounded-xl border-brand-border"
         >
-          <ButtonText className="text-[15px] font-medium text-brand-light">Resend link</ButtonText>
+          <ButtonText className="text-[15px] font-medium text-brand-light">
+            Resend link
+          </ButtonText>
         </Button>
       </AuthCard>
     );
@@ -87,10 +94,12 @@ export default function ForgotPasswordScreen() {
       subtitle="Enter your email and we'll send you a reset link"
       footer={
         <View className="items-center">
-          <Pressable onPress={() => router.push('/(auth)/login')}>
+          <Pressable onPress={() => router.push("/(auth)/login")}>
             <HStack className="items-center" space="xs">
               <ArrowLeftIcon size={14} color="#666666" />
-              <Text className="text-[14px] text-brand-muted">Back to sign in</Text>
+              <Text className="text-[14px] text-brand-muted">
+                Back to sign in
+              </Text>
             </HStack>
           </Pressable>
         </View>
@@ -98,7 +107,9 @@ export default function ForgotPasswordScreen() {
     >
       {error ? (
         <View className="rounded-xl bg-red-500/10 px-4 py-3">
-          <Text className="text-center text-[13px] text-brand-red">{error}</Text>
+          <Text className="text-center text-[13px] text-brand-red">
+            {error}
+          </Text>
         </View>
       ) : null}
 
@@ -118,7 +129,13 @@ export default function ForgotPasswordScreen() {
         isDisabled={loading}
         className="h-[50px] rounded-xl bg-brand-blue active:opacity-80"
       >
-        {loading ? <ButtonSpinner color="#fff" /> : <ButtonText className="text-[15px] font-semibold text-white">Send reset link</ButtonText>}
+        {loading ? (
+          <ButtonSpinner color="#fff" />
+        ) : (
+          <ButtonText className="text-[15px] font-semibold text-white">
+            Send reset link
+          </ButtonText>
+        )}
       </Button>
     </AuthCard>
   );

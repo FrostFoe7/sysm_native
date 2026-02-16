@@ -1,22 +1,22 @@
 // app/(onboarding)/avatar.tsx
 // Step 2: Set profile picture
 
-import React, { useState, useCallback } from 'react';
-import { View, ScrollView, Image, Pressable } from 'react-native';
-import { router } from 'expo-router';
-import * as ImagePicker from 'expo-image-picker';
-import { Text } from '@/components/ui/text';
-import { Heading } from '@/components/ui/heading';
-import { VStack } from '@/components/ui/vstack';
-import { Button, ButtonText, ButtonSpinner } from '@/components/ui/button';
-import { useAuthStore } from '@/store/useAuthStore';
-import { supabase } from '@/services/supabase';
-import { CameraIcon, VerifiedIcon } from '@/constants/icons';
+import React, { useState, useCallback } from "react";
+import { View, ScrollView, Image, Pressable } from "react-native";
+import { router } from "expo-router";
+import * as ImagePicker from "expo-image-picker";
+import { Text } from "@/components/ui/text";
+import { Heading } from "@/components/ui/heading";
+import { VStack } from "@/components/ui/vstack";
+import { Button, ButtonText, ButtonSpinner } from "@/components/ui/button";
+import { useAuthStore } from "@/store/useAuthStore";
+import { supabase } from "@/services/supabase";
+import { CameraIcon, VerifiedIcon } from "@/constants/icons";
 
 export default function AvatarStep() {
   const [image, setImage] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const userId = useAuthStore((s) => s.userId);
   const updateOnboardingStep = useAuthStore((s) => s.updateOnboardingStep);
@@ -24,7 +24,7 @@ export default function AvatarStep() {
 
   const pickImage = useCallback(async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
+      mediaTypes: ["images"],
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.7,
@@ -38,14 +38,14 @@ export default function AvatarStep() {
   const handleNext = useCallback(async () => {
     if (!userId) return;
     setSaving(true);
-    setError('');
+    setError("");
 
     try {
-      let avatarUrl = '';
+      let avatarUrl = "";
 
       if (image) {
         // Upload to storage if user picked one
-        const fileExt = image.split('.').pop();
+        const fileExt = image.split(".").pop();
         const fileName = `${userId}-${Date.now()}.${fileExt}`;
         const filePath = `${userId}/${fileName}`;
 
@@ -53,27 +53,29 @@ export default function AvatarStep() {
         const blob = await response.blob();
 
         const { error: uploadError } = await supabase.storage
-          .from('avatars')
+          .from("avatars")
           .upload(filePath, blob);
 
         if (uploadError) throw uploadError;
 
-        const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
+        const { data } = supabase.storage
+          .from("avatars")
+          .getPublicUrl(filePath);
         avatarUrl = data.publicUrl;
       }
 
       const { error: updateError } = await supabase
-        .from('users')
+        .from("users")
         .update({ avatar_url: avatarUrl, onboarding_step: 2 })
-        .eq('id', userId);
+        .eq("id", userId);
 
       if (updateError) throw updateError;
 
       await updateOnboardingStep(2);
       await refreshProfile();
-      router.push('/(onboarding)/bio');
+      router.push("/(onboarding)/bio");
     } catch (err: any) {
-      setError(err.message || 'Failed to upload image');
+      setError(err.message || "Failed to upload image");
     } finally {
       setSaving(false);
     }
@@ -81,12 +83,19 @@ export default function AvatarStep() {
 
   return (
     <ScrollView
-      contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24, paddingVertical: 32 }}
+      contentContainerStyle={{
+        flexGrow: 1,
+        justifyContent: "center",
+        paddingHorizontal: 24,
+        paddingVertical: 32,
+      }}
       keyboardShouldPersistTaps="handled"
     >
       <VStack className="w-full" space="lg">
         <VStack space="xs">
-          <Heading size="xl" className="text-brand-light">Add a photo</Heading>
+          <Heading size="xl" className="text-brand-light">
+            Add a photo
+          </Heading>
           <Text className="text-[14px] leading-[20px] text-brand-muted">
             A photo helps people recognize you and makes your profile stand out.
           </Text>
@@ -94,7 +103,9 @@ export default function AvatarStep() {
 
         {error && (
           <View className="rounded-xl bg-red-500/10 px-4 py-3">
-            <Text className="text-center text-[13px] text-brand-red">{error}</Text>
+            <Text className="text-center text-[13px] text-brand-red">
+              {error}
+            </Text>
           </View>
         )}
 
@@ -104,7 +115,10 @@ export default function AvatarStep() {
             className="relative size-32 items-center justify-center rounded-full bg-brand-border"
           >
             {image ? (
-              <Image source={{ uri: image }} className="size-full rounded-full" />
+              <Image
+                source={{ uri: image }}
+                className="size-full rounded-full"
+              />
             ) : (
               <CameraIcon size={40} color="#777777" />
             )}
@@ -114,7 +128,7 @@ export default function AvatarStep() {
           </Pressable>
           <Pressable onPress={pickImage} className="mt-4">
             <Text className="text-[15px] font-semibold text-brand-blue">
-              {image ? 'Change photo' : 'Choose from library'}
+              {image ? "Change photo" : "Choose from library"}
             </Text>
           </Pressable>
         </View>
@@ -124,7 +138,13 @@ export default function AvatarStep() {
           isDisabled={saving}
           className="h-[50px] rounded-xl bg-brand-blue active:opacity-80"
         >
-          {saving ? <ButtonSpinner color="#fff" /> : <ButtonText className="text-[15px] font-semibold text-white">{image ? 'Next' : 'Skip'}</ButtonText>}
+          {saving ? (
+            <ButtonSpinner color="#fff" />
+          ) : (
+            <ButtonText className="text-[15px] font-semibold text-white">
+              {image ? "Next" : "Skip"}
+            </ButtonText>
+          )}
         </Button>
       </VStack>
     </ScrollView>

@@ -1,46 +1,52 @@
 // app/profile/[id].tsx
 
-import React, { useState, useCallback, useEffect } from 'react';
-import { FlatList, View } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { ScreenLayout } from '@/components/ScreenLayout';
-import { ProfileHeader } from '@/components/ProfileHeader';
-import { ThreadCard } from '@/components/ThreadCard';
-import { ShareSheet } from '@/components/ShareSheet';
-import { ThreadOverflowMenu } from '@/components/ThreadOverflowMenu';
-import { AnimatedListItem } from '@/components/AnimatedListItem';
-import { AnimatedTabBar } from '@/components/AnimatedTabBar';
-import { Text } from '@/components/ui/text';
-import { ThreadService } from '@/services/thread.service';
-import type { ThreadWithAuthor } from '@/types/types';
-import { ProfileHeaderSkeleton, FeedSkeleton, TabBarSkeleton } from '@/components/skeletons';
-import { PROFILE_TABS } from '@/constants/app';
-import { useUserProfile } from '@/hooks/use-user';
-import { useInteractionStore } from '@/store/useInteractionStore';
+import React, { useState, useCallback, useEffect } from "react";
+import { FlatList, View } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { ScreenLayout } from "@/components/ScreenLayout";
+import { ProfileHeader } from "@/components/ProfileHeader";
+import { ThreadCard } from "@/components/ThreadCard";
+import { ShareSheet } from "@/components/ShareSheet";
+import { ThreadOverflowMenu } from "@/components/ThreadOverflowMenu";
+import { AnimatedListItem } from "@/components/AnimatedListItem";
+import { AnimatedTabBar } from "@/components/AnimatedTabBar";
+import { Text } from "@/components/ui/text";
+import { ThreadService } from "@/services/thread.service";
+import type { ThreadWithAuthor } from "@/types/types";
+import {
+  ProfileHeaderSkeleton,
+  FeedSkeleton,
+  TabBarSkeleton,
+} from "@/components/skeletons";
+import { PROFILE_TABS } from "@/constants/app";
+import { useUserProfile } from "@/hooks/use-user";
+import { useInteractionStore } from "@/store/useInteractionStore";
 
 export default function UserProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState('threads');
-  
+  const [activeTab, setActiveTab] = useState("threads");
+
   const {
     profile,
     isLoading,
     isFollowing,
     followersCount,
-    handleFollowToggle
-  } = useUserProfile(id ?? '');
+    handleFollowToggle,
+  } = useUserProfile(id ?? "");
 
-  const { 
-    likedThreads: likedMap, 
-    repostedThreads: repostMap, 
-    setLiked, 
+  const {
+    likedThreads: likedMap,
+    repostedThreads: repostMap,
+    setLiked,
     setReposted,
-    syncInteractions
+    syncInteractions,
   } = useInteractionStore();
 
   const [shareThreadId, setShareThreadId] = useState<string | null>(null);
-  const [overflowThread, setOverflowThread] = useState<ThreadWithAuthor | null>(null);
+  const [overflowThread, setOverflowThread] = useState<ThreadWithAuthor | null>(
+    null,
+  );
 
   // Sync maps when profile loads
   useEffect(() => {
@@ -56,31 +62,47 @@ export default function UserProfileScreen() {
     })();
   }, [profile, syncInteractions]);
 
-  const handleLike = useCallback((threadId: string) => {
-    const wasLiked = !!likedMap[threadId];
-    setLiked(threadId, !wasLiked);
-    ThreadService.toggleLike(threadId).catch(() => setLiked(threadId, wasLiked));
-  }, [likedMap, setLiked]);
+  const handleLike = useCallback(
+    (threadId: string) => {
+      const wasLiked = !!likedMap[threadId];
+      setLiked(threadId, !wasLiked);
+      ThreadService.toggleLike(threadId).catch(() =>
+        setLiked(threadId, wasLiked),
+      );
+    },
+    [likedMap, setLiked],
+  );
 
-  const handleRepost = useCallback((threadId: string) => {
-    const wasReposted = !!repostMap[threadId];
-    setReposted(threadId, !wasReposted);
-    ThreadService.toggleRepost(threadId).catch(() => setReposted(threadId, wasReposted));
-  }, [repostMap, setReposted]);
+  const handleRepost = useCallback(
+    (threadId: string) => {
+      const wasReposted = !!repostMap[threadId];
+      setReposted(threadId, !wasReposted);
+      ThreadService.toggleRepost(threadId).catch(() =>
+        setReposted(threadId, wasReposted),
+      );
+    },
+    [repostMap, setReposted],
+  );
 
-  const handleReply = useCallback((threadId: string) => {
-    router.push(`/thread/${threadId}`);
-  }, [router]);
+  const handleReply = useCallback(
+    (threadId: string) => {
+      router.push(`/thread/${threadId}`);
+    },
+    [router],
+  );
 
   const handleShare = useCallback((threadId: string) => {
     setShareThreadId(threadId);
   }, []);
 
-  const handleMore = useCallback((threadId: string) => {
-    if (!profile) return;
-    const all = [...profile.threads, ...profile.replies];
-    setOverflowThread(all.find((t) => t.id === threadId) ?? null);
-  }, [profile]);
+  const handleMore = useCallback(
+    (threadId: string) => {
+      if (!profile) return;
+      const all = [...profile.threads, ...profile.replies];
+      setOverflowThread(all.find((t) => t.id === threadId) ?? null);
+    },
+    [profile],
+  );
 
   const handleThreadDeleted = useCallback(() => {
     // Re-fetch via hook if needed
@@ -101,7 +123,7 @@ export default function UserProfileScreen() {
 
   if (!profile) return null;
 
-  const data = activeTab === 'threads' ? profile.threads : profile.replies;
+  const data = activeTab === "threads" ? profile.threads : profile.replies;
 
   return (
     <ScreenLayout>
@@ -115,7 +137,11 @@ export default function UserProfileScreen() {
         onFollowToggle={handleFollowToggle}
       />
 
-      <AnimatedTabBar tabs={PROFILE_TABS} activeKey={activeTab} onTabPress={setActiveTab} />
+      <AnimatedTabBar
+        tabs={PROFILE_TABS}
+        activeKey={activeTab}
+        onTabPress={setActiveTab}
+      />
 
       <FlatList
         data={data}
@@ -140,7 +166,7 @@ export default function UserProfileScreen() {
         ListEmptyComponent={
           <View className="items-center justify-center py-16">
             <Text className="text-[15px] text-brand-muted">
-              {activeTab === 'threads' ? 'No threads yet' : 'No replies yet'}
+              {activeTab === "threads" ? "No threads yet" : "No replies yet"}
             </Text>
           </View>
         }
@@ -148,7 +174,7 @@ export default function UserProfileScreen() {
       <ShareSheet
         isOpen={shareThreadId !== null}
         onClose={() => setShareThreadId(null)}
-        threadId={shareThreadId ?? ''}
+        threadId={shareThreadId ?? ""}
       />
       <ThreadOverflowMenu
         isOpen={overflowThread !== null}

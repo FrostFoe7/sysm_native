@@ -1,27 +1,23 @@
 // components/MessageBubble.tsx
 
-import React, { useCallback, useState, useEffect } from 'react';
-import { Pressable, View, Image } from 'react-native';
-import { HStack } from '@/components/ui/hstack';
-import { VStack } from '@/components/ui/vstack';
-import { Text } from '@/components/ui/text';
-import { Avatar, AvatarImage } from '@/components/ui/avatar';
-import { 
-  VerifiedFillIcon, 
-  ArrowLeftIcon, 
-  LockIcon 
-} from '@/constants/icons';
-import { formatRelativeTime } from '@/services/format';
-import { REACTION_EMOJIS } from '@/constants/app';
-import { VoiceService, type PlaybackState } from '@/services/voice.service';
-import { useAuthStore } from '@/store/useAuthStore';
-import type { MessageWithSender } from '@/types/types';
+import React, { useCallback, useState, useEffect } from "react";
+import { Pressable, View, Image } from "react-native";
+import { HStack } from "@/components/ui/hstack";
+import { VStack } from "@/components/ui/vstack";
+import { Text } from "@/components/ui/text";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { VerifiedFillIcon, ArrowLeftIcon, LockIcon } from "@/constants/icons";
+import { formatRelativeTime } from "@/services/format";
+import { REACTION_EMOJIS } from "@/constants/app";
+import { VoiceService, type PlaybackState } from "@/services/voice.service";
+import { useAuthStore } from "@/store/useAuthStore";
+import type { MessageWithSender } from "@/types/types";
 
 interface MessageBubbleProps {
   message: MessageWithSender;
   isGroupChat: boolean;
-  showAvatar: boolean;    // show sender avatar (for consecutive msgs from same sender)
-  showTimestamp: boolean;  // show time for first/last in a cluster
+  showAvatar: boolean; // show sender avatar (for consecutive msgs from same sender)
+  showTimestamp: boolean; // show time for first/last in a cluster
   onReply?: (messageId: string) => void;
   onReaction?: (messageId: string, emoji: string) => void;
   onImagePress?: (url: string) => void;
@@ -45,7 +41,7 @@ export function MessageBubble({
   const [showReactions, setShowReactions] = useState(false);
   const currentUserId = useAuthStore((s) => s.userId);
   const isMe = message.sender_id === currentUserId;
-  const isSystem = message.type === 'system';
+  const isSystem = message.type === "system";
 
   const handleLongPress = useCallback(() => {
     setShowReactions(!showReactions);
@@ -71,7 +67,9 @@ export function MessageBubble({
 
   if (message.is_deleted) {
     return (
-      <View className={`flex-row px-4 py-1 ${isMe ? 'justify-end' : 'justify-start'}`}>
+      <View
+        className={`flex-row px-4 py-1 ${isMe ? "justify-end" : "justify-start"}`}
+      >
         <View className="rounded-2xl border border-brand-border-secondary px-4 py-2">
           <Text className="text-[13px] italic text-brand-muted">
             Message deleted
@@ -83,7 +81,9 @@ export function MessageBubble({
 
   // Check if current user has reacted with this emoji
   const hasReacted = (emoji: string) =>
-    message.reactions.some((r) => r.user_id === currentUserId && r.emoji === emoji);
+    message.reactions.some(
+      (r) => r.user_id === currentUserId && r.emoji === emoji,
+    );
 
   // Aggregate reactions
   const reactionCounts = message.reactions.reduce(
@@ -94,21 +94,23 @@ export function MessageBubble({
     {} as Record<string, number>,
   );
 
-  const bubbleBg = isMe ? 'bg-brand-blue' : 'bg-[#262626]';
-  const textColor = isMe ? 'text-white' : 'text-brand-light';
-  const replyTextColor = isMe ? 'text-white/60' : 'text-[#777]';
+  const bubbleBg = isMe ? "bg-brand-blue" : "bg-[#262626]";
+  const textColor = isMe ? "text-white" : "text-brand-light";
+  const replyTextColor = isMe ? "text-white/60" : "text-[#777]";
 
   return (
     <View className="px-4 py-[2px]">
       {/* Reaction picker */}
       {showReactions && (
-        <View className={`mb-1 flex-row ${isMe ? 'justify-end' : isGroupChat && showAvatar ? 'ml-10 justify-start' : 'justify-start'}`}>
+        <View
+          className={`mb-1 flex-row ${isMe ? "justify-end" : isGroupChat && showAvatar ? "ml-10 justify-start" : "justify-start"}`}
+        >
           <HStack className="rounded-full bg-[#262626] px-2 py-1" space="xs">
             {REACTION_EMOJIS.map((emoji) => (
               <Pressable
                 key={emoji}
                 onPress={() => handleReaction(emoji)}
-                className={`rounded-full px-1.5 py-0.5 ${hasReacted(emoji) ? 'bg-white/10' : ''}`}
+                className={`rounded-full px-1.5 py-0.5 ${hasReacted(emoji) ? "bg-white/10" : ""}`}
               >
                 <Text className="text-[18px]">{emoji}</Text>
               </Pressable>
@@ -117,7 +119,9 @@ export function MessageBubble({
         </View>
       )}
 
-      <View className={`flex-row items-end ${isMe ? 'justify-end' : 'justify-start'}`}>
+      <View
+        className={`flex-row items-end ${isMe ? "justify-end" : "justify-start"}`}
+      >
         {/* Avatar for group chats (received msgs) */}
         {!isMe && isGroupChat && (
           <Pressable
@@ -134,7 +138,7 @@ export function MessageBubble({
           </Pressable>
         )}
 
-        <View style={{ maxWidth: '75%' }}>
+        <View style={{ maxWidth: "75%" }}>
           {/* Sender name in group chats */}
           {!isMe && isGroupChat && showAvatar && (
             <HStack className="mb-0.5 ml-3 items-center" space="xs">
@@ -150,12 +154,18 @@ export function MessageBubble({
           {/* Reply preview */}
           {message.replyTo && (
             <View
-              className={`mx-3 mb-0.5 rounded-t-xl border-l-2 border-brand-blue px-3 py-1 ${isMe ? 'bg-[#0077cc]' : 'bg-brand-border'}`}
+              className={`mx-3 mb-0.5 rounded-t-xl border-l-2 border-brand-blue px-3 py-1 ${isMe ? "bg-[#0077cc]" : "bg-brand-border"}`}
             >
-              <Text className={`text-[11px] font-semibold ${replyTextColor}`} numberOfLines={1}>
+              <Text
+                className={`text-[11px] font-semibold ${replyTextColor}`}
+                numberOfLines={1}
+              >
                 {message.replyTo.sender.display_name}
               </Text>
-              <Text className={`text-[11px] ${replyTextColor}`} numberOfLines={1}>
+              <Text
+                className={`text-[11px] ${replyTextColor}`}
+                numberOfLines={1}
+              >
                 {message.replyTo.content}
               </Text>
             </View>
@@ -164,26 +174,30 @@ export function MessageBubble({
           <Pressable
             onLongPress={handleLongPress}
             className={`rounded-2xl px-3.5 py-2.5 ${bubbleBg} ${
-              message.replyTo ? 'rounded-t-lg' : ''
+              message.replyTo ? "rounded-t-lg" : ""
             }`}
           >
             {/* Text message */}
-            {message.type === 'text' && (
+            {message.type === "text" && (
               <Text className={`text-[15px] leading-5 ${textColor}`}>
                 {message.content}
               </Text>
             )}
 
             {/* Image message */}
-            {message.type === 'image' && (
-              <Pressable onPress={() => message.media_url && onImagePress?.(message.media_url)}>
+            {message.type === "image" && (
+              <Pressable
+                onPress={() =>
+                  message.media_url && onImagePress?.(message.media_url)
+                }
+              >
                 {message.content ? (
                   <Text className={`mb-2 text-[15px] leading-5 ${textColor}`}>
                     {message.content}
                   </Text>
                 ) : null}
                 <Image
-                  source={{ uri: message.media_url ?? '' }}
+                  source={{ uri: message.media_url ?? "" }}
                   className="h-[200px] w-[250px] rounded-xl"
                   resizeMode="cover"
                 />
@@ -191,7 +205,7 @@ export function MessageBubble({
             )}
 
             {/* Video message */}
-            {message.type === 'video' && (
+            {message.type === "video" && (
               <View>
                 {message.content ? (
                   <Text className={`mb-2 text-[15px] leading-5 ${textColor}`}>
@@ -200,7 +214,9 @@ export function MessageBubble({
                 ) : null}
                 <View className="h-[200px] w-[250px] items-center justify-center rounded-xl bg-black">
                   <Image
-                    source={{ uri: message.media_thumbnail ?? message.media_url ?? '' }}
+                    source={{
+                      uri: message.media_thumbnail ?? message.media_url ?? "",
+                    }}
                     className="size-full rounded-xl"
                     resizeMode="cover"
                   />
@@ -212,23 +228,37 @@ export function MessageBubble({
             )}
 
             {/* Thread share */}
-            {message.type === 'thread_share' && message.sharedThread && (
-              <Pressable onPress={() => message.shared_thread_id && onThreadPress?.(message.shared_thread_id)}>
+            {message.type === "thread_share" && message.sharedThread && (
+              <Pressable
+                onPress={() =>
+                  message.shared_thread_id &&
+                  onThreadPress?.(message.shared_thread_id)
+                }
+              >
                 {message.content ? (
                   <Text className={`mb-2 text-[15px] leading-5 ${textColor}`}>
                     {message.content}
                   </Text>
                 ) : null}
-                <View className={`rounded-xl border p-3 ${isMe ? 'border-white/20 bg-white/10' : 'border-[#333] bg-[#1a1a1a]'}`}>
+                <View
+                  className={`rounded-xl border p-3 ${isMe ? "border-white/20 bg-white/10" : "border-[#333] bg-[#1a1a1a]"}`}
+                >
                   <HStack className="mb-1 items-center" space="xs">
                     <Avatar size="xs" className="size-[18px]">
-                      <AvatarImage source={{ uri: message.sharedThread.author.avatar_url }} />
+                      <AvatarImage
+                        source={{ uri: message.sharedThread.author.avatar_url }}
+                      />
                     </Avatar>
-                    <Text className={`text-[12px] font-semibold ${isMe ? 'text-white/80' : 'text-[#999]'}`}>
+                    <Text
+                      className={`text-[12px] font-semibold ${isMe ? "text-white/80" : "text-[#999]"}`}
+                    >
                       {message.sharedThread.author.username}
                     </Text>
                   </HStack>
-                  <Text className={`text-[13px] ${isMe ? 'text-white/90' : 'text-[#ccc]'}`} numberOfLines={3}>
+                  <Text
+                    className={`text-[13px] ${isMe ? "text-white/90" : "text-[#ccc]"}`}
+                    numberOfLines={3}
+                  >
                     {message.sharedThread.content}
                   </Text>
                 </View>
@@ -236,14 +266,21 @@ export function MessageBubble({
             )}
 
             {/* Reel share */}
-            {message.type === 'reel_share' && message.sharedReel && (
-              <Pressable onPress={() => message.shared_reel_id && onReelPress?.(message.shared_reel_id)}>
+            {message.type === "reel_share" && message.sharedReel && (
+              <Pressable
+                onPress={() =>
+                  message.shared_reel_id &&
+                  onReelPress?.(message.shared_reel_id)
+                }
+              >
                 {message.content ? (
                   <Text className={`mb-2 text-[15px] leading-5 ${textColor}`}>
                     {message.content}
                   </Text>
                 ) : null}
-                <View className={`rounded-xl border p-2 ${isMe ? 'border-white/20 bg-white/10' : 'border-[#333] bg-[#1a1a1a]'}`}>
+                <View
+                  className={`rounded-xl border p-2 ${isMe ? "border-white/20 bg-white/10" : "border-[#333] bg-[#1a1a1a]"}`}
+                >
                   <HStack className="items-center" space="sm">
                     <Image
                       source={{ uri: message.sharedReel.thumbnailUrl }}
@@ -253,13 +290,22 @@ export function MessageBubble({
                     <VStack className="flex-1">
                       <HStack className="items-center" space="xs">
                         <Avatar size="xs" className="size-[16px]">
-                          <AvatarImage source={{ uri: message.sharedReel.author.avatar_url }} />
+                          <AvatarImage
+                            source={{
+                              uri: message.sharedReel.author.avatar_url,
+                            }}
+                          />
                         </Avatar>
-                        <Text className={`text-[12px] font-semibold ${isMe ? 'text-white/80' : 'text-[#999]'}`}>
+                        <Text
+                          className={`text-[12px] font-semibold ${isMe ? "text-white/80" : "text-[#999]"}`}
+                        >
                           {message.sharedReel.author.username}
                         </Text>
                       </HStack>
-                      <Text className={`mt-0.5 text-[12px] ${isMe ? 'text-white/70' : 'text-[#777]'}`} numberOfLines={2}>
+                      <Text
+                        className={`mt-0.5 text-[12px] ${isMe ? "text-white/70" : "text-[#777]"}`}
+                        numberOfLines={2}
+                      >
                         {message.sharedReel.caption}
                       </Text>
                     </VStack>
@@ -269,18 +315,20 @@ export function MessageBubble({
             )}
 
             {/* Voice note */}
-            {message.type === 'voice_note' && (
-              <VoiceNotePlayer
-                message={message}
-                isMe={isMe}
-              />
+            {message.type === "voice_note" && (
+              <VoiceNotePlayer message={message} isMe={isMe} />
             )}
 
             {/* E2EE indicator */}
             {(message as any).is_encrypted && (
               <HStack className="mt-1 items-center" space="xs">
-                <LockIcon size={10} color={isMe ? 'rgba(255,255,255,0.5)' : '#555'} />
-                <Text className={`text-2xs ${isMe ? 'text-white/50' : 'text-[#555]'}`}>
+                <LockIcon
+                  size={10}
+                  color={isMe ? "rgba(255,255,255,0.5)" : "#555"}
+                />
+                <Text
+                  className={`text-2xs ${isMe ? "text-white/50" : "text-[#555]"}`}
+                >
                   End-to-end encrypted
                 </Text>
               </HStack>
@@ -290,7 +338,7 @@ export function MessageBubble({
           {/* Reactions display */}
           {Object.keys(reactionCounts).length > 0 && (
             <HStack
-              className={`-mt-1 flex-wrap ${isMe ? 'justify-end' : 'justify-start'} ${isMe ? 'mr-2' : 'ml-2'}`}
+              className={`-mt-1 flex-wrap ${isMe ? "justify-end" : "justify-start"} ${isMe ? "mr-2" : "ml-2"}`}
               space="xs"
             >
               {Object.entries(reactionCounts).map(([emoji, count]) => (
@@ -298,7 +346,9 @@ export function MessageBubble({
                   key={emoji}
                   onPress={() => onReaction?.(message.id, emoji)}
                   className={`flex-row items-center rounded-full border px-1.5 py-0.5 ${
-                    hasReacted(emoji) ? 'border-brand-blue bg-brand-blue/20' : 'border-[#333] bg-brand-border'
+                    hasReacted(emoji)
+                      ? "border-brand-blue bg-brand-blue/20"
+                      : "border-[#333] bg-brand-border"
                   }`}
                 >
                   <Text className="text-[12px]">{emoji}</Text>
@@ -313,7 +363,7 @@ export function MessageBubble({
           {/* Timestamp + delivery status */}
           {showTimestamp && (
             <HStack
-              className={`mt-0.5 items-center ${isMe ? 'justify-end pr-1' : isGroupChat ? 'pl-1' : 'pl-1'}`}
+              className={`mt-0.5 items-center ${isMe ? "justify-end pr-1" : isGroupChat ? "pl-1" : "pl-1"}`}
               space="xs"
             >
               <Text className="text-2xs text-brand-muted">
@@ -321,16 +371,16 @@ export function MessageBubble({
               </Text>
               {isMe && (
                 <Text className="text-2xs text-brand-muted">
-                  {message.status === 'sending'
-                    ? '○'
-                    : message.status === 'sent'
-                      ? '✓'
-                      : message.status === 'delivered'
-                        ? '✓✓'
-                        : '✓'}
+                  {message.status === "sending"
+                    ? "○"
+                    : message.status === "sent"
+                      ? "✓"
+                      : message.status === "delivered"
+                        ? "✓✓"
+                        : "✓"}
                 </Text>
               )}
-              {isMe && message.status === 'seen' && (
+              {isMe && message.status === "seen" && (
                 <Text className="text-2xs text-brand-blue">✓✓</Text>
               )}
             </HStack>
@@ -353,9 +403,16 @@ export function MessageBubble({
 
 // ─── Voice Note Player ──────────────────────────────────────────────────────────
 
-function VoiceNotePlayer({ message, isMe }: { message: MessageWithSender; isMe: boolean }) {
+function VoiceNotePlayer({
+  message,
+  isMe,
+}: {
+  message: MessageWithSender;
+  isMe: boolean;
+}) {
   const [playback, setPlayback] = useState<PlaybackState | null>(null);
-  const isPlaying = playback?.messageId === message.id && playback?.status === 'playing';
+  const isPlaying =
+    playback?.messageId === message.id && playback?.status === "playing";
   const progress =
     playback?.messageId === message.id && playback?.durationMs
       ? Math.min(playback.positionMs / playback.durationMs, 1)
@@ -387,7 +444,7 @@ function VoiceNotePlayer({ message, isMe }: { message: MessageWithSender; isMe: 
         onPress={handlePlayPause}
         className="size-8 items-center justify-center rounded-full bg-white/20"
       >
-        <Text className="text-[14px]">{isPlaying ? '⏸' : '▶'}</Text>
+        <Text className="text-[14px]">{isPlaying ? "⏸" : "▶"}</Text>
       </Pressable>
       <View className="h-[4px] flex-1 rounded-full bg-white/30">
         <View
@@ -395,7 +452,7 @@ function VoiceNotePlayer({ message, isMe }: { message: MessageWithSender; isMe: 
           style={{ width: `${(progress * 100).toFixed(1)}%` as any }}
         />
       </View>
-      <Text className={`text-[11px] ${isMe ? 'text-white/60' : 'text-[#777]'}`}>
+      <Text className={`text-[11px] ${isMe ? "text-white/60" : "text-[#777]"}`}>
         {displayDuration}
       </Text>
     </HStack>
@@ -412,11 +469,15 @@ export function DateSeparator({ date }: { date: string }) {
 
   let label: string;
   if (d.toDateString() === today.toDateString()) {
-    label = 'Today';
+    label = "Today";
   } else if (d.toDateString() === yesterday.toDateString()) {
-    label = 'Yesterday';
+    label = "Yesterday";
   } else {
-    label = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    label = d.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
   }
 
   return (

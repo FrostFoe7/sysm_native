@@ -2,7 +2,7 @@
 // Messaging data-access layer — upgraded for reliability, race-condition safety,
 // realtime correctness, and cursor-based pagination.
 
-import { supabase, getCachedUserId } from './supabase';
+import { supabase, getCachedUserId } from "./supabase";
 import type {
   User,
   Conversation,
@@ -10,21 +10,22 @@ import type {
   DirectMessage,
   MessageWithSender,
   MessageType,
-} from '@/types/types';
+} from "@/types/types";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function rowToUser(row: any): User {
   return {
-    id: row.id ?? row.user_id ?? '',
-    username: row.username ?? '',
-    display_name: row.display_name ?? '',
-    avatar_url: row.avatar_url ?? '',
-    bio: row.bio ?? '',
+    id: row.id ?? row.user_id ?? "",
+    username: row.username ?? "",
+    display_name: row.display_name ?? "",
+    avatar_url: row.avatar_url ?? "",
+    bio: row.bio ?? "",
     verified: row.verified ?? false,
+    is_private: row.is_private ?? false,
     followers_count: row.followers_count ?? 0,
     following_count: row.following_count ?? 0,
-    created_at: row.created_at ?? '',
+    created_at: row.created_at ?? "",
   };
 }
 
@@ -32,14 +33,15 @@ function rowToUser(row: any): User {
 function rpcRowToMessage(row: any): MessageWithSender {
   const sender: User = {
     id: row.sender_id,
-    username: row.sender_username ?? '',
-    display_name: row.sender_display_name ?? '',
-    avatar_url: row.sender_avatar_url ?? '',
-    bio: '',
+    username: row.sender_username ?? "",
+    display_name: row.sender_display_name ?? "",
+    avatar_url: row.sender_avatar_url ?? "",
+    bio: "",
     verified: row.sender_verified ?? false,
+    is_private: false,
     followers_count: 0,
     following_count: 0,
-    created_at: '',
+    created_at: "",
   };
 
   const replyTo =
@@ -47,17 +49,17 @@ function rpcRowToMessage(row: any): MessageWithSender {
       ? ({
           id: row.reply_to_id,
           conversation_id: row.conversation_id,
-          sender_id: '',
-          type: 'text' as const,
-          content: row.reply_content ?? '',
+          sender_id: "",
+          type: "text" as const,
+          content: row.reply_content ?? "",
           media_url: null,
           media_thumbnail: null,
           reply_to_id: null,
           shared_thread_id: null,
           shared_reel_id: null,
           reactions: [],
-          status: 'sent' as const,
-          created_at: '',
+          status: "sent" as const,
+          created_at: "",
           is_deleted: false,
           audio_url: null,
           audio_duration_ms: null,
@@ -66,28 +68,31 @@ function rpcRowToMessage(row: any): MessageWithSender {
           key_version: null,
           is_encrypted: false,
           sender: {
-            id: '',
-            username: '',
-            display_name: row.reply_sender_name ?? '',
-            avatar_url: '',
-            bio: '',
+            id: "",
+            username: "",
+            display_name: row.reply_sender_name ?? "",
+            avatar_url: "",
+            bio: "",
             verified: false,
+            is_private: false,
             followers_count: 0,
             following_count: 0,
-            created_at: '',
+            created_at: "",
           },
         } as DirectMessage & { sender: User })
       : null;
 
   const reactions: { user_id: string; emoji: string; created_at: string }[] =
-    Array.isArray(row.reactions) ? row.reactions : JSON.parse(row.reactions ?? '[]');
+    Array.isArray(row.reactions)
+      ? row.reactions
+      : JSON.parse(row.reactions ?? "[]");
 
   return {
     id: row.id,
     conversation_id: row.conversation_id,
     sender_id: row.sender_id,
     type: row.type as MessageType,
-    content: row.content ?? '',
+    content: row.content ?? "",
     media_url: row.media_url ?? null,
     media_thumbnail: row.media_thumbnail ?? null,
     reply_to_id: row.reply_to_id ?? null,
@@ -115,7 +120,9 @@ function rpcRowToMessage(row: any): MessageWithSender {
 async function getConversations(): Promise<ConversationWithDetails[]> {
   const userId = await getCachedUserId();
 
-  const { data, error } = await supabase.rpc('get_conversations', { p_user_id: userId });
+  const { data, error } = await supabase.rpc("get_conversations", {
+    p_user_id: userId,
+  });
   if (error) throw error;
 
   const convMap = new Map<string, ConversationWithDetails>();
@@ -126,11 +133,9 @@ async function getConversations(): Promise<ConversationWithDetails[]> {
       type: row.type as any,
       name: row.name,
       avatar_url: row.avatar_url,
-      created_by: '',
-      created_at: '',
+      created_by: "",
+      created_at: "",
       updated_at: row.updated_at,
-      is_muted: row.is_muted ?? false,
-      is_pinned: row.is_pinned ?? false,
       last_message_id: null,
     };
 
@@ -138,32 +143,33 @@ async function getConversations(): Promise<ConversationWithDetails[]> {
     if (row.other_user_id) {
       otherUsers.push({
         id: row.other_user_id,
-        username: row.other_username ?? '',
-        display_name: row.other_display_name ?? '',
-        avatar_url: row.other_avatar_url ?? '',
-        bio: '',
+        username: row.other_username ?? "",
+        display_name: row.other_display_name ?? "",
+        avatar_url: row.other_avatar_url ?? "",
+        bio: "",
         verified: row.other_verified ?? false,
+        is_private: false,
         followers_count: 0,
         following_count: 0,
-        created_at: '',
+        created_at: "",
       });
     }
 
     const lastMessage = row.last_message_content
       ? {
-          id: '',
+          id: "",
           conversation_id: row.id,
-          sender_id: row.last_message_sender ?? '',
-          type: (row.last_message_type ?? 'text') as MessageType,
-          content: row.last_message_content ?? '',
+          sender_id: row.last_message_sender ?? "",
+          type: (row.last_message_type ?? "text") as MessageType,
+          content: row.last_message_content ?? "",
           media_url: null,
           media_thumbnail: null,
           reply_to_id: null,
           shared_thread_id: null,
           shared_reel_id: null,
           reactions: [],
-          status: 'sent' as const,
-          created_at: row.last_message_at ?? '',
+          status: "sent" as const,
+          created_at: row.last_message_at ?? "",
           is_deleted: false,
           audio_url: null,
           audio_duration_ms: null,
@@ -182,27 +188,31 @@ async function getConversations(): Promise<ConversationWithDetails[]> {
       unreadCount: Number(row.unread_count ?? 0),
       otherUsers,
       typingUsers: [],
+      is_muted: row.is_muted ?? false,
+      is_pinned: row.is_pinned ?? false,
     });
   }
 
   return Array.from(convMap.values());
 }
 
-async function getConversation(conversationId: string): Promise<ConversationWithDetails | undefined> {
+async function getConversation(
+  conversationId: string,
+): Promise<ConversationWithDetails | undefined> {
   const userId = await getCachedUserId();
 
   const { data: conv } = await supabase
-    .from('conversations')
-    .select('*')
-    .eq('id', conversationId)
+    .from("conversations")
+    .select("*")
+    .eq("id", conversationId)
     .single();
 
   if (!conv) return undefined;
 
   const { data: participants } = await supabase
-    .from('conversation_participants')
-    .select('*, users!conversation_participants_user_id_fkey(*)')
-    .eq('conversation_id', conversationId);
+    .from("conversation_participants")
+    .select("*, users!conversation_participants_user_id_fkey(*)")
+    .eq("conversation_id", conversationId);
 
   const mappedParticipants = (participants ?? []).map((p: any) => ({
     id: p.id,
@@ -211,7 +221,10 @@ async function getConversation(conversationId: string): Promise<ConversationWith
     role: p.role as any,
     joined_at: p.joined_at,
     last_read_message_id: p.last_read_message_id,
+    last_read_at: p.last_read_at ?? null,
     is_typing: p.is_typing,
+    is_muted: p.is_muted ?? false,
+    is_pinned: p.is_pinned ?? false,
     user: rowToUser(p.users),
   }));
 
@@ -226,9 +239,9 @@ async function getConversation(conversationId: string): Promise<ConversationWith
   let lastMessage: (DirectMessage & { sender: User }) | null = null;
   if (conv.last_message_id) {
     const { data: msg } = await supabase
-      .from('messages')
-      .select('*, users!messages_sender_id_fkey(*)')
-      .eq('id', conv.last_message_id)
+      .from("messages")
+      .select("*, users!messages_sender_id_fkey(*)")
+      .eq("id", conv.last_message_id)
       .single();
 
     if (msg) {
@@ -259,28 +272,30 @@ async function getConversation(conversationId: string): Promise<ConversationWith
   }
 
   // Unread count via participant data
-  const myParticipant = mappedParticipants.find((p: any) => p.user_id === userId);
+  const myParticipant = mappedParticipants.find(
+    (p: any) => p.user_id === userId,
+  );
   let unreadCount = 0;
   if (myParticipant?.last_read_message_id) {
     const { data: lastRead } = await supabase
-      .from('messages')
-      .select('created_at')
-      .eq('id', myParticipant.last_read_message_id)
+      .from("messages")
+      .select("created_at")
+      .eq("id", myParticipant.last_read_message_id)
       .single();
 
     if (lastRead) {
       const { count } = await supabase
-        .from('messages')
-        .select('id', { count: 'exact', head: true })
-        .eq('conversation_id', conversationId)
-        .neq('sender_id', userId)
-        .gt('created_at', lastRead.created_at);
+        .from("messages")
+        .select("id", { count: "exact", head: true })
+        .eq("conversation_id", conversationId)
+        .neq("sender_id", userId)
+        .gt("created_at", lastRead.created_at);
       unreadCount = count ?? 0;
     }
   }
 
-  const isMuted = (myParticipant as any)?.is_muted ?? conv.is_muted ?? false;
-  const isPinned = (myParticipant as any)?.is_pinned ?? conv.is_pinned ?? false;
+  const isMuted = (myParticipant as any)?.is_muted ?? false;
+  const isPinned = (myParticipant as any)?.is_pinned ?? false;
 
   return {
     conversation: {
@@ -291,8 +306,6 @@ async function getConversation(conversationId: string): Promise<ConversationWith
       created_by: conv.created_by,
       created_at: conv.created_at,
       updated_at: conv.updated_at,
-      is_muted: isMuted,
-      is_pinned: isPinned,
       last_message_id: conv.last_message_id,
     },
     participants: mappedParticipants,
@@ -300,6 +313,8 @@ async function getConversation(conversationId: string): Promise<ConversationWith
     unreadCount,
     otherUsers,
     typingUsers,
+    is_muted: isMuted,
+    is_pinned: isPinned,
   };
 }
 
@@ -311,7 +326,7 @@ async function getMessages(
   beforeAt?: string,
   beforeId?: string,
 ): Promise<MessageWithSender[]> {
-  const { data, error } = await supabase.rpc('get_paginated_messages', {
+  const { data, error } = await supabase.rpc("get_paginated_messages", {
     p_conversation_id: conversationId,
     p_limit: limit,
     ...(beforeAt ? { p_before_at: beforeAt } : {}),
@@ -319,7 +334,7 @@ async function getMessages(
   });
 
   if (error) {
-    console.error('get_paginated_messages error:', error);
+    console.error("get_paginated_messages error:", error);
     // Fallback to direct query if RPC not available
     return getMessagesFallback(conversationId, limit);
   }
@@ -331,26 +346,30 @@ async function getMessages(
 }
 
 /** Fallback if the RPC hasn't been deployed yet */
-async function getMessagesFallback(conversationId: string, limit: number): Promise<MessageWithSender[]> {
+async function getMessagesFallback(
+  conversationId: string,
+  limit: number,
+): Promise<MessageWithSender[]> {
   const { data } = await supabase
-    .from('messages')
-    .select('*, users!messages_sender_id_fkey(*)')
-    .eq('conversation_id', conversationId)
-    .eq('is_deleted', false)
-    .order('created_at', { ascending: true })
+    .from("messages")
+    .select("*, users!messages_sender_id_fkey(*)")
+    .eq("conversation_id", conversationId)
+    .eq("is_deleted", false)
+    .order("created_at", { ascending: true })
     .limit(limit);
 
   if (!data) return [];
 
   const messageIds = data.map((m: any) => m.id);
   const { data: reactions } = await supabase
-    .from('message_reactions')
-    .select('*')
-    .in('message_id', messageIds);
+    .from("message_reactions")
+    .select("*")
+    .in("message_id", messageIds);
 
   const reactionsByMessage = new Map<string, any[]>();
   for (const r of reactions ?? []) {
-    if (!reactionsByMessage.has(r.message_id)) reactionsByMessage.set(r.message_id, []);
+    if (!reactionsByMessage.has(r.message_id))
+      reactionsByMessage.set(r.message_id, []);
     reactionsByMessage.get(r.message_id)!.push({
       user_id: r.user_id,
       emoji: r.emoji,
@@ -405,11 +424,11 @@ async function sendMessage(params: {
   const userId = await getCachedUserId();
 
   const { data, error } = await supabase
-    .from('messages')
+    .from("messages")
     .insert({
       conversation_id: params.conversationId,
       sender_id: userId,
-      type: params.type ?? 'text',
+      type: params.type ?? "text",
       content: params.content,
       media_url: params.mediaUrl ?? null,
       media_thumbnail: params.mediaThumbnail ?? null,
@@ -422,12 +441,12 @@ async function sendMessage(params: {
       encrypted_key: params.encryptedKey ?? null,
       key_version: params.keyVersion ?? null,
       is_encrypted: params.isEncrypted ?? false,
-      status: 'sent',
+      status: "sent",
     })
-    .select('*, users!messages_sender_id_fkey(*)')
+    .select("*, users!messages_sender_id_fkey(*)")
     .single();
 
-  if (error || !data) throw error ?? new Error('Failed to send message');
+  if (error || !data) throw error ?? new Error("Failed to send message");
 
   return {
     id: data.id,
@@ -463,7 +482,7 @@ async function markAsRead(conversationId: string): Promise<void> {
   const userId = await getCachedUserId();
 
   // Try RPC first, fallback to manual
-  const { error } = await supabase.rpc('mark_conversation_read', {
+  const { error } = await supabase.rpc("mark_conversation_read", {
     p_conversation_id: conversationId,
     p_user_id: userId,
   });
@@ -471,30 +490,33 @@ async function markAsRead(conversationId: string): Promise<void> {
   if (error) {
     // Fallback if RPC not deployed
     const { data: lastMsg } = await supabase
-      .from('messages')
-      .select('id')
-      .eq('conversation_id', conversationId)
-      .order('created_at', { ascending: false })
+      .from("messages")
+      .select("id")
+      .eq("conversation_id", conversationId)
+      .order("created_at", { ascending: false })
       .limit(1)
       .single();
 
     if (lastMsg) {
       await supabase
-        .from('conversation_participants')
+        .from("conversation_participants")
         .update({ last_read_message_id: lastMsg.id })
-        .eq('conversation_id', conversationId)
-        .eq('user_id', userId);
+        .eq("conversation_id", conversationId)
+        .eq("user_id", userId);
     }
   }
 }
 
 // ─── Reactions (atomic RPC) ─────────────────────────────────────────────────
 
-async function toggleReaction(messageId: string, emoji: string): Promise<boolean> {
+async function toggleReaction(
+  messageId: string,
+  emoji: string,
+): Promise<boolean> {
   const userId = await getCachedUserId();
 
   // Try atomic RPC first
-  const { data, error } = await supabase.rpc('toggle_reaction', {
+  const { data, error } = await supabase.rpc("toggle_reaction", {
     p_message_id: messageId,
     p_user_id: userId,
     p_emoji: emoji,
@@ -504,18 +526,18 @@ async function toggleReaction(messageId: string, emoji: string): Promise<boolean
 
   // Fallback: check-then-act (original behavior)
   const { data: existing } = await supabase
-    .from('message_reactions')
-    .select('id')
-    .eq('message_id', messageId)
-    .eq('user_id', userId)
-    .eq('emoji', emoji)
+    .from("message_reactions")
+    .select("id")
+    .eq("message_id", messageId)
+    .eq("user_id", userId)
+    .eq("emoji", emoji)
     .maybeSingle();
 
   if (existing) {
-    await supabase.from('message_reactions').delete().eq('id', existing.id);
+    await supabase.from("message_reactions").delete().eq("id", existing.id);
     return false;
   } else {
-    await supabase.from('message_reactions').insert({
+    await supabase.from("message_reactions").insert({
       message_id: messageId,
       user_id: userId,
       emoji,
@@ -526,14 +548,19 @@ async function toggleReaction(messageId: string, emoji: string): Promise<boolean
 
 // ─── Conversation management ────────────────────────────────────────────────
 
-async function createDirectConversation(otherUserId: string): Promise<ConversationWithDetails> {
+async function createDirectConversation(
+  otherUserId: string,
+): Promise<ConversationWithDetails> {
   const userId = await getCachedUserId();
 
   // O(1) lookup via RPC instead of N+1 loop
-  const { data: existingId, error: rpcError } = await supabase.rpc('find_direct_conversation', {
-    p_user_id: userId,
-    p_other_user_id: otherUserId,
-  });
+  const { data: existingId, error: rpcError } = await supabase.rpc(
+    "find_direct_conversation",
+    {
+      p_user_id: userId,
+      p_other_user_id: otherUserId,
+    },
+  );
 
   if (!rpcError && existingId) {
     const existing = await getConversation(existingId);
@@ -543,24 +570,24 @@ async function createDirectConversation(otherUserId: string): Promise<Conversati
   // Fallback: scan manually if RPC not available
   if (rpcError) {
     const { data: myConvs } = await supabase
-      .from('conversation_participants')
-      .select('conversation_id')
-      .eq('user_id', userId);
+      .from("conversation_participants")
+      .select("conversation_id")
+      .eq("user_id", userId);
 
     for (const cp of myConvs ?? []) {
       const { data: otherParticipant } = await supabase
-        .from('conversation_participants')
-        .select('user_id')
-        .eq('conversation_id', cp.conversation_id)
-        .eq('user_id', otherUserId)
+        .from("conversation_participants")
+        .select("user_id")
+        .eq("conversation_id", cp.conversation_id)
+        .eq("user_id", otherUserId)
         .maybeSingle();
 
       if (otherParticipant) {
         const { data: conv } = await supabase
-          .from('conversations')
-          .select('type')
-          .eq('id', cp.conversation_id)
-          .eq('type', 'direct')
+          .from("conversations")
+          .select("type")
+          .eq("id", cp.conversation_id)
+          .eq("type", "direct")
           .maybeSingle();
 
         if (conv) {
@@ -573,20 +600,21 @@ async function createDirectConversation(otherUserId: string): Promise<Conversati
 
   // Create new conversation
   const { data: newConv, error } = await supabase
-    .from('conversations')
-    .insert({ type: 'direct', created_by: userId })
+    .from("conversations")
+    .insert({ type: "direct", created_by: userId })
     .select()
     .single();
 
-  if (error || !newConv) throw error ?? new Error('Failed to create conversation');
+  if (error || !newConv)
+    throw error ?? new Error("Failed to create conversation");
 
-  await supabase.from('conversation_participants').insert([
-    { conversation_id: newConv.id, user_id: userId, role: 'admin' },
-    { conversation_id: newConv.id, user_id: otherUserId, role: 'member' },
+  await supabase.from("conversation_participants").insert([
+    { conversation_id: newConv.id, user_id: userId, role: "admin" },
+    { conversation_id: newConv.id, user_id: otherUserId, role: "member" },
   ]);
 
   const created = await getConversation(newConv.id);
-  if (!created) throw new Error('Failed to retrieve created conversation');
+  if (!created) throw new Error("Failed to retrieve created conversation");
   return created;
 }
 
@@ -598,9 +626,9 @@ async function createGroupConversation(params: {
   const userId = await getCachedUserId();
 
   const { data: newConv, error } = await supabase
-    .from('conversations')
+    .from("conversations")
     .insert({
-      type: 'group',
+      type: "group",
       name: params.name,
       avatar_url: params.avatarUrl ?? null,
       created_by: userId,
@@ -608,35 +636,69 @@ async function createGroupConversation(params: {
     .select()
     .single();
 
-  if (error || !newConv) throw error ?? new Error('Failed to create group');
+  if (error || !newConv) throw error ?? new Error("Failed to create group");
 
   const participantRows = [userId, ...params.memberIds].map((uid) => ({
     conversation_id: newConv.id,
     user_id: uid,
-    role: uid === userId ? 'admin' : ('member' as const),
+    role: uid === userId ? "admin" : ("member" as const),
   }));
 
-  await supabase.from('conversation_participants').insert(participantRows);
+  await supabase.from("conversation_participants").insert(participantRows);
 
   const created = await getConversation(newConv.id);
-  if (!created) throw new Error('Failed to retrieve created group');
+  if (!created) throw new Error("Failed to retrieve created group");
   return created;
 }
 
-async function addGroupMember(conversationId: string, userId: string): Promise<void> {
-  await supabase.from('conversation_participants').insert({
+async function addGroupMember(
+  conversationId: string,
+  userId: string,
+): Promise<void> {
+  // Verify caller is admin of this group
+  const currentUserId = await getCachedUserId();
+  const { data: callerRole } = await supabase
+    .from("conversation_participants")
+    .select("role")
+    .eq("conversation_id", conversationId)
+    .eq("user_id", currentUserId)
+    .maybeSingle();
+
+  if (callerRole?.role !== "admin") {
+    throw new Error("Only group admins can add members");
+  }
+
+  await supabase.from("conversation_participants").insert({
     conversation_id: conversationId,
     user_id: userId,
-    role: 'member',
+    role: "member",
   });
 }
 
-async function removeGroupMember(conversationId: string, userId: string): Promise<void> {
+async function removeGroupMember(
+  conversationId: string,
+  userId: string,
+): Promise<void> {
+  // Verify caller is admin of this group
+  const currentUserId = await getCachedUserId();
+  if (currentUserId !== userId) {
+    const { data: callerRole } = await supabase
+      .from("conversation_participants")
+      .select("role")
+      .eq("conversation_id", conversationId)
+      .eq("user_id", currentUserId)
+      .maybeSingle();
+
+    if (callerRole?.role !== "admin") {
+      throw new Error("Only group admins can remove members");
+    }
+  }
+
   await supabase
-    .from('conversation_participants')
+    .from("conversation_participants")
     .delete()
-    .eq('conversation_id', conversationId)
-    .eq('user_id', userId);
+    .eq("conversation_id", conversationId)
+    .eq("user_id", userId);
 }
 
 async function leaveGroup(conversationId: string): Promise<void> {
@@ -644,12 +706,15 @@ async function leaveGroup(conversationId: string): Promise<void> {
   await removeGroupMember(conversationId, userId);
 }
 
-async function promoteToAdmin(conversationId: string, userId: string): Promise<void> {
+async function promoteToAdmin(
+  conversationId: string,
+  userId: string,
+): Promise<void> {
   await supabase
-    .from('conversation_participants')
-    .update({ role: 'admin' })
-    .eq('conversation_id', conversationId)
-    .eq('user_id', userId);
+    .from("conversation_participants")
+    .update({ role: "admin" })
+    .eq("conversation_id", conversationId)
+    .eq("user_id", userId);
 }
 
 async function updateGroupInfo(
@@ -658,10 +723,14 @@ async function updateGroupInfo(
 ): Promise<void> {
   const updateData: Record<string, any> = {};
   if (updates.name !== undefined) updateData.name = updates.name;
-  if (updates.avatarUrl !== undefined) updateData.avatar_url = updates.avatarUrl;
+  if (updates.avatarUrl !== undefined)
+    updateData.avatar_url = updates.avatarUrl;
 
   if (Object.keys(updateData).length > 0) {
-    await supabase.from('conversations').update(updateData).eq('id', conversationId);
+    await supabase
+      .from("conversations")
+      .update(updateData)
+      .eq("id", conversationId);
   }
 }
 
@@ -669,36 +738,38 @@ async function updateGroupInfo(
 async function toggleConversationPin(conversationId: string): Promise<boolean> {
   const userId = await getCachedUserId();
   const { data: part } = await supabase
-    .from('conversation_participants')
-    .select('is_pinned')
-    .eq('conversation_id', conversationId)
-    .eq('user_id', userId)
+    .from("conversation_participants")
+    .select("is_pinned")
+    .eq("conversation_id", conversationId)
+    .eq("user_id", userId)
     .single();
 
   const newVal = !(part?.is_pinned ?? false);
   await supabase
-    .from('conversation_participants')
+    .from("conversation_participants")
     .update({ is_pinned: newVal })
-    .eq('conversation_id', conversationId)
-    .eq('user_id', userId);
+    .eq("conversation_id", conversationId)
+    .eq("user_id", userId);
   return newVal;
 }
 
-async function toggleConversationMute(conversationId: string): Promise<boolean> {
+async function toggleConversationMute(
+  conversationId: string,
+): Promise<boolean> {
   const userId = await getCachedUserId();
   const { data: part } = await supabase
-    .from('conversation_participants')
-    .select('is_muted')
-    .eq('conversation_id', conversationId)
-    .eq('user_id', userId)
+    .from("conversation_participants")
+    .select("is_muted")
+    .eq("conversation_id", conversationId)
+    .eq("user_id", userId)
     .single();
 
   const newVal = !(part?.is_muted ?? false);
   await supabase
-    .from('conversation_participants')
+    .from("conversation_participants")
     .update({ is_muted: newVal })
-    .eq('conversation_id', conversationId)
-    .eq('user_id', userId);
+    .eq("conversation_id", conversationId)
+    .eq("user_id", userId);
   return newVal;
 }
 
@@ -718,23 +789,48 @@ async function searchInbox(query: string): Promise<ConversationWithDetails[]> {
 
 async function deleteMessage(messageId: string): Promise<boolean> {
   const { error } = await supabase
-    .from('messages')
+    .from("messages")
     .update({ is_deleted: true })
-    .eq('id', messageId);
+    .eq("id", messageId);
   return !error;
+}
+
+async function editMessage(
+  messageId: string,
+  content: string,
+): Promise<{ id: string; content: string; is_edited: boolean; edited_at: string }> {
+  const userId = await getCachedUserId();
+
+  const { data, error } = await supabase.rpc("edit_message", {
+    p_user_id: userId,
+    p_message_id: messageId,
+    p_content: content,
+  });
+
+  if (error) throw error;
+  const row = data?.[0] ?? data;
+  return {
+    id: row.id,
+    content: row.content,
+    is_edited: row.is_edited,
+    edited_at: row.edited_at,
+  };
 }
 
 // ─── Realtime subscriptions ─────────────────────────────────────────────────
 
-function subscribeToMessages(conversationId: string, onMessage: (msg: any) => void) {
+function subscribeToMessages(
+  conversationId: string,
+  onMessage: (msg: any) => void,
+) {
   return supabase
     .channel(`messages:${conversationId}`)
     .on(
-      'postgres_changes',
+      "postgres_changes",
       {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'messages',
+        event: "INSERT",
+        schema: "public",
+        table: "messages",
         filter: `conversation_id=eq.${conversationId}`,
       },
       (payload: any) => onMessage(payload.new),
@@ -749,11 +845,11 @@ function subscribeToMessageUpdates(
   return supabase
     .channel(`msg-updates:${conversationId}`)
     .on(
-      'postgres_changes',
+      "postgres_changes",
       {
-        event: 'UPDATE',
-        schema: 'public',
-        table: 'messages',
+        event: "UPDATE",
+        schema: "public",
+        table: "messages",
         filter: `conversation_id=eq.${conversationId}`,
       },
       (payload: any) => onUpdate(payload.new),
@@ -768,9 +864,10 @@ function subscribeToReactions(
   return supabase
     .channel(`reactions:${conversationId}`)
     .on(
-      'postgres_changes',
-      { event: '*', schema: 'public', table: 'message_reactions' },
-      (payload: any) => onReaction(payload.new ?? payload.old, payload.eventType),
+      "postgres_changes",
+      { event: "*", schema: "public", table: "message_reactions" },
+      (payload: any) =>
+        onReaction(payload.new ?? payload.old, payload.eventType),
     )
     .subscribe();
 }
@@ -782,11 +879,11 @@ function subscribeToTyping(
   return supabase
     .channel(`typing:${conversationId}`)
     .on(
-      'postgres_changes',
+      "postgres_changes",
       {
-        event: 'UPDATE',
-        schema: 'public',
-        table: 'conversation_participants',
+        event: "UPDATE",
+        schema: "public",
+        table: "conversation_participants",
         filter: `conversation_id=eq.${conversationId}`,
       },
       (payload: any) => {
@@ -804,11 +901,11 @@ function subscribeToParticipants(
   return supabase
     .channel(`participants:${conversationId}`)
     .on(
-      'postgres_changes',
+      "postgres_changes",
       {
-        event: '*',
-        schema: 'public',
-        table: 'conversation_participants',
+        event: "*",
+        schema: "public",
+        table: "conversation_participants",
         filter: `conversation_id=eq.${conversationId}`,
       },
       (payload: any) => onChange(payload),
@@ -820,28 +917,31 @@ function subscribeToInbox(userId: string, onUpdate: () => void) {
   return supabase
     .channel(`inbox:${userId}`)
     .on(
-      'postgres_changes',
-      { event: 'INSERT', schema: 'public', table: 'messages' },
+      "postgres_changes",
+      { event: "INSERT", schema: "public", table: "messages" },
       () => onUpdate(),
     )
     .on(
-      'postgres_changes',
-      { event: 'UPDATE', schema: 'public', table: 'conversations' },
+      "postgres_changes",
+      { event: "UPDATE", schema: "public", table: "conversations" },
       () => onUpdate(),
     )
     .subscribe();
 }
 
-async function setTyping(conversationId: string, isTyping: boolean): Promise<void> {
+async function setTyping(
+  conversationId: string,
+  isTyping: boolean,
+): Promise<void> {
   const userId = await getCachedUserId();
   await supabase
-    .from('conversation_participants')
+    .from("conversation_participants")
     .update({
       is_typing: isTyping,
       typing_at: isTyping ? new Date().toISOString() : null,
     })
-    .eq('conversation_id', conversationId)
-    .eq('user_id', userId);
+    .eq("conversation_id", conversationId)
+    .eq("user_id", userId);
 }
 
 // ─── Voice note helper ──────────────────────────────────────────────────────
@@ -854,8 +954,8 @@ async function sendVoiceMessage(params: {
 }): Promise<MessageWithSender> {
   return sendMessage({
     conversationId: params.conversationId,
-    content: '',
-    type: 'voice_note',
+    content: "",
+    type: "voice_note",
     audioUrl: params.audioUrl,
     audioDurationMs: params.audioDurationMs,
     replyToId: params.replyToId,
@@ -876,8 +976,8 @@ async function sendEncryptedMessage(params: {
 }): Promise<MessageWithSender> {
   return sendMessage({
     conversationId: params.conversationId,
-    content: '[Encrypted message]',
-    type: params.type ?? 'text',
+    content: "[Encrypted message]",
+    type: params.type ?? "text",
     encryptedContent: params.encryptedContent,
     encryptedKey: params.encryptedKey,
     keyVersion: params.keyVersion,
@@ -908,6 +1008,7 @@ export const ChatService = {
   toggleConversationMute,
   searchInbox,
   deleteMessage,
+  editMessage,
   subscribeToMessages,
   subscribeToMessageUpdates,
   subscribeToReactions,

@@ -1,9 +1,9 @@
-import React, { forwardRef, memo } from 'react';
-import { StyleSheet } from 'react-native';
-import { headingStyle } from './styles';
-import type { VariantProps } from '@gluestack-ui/utils/nativewind-utils';
+import React, { forwardRef, memo } from "react";
+import { StyleSheet } from "react-native";
+import { headingStyle } from "./styles";
+import type { VariantProps } from "@gluestack-ui/utils/nativewind-utils";
 type IHeadingProps = VariantProps<typeof headingStyle> &
-  React.ComponentPropsWithoutRef<'h1'> & {
+  React.ComponentPropsWithoutRef<"h1"> & {
     as?: React.ElementType;
   };
 
@@ -21,12 +21,12 @@ const MappedHeading = memo(
       highlight,
       ...props
     },
-    ref
+    ref,
   ) {
     switch (size) {
-      case '5xl':
-      case '4xl':
-      case '3xl':
+      case "5xl":
+      case "4xl":
+      case "3xl":
         return (
           <h1
             className={headingStyle({
@@ -45,7 +45,7 @@ const MappedHeading = memo(
             ref={ref}
           />
         );
-      case '2xl':
+      case "2xl":
         return (
           <h2
             className={headingStyle({
@@ -64,7 +64,7 @@ const MappedHeading = memo(
             ref={ref}
           />
         );
-      case 'xl':
+      case "xl":
         return (
           <h3
             className={headingStyle({
@@ -83,7 +83,7 @@ const MappedHeading = memo(
             ref={ref}
           />
         );
-      case 'lg':
+      case "lg":
         return (
           <h4
             className={headingStyle({
@@ -102,7 +102,7 @@ const MappedHeading = memo(
             ref={ref}
           />
         );
-      case 'md':
+      case "md":
         return (
           <h5
             className={headingStyle({
@@ -121,8 +121,8 @@ const MappedHeading = memo(
             ref={ref}
           />
         );
-      case 'sm':
-      case 'xs':
+      case "sm":
+      case "xs":
         return (
           <h6
             className={headingStyle({
@@ -161,13 +161,13 @@ const MappedHeading = memo(
           />
         );
     }
-  })
+  }),
 );
 
 const Heading = memo(
   forwardRef<HTMLHeadingElement, IHeadingProps>(function Heading(
-    { className, size = 'lg', as: AsComp, ...props },
-    ref
+    { className, size = "lg", as: AsComp, ...props },
+    ref,
   ) {
     const {
       isTruncated,
@@ -203,9 +203,9 @@ const Heading = memo(
     return (
       <MappedHeading className={className} size={size} ref={ref} {...props} />
     );
-  })
+  }),
 );
 
-Heading.displayName = 'Heading';
+Heading.displayName = "Heading";
 
 export { Heading };

@@ -1,9 +1,9 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { supabase, clearUserIdCache } from '@/services/supabase';
-import type { User } from '@/types/types';
-import type { Session, AuthError } from '@supabase/supabase-js';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { supabase, clearUserIdCache } from "@/services/supabase";
+import type { User } from "@/types/types";
+import type { Session, AuthError } from "@supabase/supabase-js";
 
 // ─── Types ──────────────────────────────────────────────────────────────────────
 
@@ -25,10 +25,18 @@ interface AuthState {
   initialize: () => Promise<void>;
 
   // Auth methods
-  signUpWithEmail: (email: string, password: string) => Promise<{ error: AuthError | null }>;
-  signInWithEmail: (email: string, password: string) => Promise<{ error: AuthError | null }>;
+  signUpWithEmail: (
+    email: string,
+    password: string,
+  ) => Promise<{ error: AuthError | null }>;
+  signInWithEmail: (
+    email: string,
+    password: string,
+  ) => Promise<{ error: AuthError | null }>;
   signInWithMagicLink: (email: string) => Promise<{ error: AuthError | null }>;
-  signInWithOAuth: (provider: 'google' | 'apple') => Promise<{ error: AuthError | null }>;
+  signInWithOAuth: (
+    provider: "google" | "apple",
+  ) => Promise<{ error: AuthError | null }>;
   sendPasswordReset: (email: string) => Promise<{ error: AuthError | null }>;
   updatePassword: (newPassword: string) => Promise<{ error: AuthError | null }>;
 
@@ -52,17 +60,18 @@ function rowToProfile(data: any): AuthProfile {
   return {
     id: data.id,
     username: data.username,
-    display_name: data.display_name ?? '',
-    avatar_url: data.avatar_url ?? '',
-    bio: data.bio ?? '',
+    display_name: data.display_name ?? "",
+    avatar_url: data.avatar_url ?? "",
+    bio: data.bio ?? "",
     verified: data.verified ?? false,
+    is_private: data.is_private ?? false,
     followers_count: data.followers_count ?? 0,
     following_count: data.following_count ?? 0,
     created_at: data.created_at,
     is_onboarded: data.is_onboarded ?? false,
     onboarding_step: data.onboarding_step ?? 0,
     interests: data.interests ?? [],
-    website: data.website ?? '',
+    website: data.website ?? "",
   };
 }
 
@@ -82,14 +91,23 @@ export const useAuthStore = create<AuthState>()(
       initialize: async () => {
         // Prevent concurrent or double initialization
         if (get().isInitialized && !get().isLoading) return;
-        
+
         try {
           // 1. Get initial session
-          const { data: { session }, error } = await supabase.auth.getSession();
+          const {
+            data: { session },
+            error,
+          } = await supabase.auth.getSession();
 
           // If session is invalid or refresh token is missing/expired, Supabase returns error or null
           if (error || !session?.user) {
-            set({ session: null, userId: null, user: null, isLoading: false, isInitialized: true });
+            set({
+              session: null,
+              userId: null,
+              user: null,
+              isLoading: false,
+              isInitialized: true,
+            });
           } else {
             const profile = await get().fetchProfile(session.user.id);
             set({
@@ -103,9 +121,12 @@ export const useAuthStore = create<AuthState>()(
 
           // 2. Setup subscription
           supabase.auth.onAuthStateChange(async (event, newSession) => {
-            console.log('Auth event:', event);
-            
-            if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && newSession?.user) {
+            console.log("Auth event:", event);
+
+            if (
+              (event === "SIGNED_IN" || event === "INITIAL_SESSION") &&
+              newSession?.user
+            ) {
               const profile = await get().fetchProfile(newSession.user.id);
               set({
                 session: newSession,
@@ -114,19 +135,25 @@ export const useAuthStore = create<AuthState>()(
                 isLoading: false,
                 isInitialized: true,
               });
-            } else if (event === 'SIGNED_OUT') {
+            } else if (event === "SIGNED_OUT") {
               clearUserIdCache();
-              set({ session: null, userId: null, user: null, isLoading: false, isInitialized: true });
-            } else if (event === 'TOKEN_REFRESHED' && newSession) {
+              set({
+                session: null,
+                userId: null,
+                user: null,
+                isLoading: false,
+                isInitialized: true,
+              });
+            } else if (event === "TOKEN_REFRESHED" && newSession) {
               set({ session: newSession });
-            } else if (event === 'PASSWORD_RECOVERY' && newSession) {
+            } else if (event === "PASSWORD_RECOVERY" && newSession) {
               set({ session: newSession });
-            } else if (event === 'USER_UPDATED' && newSession) {
+            } else if (event === "USER_UPDATED" && newSession) {
               set({ session: newSession });
             }
           });
         } catch (err) {
-          console.error('Auth initialization error:', err);
+          console.error("Auth initialization error:", err);
           set({ isLoading: false, isInitialized: true });
         }
       },
@@ -166,7 +193,10 @@ export const useAuthStore = create<AuthState>()(
 
       signInWithEmail: async (email, password) => {
         set({ isLoading: true });
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
 
         if (error) {
           set({ isLoading: false });
@@ -201,7 +231,7 @@ export const useAuthStore = create<AuthState>()(
       signInWithOAuth: async (provider) => {
         const { error } = await supabase.auth.signInWithOAuth({
           provider,
-          options: { redirectTo: 'sysm://auth/callback' },
+          options: { redirectTo: "sysm://auth/callback" },
         });
         return { error };
       },
@@ -210,13 +240,15 @@ export const useAuthStore = create<AuthState>()(
 
       sendPasswordReset: async (email) => {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: 'sysm://auth/reset-password',
+          redirectTo: "sysm://auth/reset-password",
         });
         return { error };
       },
 
       updatePassword: async (newPassword) => {
-        const { error } = await supabase.auth.updateUser({ password: newPassword });
+        const { error } = await supabase.auth.updateUser({
+          password: newPassword,
+        });
         return { error };
       },
 
@@ -231,9 +263,9 @@ export const useAuthStore = create<AuthState>()(
 
       fetchProfile: async (authId: string): Promise<AuthProfile | null> => {
         const { data, error } = await supabase
-          .from('users')
-          .select('*')
-          .eq('auth_id', authId)
+          .from("users")
+          .select("*")
+          .eq("auth_id", authId)
           .maybeSingle();
 
         if (error || !data) return null;
@@ -255,7 +287,10 @@ export const useAuthStore = create<AuthState>()(
         const userId = get().userId;
         if (!userId) return;
 
-        await supabase.from('users').update({ onboarding_step: step }).eq('id', userId);
+        await supabase
+          .from("users")
+          .update({ onboarding_step: step })
+          .eq("id", userId);
         set((state) => ({
           user: state.user ? { ...state.user, onboarding_step: step } : null,
         }));
@@ -265,13 +300,18 @@ export const useAuthStore = create<AuthState>()(
         const userId = get().userId;
         if (!userId) return;
 
-        await supabase.from('users').update({
-          is_onboarded: true,
-          onboarding_step: 5,
-        }).eq('id', userId);
+        await supabase
+          .from("users")
+          .update({
+            is_onboarded: true,
+            onboarding_step: 5,
+          })
+          .eq("id", userId);
 
         set((state) => ({
-          user: state.user ? { ...state.user, is_onboarded: true, onboarding_step: 5 } : null,
+          user: state.user
+            ? { ...state.user, is_onboarded: true, onboarding_step: 5 }
+            : null,
         }));
       },
 
@@ -284,7 +324,7 @@ export const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: 'auth-storage',
+      name: "auth-storage",
       storage: createJSONStorage(() => AsyncStorage),
       partialize: (state) => ({
         session: state.session,

@@ -1,21 +1,25 @@
 // app/(auth)/reset-password.tsx
 // Set a new password (after clicking reset link from email)
 
-import React, { useState, useCallback } from 'react';
-import { View, Pressable } from 'react-native';
-import { router } from 'expo-router';
-import { Text } from '@/components/ui/text';
-import { Button, ButtonText, ButtonSpinner } from '@/components/ui/button';
-import { AuthCard } from '@/components/AuthCard';
-import { FloatingInput } from '@/components/FloatingInput';
-import { PasswordStrength } from '@/components/PasswordStrength';
-import { useAuthStore } from '@/store/useAuthStore';
-import { CheckCircleIcon } from '@/constants/icons';
+import React, { useState, useCallback } from "react";
+import { View, Pressable } from "react-native";
+import { router } from "expo-router";
+import { Text } from "@/components/ui/text";
+import { Button, ButtonText, ButtonSpinner } from "@/components/ui/button";
+import { AuthCard } from "@/components/AuthCard";
+import { FloatingInput } from "@/components/FloatingInput";
+import { PasswordStrength } from "@/components/PasswordStrength";
+import { useAuthStore } from "@/store/useAuthStore";
+import { CheckCircleIcon } from "@/constants/icons";
 
 export default function ResetPasswordScreen() {
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [errors, setErrors] = useState<{ password?: string; confirm?: string; general?: string }>({});
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [errors, setErrors] = useState<{
+    password?: string;
+    confirm?: string;
+    general?: string;
+  }>({});
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -23,9 +27,9 @@ export default function ResetPasswordScreen() {
 
   const validate = useCallback(() => {
     const e: typeof errors = {};
-    if (!password) e.password = 'Password is required';
-    else if (password.length < 6) e.password = 'At least 6 characters';
-    if (password !== confirmPassword) e.confirm = 'Passwords do not match';
+    if (!password) e.password = "Password is required";
+    else if (password.length < 6) e.password = "At least 6 characters";
+    if (password !== confirmPassword) e.confirm = "Passwords do not match";
     setErrors(e);
     return Object.keys(e).length === 0;
   }, [password, confirmPassword]);
@@ -63,10 +67,12 @@ export default function ResetPasswordScreen() {
         </View>
 
         <Button
-          onPress={() => router.replace('/(auth)/login')}
+          onPress={() => router.replace("/(auth)/login")}
           className="h-[50px] rounded-xl bg-brand-blue active:opacity-80"
         >
-          <ButtonText className="text-[15px] font-semibold text-white">Back to sign in</ButtonText>
+          <ButtonText className="text-[15px] font-semibold text-white">
+            Back to sign in
+          </ButtonText>
         </Button>
       </AuthCard>
     );
@@ -78,15 +84,19 @@ export default function ResetPasswordScreen() {
       subtitle="Enter your new password"
       footer={
         <View className="items-center">
-          <Pressable onPress={() => router.push('/(auth)/login')}>
-            <Text className="text-[14px] text-brand-muted">Back to sign in</Text>
+          <Pressable onPress={() => router.push("/(auth)/login")}>
+            <Text className="text-[14px] text-brand-muted">
+              Back to sign in
+            </Text>
           </Pressable>
         </View>
       }
     >
       {errors.general && (
         <View className="rounded-xl bg-red-500/10 px-4 py-3">
-          <Text className="text-center text-[13px] text-brand-red">{errors.general}</Text>
+          <Text className="text-center text-[13px] text-brand-red">
+            {errors.general}
+          </Text>
         </View>
       )}
 
@@ -118,7 +128,13 @@ export default function ResetPasswordScreen() {
         isDisabled={loading}
         className="h-[50px] rounded-xl bg-brand-blue active:opacity-80"
       >
-        {loading ? <ButtonSpinner color="#fff" /> : <ButtonText className="text-[15px] font-semibold text-white">Update password</ButtonText>}
+        {loading ? (
+          <ButtonSpinner color="#fff" />
+        ) : (
+          <ButtonText className="text-[15px] font-semibold text-white">
+            Update password
+          </ButtonText>
+        )}
       </Button>
     </AuthCard>
   );

@@ -1,12 +1,12 @@
 // components/ActionRow.tsx
 
-import React from 'react';
-import { Pressable } from 'react-native';
-import { HStack } from '@/components/ui/hstack';
-import { Text } from '@/components/ui/text';
-import { AnimatedHeart } from '@/components/AnimatedHeart';
-import { ChatIcon, ShareIcon, RepostIcon } from '@/constants/icons';
-import { formatCount } from '@/services/format';
+import React from "react";
+import { Pressable } from "react-native";
+import { HStack } from "@/components/ui/hstack";
+import { Text } from "@/components/ui/text";
+import { AnimatedHeart } from "@/components/AnimatedHeart";
+import { ChatIcon, ShareIcon, RepostIcon } from "@/constants/icons";
+import { formatCount } from "@/services/format";
 
 interface ActionRowProps {
   likeCount: number;
@@ -31,7 +31,7 @@ export function ActionRow({
   onRepost,
   onShare,
 }: ActionRowProps) {
-  const repostColor = isReposted ? '#00ba7c' : '#999999';
+  const repostColor = isReposted ? "#00ba7c" : "#999999";
 
   return (
     <HStack className="-ml-2 mr-[-8px] mt-1 items-center" space="xs">
@@ -41,7 +41,7 @@ export function ActionRow({
         {likeCount > 0 && (
           <Text
             className={`-ml-1 text-[13px] ${
-              isLiked ? 'text-brand-red' : 'text-brand-muted-alt'
+              isLiked ? "text-brand-red" : "text-brand-muted-alt"
             }`}
           >
             {formatCount(likeCount)}

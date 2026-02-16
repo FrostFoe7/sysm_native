@@ -1,10 +1,16 @@
-import { Platform, View as RNView, Pressable as RNPressable, Text as RNText, StyleSheet } from 'react-native';
-import React, { forwardRef } from 'react';
+import {
+  Platform,
+  View as RNView,
+  Pressable as RNPressable,
+  Text as RNText,
+  StyleSheet,
+} from "react-native";
+import React, { forwardRef } from "react";
 
 /**
  * Reliable web detection
  */
-export const isWeb = Platform.OS === 'web';
+export const isWeb = Platform.OS === "web";
 export const isNative = !isWeb;
 
 // Fallback types and objects for Reanimated
@@ -35,7 +41,7 @@ let FadeOutBase: any = null;
 // Reanimated 4/Worklets can be tricky on web with RNW
 if (isNative) {
   try {
-    const Reanimated = require('react-native-reanimated');
+    const Reanimated = require("react-native-reanimated");
     Animated = Reanimated.default;
     useAnimatedStyleBase = Reanimated.useAnimatedStyle;
     useSharedValueBase = Reanimated.useSharedValue;
@@ -48,7 +54,7 @@ if (isNative) {
     FadeInDownBase = Reanimated.FadeInDown;
     FadeOutBase = Reanimated.FadeOut;
   } catch (e) {
-    console.warn('Reanimated failed to load on native:', e);
+    console.warn("Reanimated failed to load on native:", e);
   }
 }
 
@@ -88,32 +94,32 @@ export const FadeOut = FadeOutBase;
 /**
  * Web-safe animated components
  */
-export const SafeAnimatedView = isWeb 
+export const SafeAnimatedView = isWeb
   ? forwardRef(({ entering, exiting, layout, ...props }: any, ref) => (
-      <RNView 
-        {...props} 
-        style={props.style ? StyleSheet.flatten(props.style) : undefined} 
-        ref={ref} 
+      <RNView
+        {...props}
+        style={props.style ? StyleSheet.flatten(props.style) : undefined}
+        ref={ref}
       />
     ))
   : Animated.View || RNView;
 
-export const SafeAnimatedPressable = isWeb 
+export const SafeAnimatedPressable = isWeb
   ? forwardRef(({ entering, exiting, layout, ...props }: any, ref) => (
-      <RNPressable 
-        {...props} 
-        style={props.style ? StyleSheet.flatten(props.style) : undefined} 
-        ref={ref} 
+      <RNPressable
+        {...props}
+        style={props.style ? StyleSheet.flatten(props.style) : undefined}
+        ref={ref}
       />
     ))
   : Animated.createAnimatedComponent(RNPressable);
 
-export const SafeAnimatedText = isWeb 
+export const SafeAnimatedText = isWeb
   ? forwardRef(({ entering, exiting, layout, ...props }: any, ref) => (
-      <RNText 
-        {...props} 
-        style={props.style ? StyleSheet.flatten(props.style) : undefined} 
-        ref={ref} 
+      <RNText
+        {...props}
+        style={props.style ? StyleSheet.flatten(props.style) : undefined}
+        ref={ref}
       />
     ))
   : Animated.Text || Animated.createAnimatedComponent(RNText);

@@ -1,22 +1,28 @@
 // components/FloatingInput.tsx
 
-import React, { useState } from 'react';
-import { View, TextInput, Pressable, Platform, TextInputProps } from 'react-native';
-import { Text } from '@/components/ui/text';
-import { EyeIcon, EyeOffIcon } from '@/constants/icons';
+import React, { useState } from "react";
+import {
+  View,
+  TextInput,
+  Pressable,
+  Platform,
+  TextInputProps,
+} from "react-native";
+import { Text } from "@/components/ui/text";
+import { EyeIcon, EyeOffIcon } from "@/constants/icons";
 
 interface FloatingInputProps {
   label: string;
   value: string;
   onChangeText: (text: string) => void;
   secureTextEntry?: boolean;
-  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
-  keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad';
+  autoCapitalize?: "none" | "sentences" | "words" | "characters";
+  keyboardType?: "default" | "email-address" | "numeric" | "phone-pad";
   error?: string;
   placeholder?: string;
-  autoComplete?: TextInputProps['autoComplete'];
-  returnKeyType?: TextInputProps['returnKeyType'];
-  onSubmitEditing?: TextInputProps['onSubmitEditing'];
+  autoComplete?: TextInputProps["autoComplete"];
+  returnKeyType?: TextInputProps["returnKeyType"];
+  onSubmitEditing?: TextInputProps["onSubmitEditing"];
   maxLength?: number;
   rightElement?: React.ReactNode;
 }
@@ -26,8 +32,8 @@ export function FloatingInput({
   value,
   onChangeText,
   secureTextEntry,
-  autoCapitalize = 'none',
-  keyboardType = 'default',
+  autoCapitalize = "none",
+  keyboardType = "default",
   error,
   placeholder,
   autoComplete,
@@ -45,17 +51,17 @@ export function FloatingInput({
     <View className="w-full">
       <View
         className={`relative h-[56px] justify-center rounded-xl border px-4 ${
-          error 
-            ? 'border-brand-red' 
-            : isFocused 
-              ? 'border-brand-blue' 
-              : 'border-brand-border bg-brand-elevated'
+          error
+            ? "border-brand-red"
+            : isFocused
+              ? "border-brand-blue"
+              : "border-brand-border bg-brand-elevated"
         }`}
       >
         {showLabel && (
           <Text
             className={`absolute left-4 top-2 text-[11px] font-semibold ${
-              error ? 'text-brand-red' : 'text-brand-blue'
+              error ? "text-brand-red" : "text-brand-blue"
             }`}
           >
             {label}
@@ -66,7 +72,7 @@ export function FloatingInput({
           onChangeText={onChangeText}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          placeholder={!showLabel ? placeholder || label : ''}
+          placeholder={!showLabel ? placeholder || label : ""}
           placeholderTextColor="#555555"
           secureTextEntry={secureTextEntry && !isPasswordVisible}
           autoCapitalize={autoCapitalize}
@@ -79,7 +85,7 @@ export function FloatingInput({
           style={{
             paddingTop: showLabel ? 12 : 0,
             paddingRight: secureTextEntry || rightElement ? 32 : 0,
-            ...(Platform.OS === 'web' ? { outlineStyle: 'none' as any } : {}),
+            ...(Platform.OS === "web" ? { outlineStyle: "none" as any } : {}),
           }}
         />
         {secureTextEntry ? (
@@ -95,9 +101,7 @@ export function FloatingInput({
             )}
           </Pressable>
         ) : rightElement ? (
-          <View className="absolute right-4 top-[18px]">
-            {rightElement}
-          </View>
+          <View className="absolute right-4 top-[18px]">{rightElement}</View>
         ) : null}
       </View>
       {error && (

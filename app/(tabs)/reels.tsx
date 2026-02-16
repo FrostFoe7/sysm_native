@@ -1,7 +1,7 @@
 // app/(tabs)/reels.tsx
 // Instagram Reels: fullscreen vertical paging feed
 
-import React, { useCallback, useRef, useLayoutEffect, useEffect } from 'react';
+import React, { useCallback, useRef, useLayoutEffect, useEffect } from "react";
 import {
   View,
   FlatList,
@@ -10,21 +10,21 @@ import {
   ViewToken,
   StatusBar,
   Pressable,
-} from 'react-native';
-import { useRouter } from 'expo-router';
-import { useNavigation } from '@react-navigation/native';
-import { Text } from '@/components/ui/text';
-import { ReelPlayer } from '@/components/ReelPlayer';
-import { DESKTOP_BREAKPOINT } from '@/constants/ui';
-import { ArrowLeftIcon } from '@/constants/icons';
-import type { ReelWithAuthor } from '@/types/types';
-import { useReels } from '@/hooks/use-reels';
+} from "react-native";
+import { useRouter } from "expo-router";
+import { useNavigation } from "@react-navigation/native";
+import { Text } from "@/components/ui/text";
+import { ReelPlayer } from "@/components/ReelPlayer";
+import { DESKTOP_BREAKPOINT } from "@/constants/ui";
+import { ArrowLeftIcon } from "@/constants/icons";
+import type { ReelWithAuthor } from "@/types/types";
+import { useReels } from "@/hooks/use-reels";
 
 export default function ReelsScreen() {
   const router = useRouter();
   const navigation = useNavigation();
   const { width: windowW, height: windowH } = useWindowDimensions();
-  const isDesktop = Platform.OS === 'web' && windowW >= DESKTOP_BREAKPOINT;
+  const isDesktop = Platform.OS === "web" && windowW >= DESKTOP_BREAKPOINT;
 
   const {
     data: reels,
@@ -42,15 +42,15 @@ export default function ReelsScreen() {
   // Hide bottom tab bar on this screen
   useLayoutEffect(() => {
     navigation.setOptions({
-      tabBarStyle: { display: 'none' },
+      tabBarStyle: { display: "none" },
     });
     return () => {
       navigation.setOptions({
-        tabBarStyle: { 
-          backgroundColor: 'brand-dark',
-          borderTopColor: 'brand-border',
+        tabBarStyle: {
+          backgroundColor: "brand-dark",
+          borderTopColor: "brand-border",
           borderTopWidth: 0.5,
-          height: Platform.OS === 'web' ? 60 : 84,
+          height: Platform.OS === "web" ? 60 : 84,
           paddingTop: 8,
           elevation: 0,
         },
@@ -100,7 +100,7 @@ export default function ReelsScreen() {
             style={{
               width: PHONE_FRAME_WIDTH,
               height: PHONE_FRAME_HEIGHT,
-              overflow: 'hidden',
+              overflow: "hidden",
             }}
           >
             <ReelPlayer
@@ -147,20 +147,27 @@ export default function ReelsScreen() {
   // Desktop: centered phone-frame layout
   if (isDesktop) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#0a0a0a', alignItems: 'center', justifyContent: 'center' }}>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: "#0a0a0a",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <StatusBar barStyle="light-content" backgroundColor="#000000" />
 
         {/* Header */}
         <View
           style={{
-            position: 'absolute',
+            position: "absolute",
             top: 0,
             left: 0,
             right: 0,
             height: 64,
-            backgroundColor: 'transparent',
-            alignItems: 'center',
-            justifyContent: 'center',
+            backgroundColor: "transparent",
+            alignItems: "center",
+            justifyContent: "center",
             zIndex: 10,
             paddingHorizontal: 16,
           }}
@@ -168,7 +175,7 @@ export default function ReelsScreen() {
           <Pressable
             onPress={() => router.back()}
             style={{
-              position: 'absolute',
+              position: "absolute",
               left: 16,
               padding: 8,
             }}
@@ -185,10 +192,10 @@ export default function ReelsScreen() {
             width: PHONE_FRAME_WIDTH,
             height: PHONE_FRAME_HEIGHT,
             borderRadius: 24,
-            overflow: 'hidden',
-            backgroundColor: '#000000',
+            overflow: "hidden",
+            backgroundColor: "#000000",
             borderWidth: 2,
-            borderColor: 'brand-border',
+            borderColor: "brand-border",
           }}
         >
           <FlatList
@@ -207,16 +214,16 @@ export default function ReelsScreen() {
             initialNumToRender={2}
             maxToRenderPerBatch={3}
             windowSize={5}
-            removeClippedSubviews={Platform.OS !== 'web'}
+            removeClippedSubviews={Platform.OS !== "web"}
           />
         </View>
 
         {/* Reel counter */}
         <View
           style={{
-            position: 'absolute',
+            position: "absolute",
             bottom: 16,
-            alignItems: 'center',
+            alignItems: "center",
           }}
         >
           <Text className="text-[12px] text-brand-muted">
@@ -229,35 +236,38 @@ export default function ReelsScreen() {
 
   // Mobile: fullscreen paging feed
   return (
-    <View style={{ flex: 1, backgroundColor: '#000000' }}>
+    <View style={{ flex: 1, backgroundColor: "#000000" }}>
       <StatusBar barStyle="light-content" backgroundColor="#000000" />
 
       {/* Reels header */}
       <View
         style={{
-          position: 'absolute',
+          position: "absolute",
           top: 0,
           left: 0,
           right: 0,
-          height: Platform.OS === 'ios' ? 60 : 56,
-          backgroundColor: 'transparent',
-          alignItems: 'center',
-          justifyContent: 'center',
+          height: Platform.OS === "ios" ? 60 : 56,
+          backgroundColor: "transparent",
+          alignItems: "center",
+          justifyContent: "center",
           zIndex: 30,
-          paddingTop: Platform.OS === 'ios' ? 12 : 8,
+          paddingTop: Platform.OS === "ios" ? 12 : 8,
         }}
       >
         <Pressable
           onPress={() => router.back()}
           style={{
-            position: 'absolute',
+            position: "absolute",
             left: 12,
             padding: 8,
           }}
           hitSlop={8}
-                  >
-                    <ArrowLeftIcon size={24} color="#f3f5f7" />
-                  </Pressable>        <Text className="text-[18px] font-bold tracking-tight text-brand-light">Reels</Text>
+        >
+          <ArrowLeftIcon size={24} color="#f3f5f7" />
+        </Pressable>{" "}
+        <Text className="text-[18px] font-bold tracking-tight text-brand-light">
+          Reels
+        </Text>
       </View>
 
       <FlatList
@@ -276,7 +286,7 @@ export default function ReelsScreen() {
         initialNumToRender={2}
         maxToRenderPerBatch={3}
         windowSize={5}
-        removeClippedSubviews={Platform.OS !== 'web'}
+        removeClippedSubviews={Platform.OS !== "web"}
       />
     </View>
   );

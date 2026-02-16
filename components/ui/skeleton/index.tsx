@@ -1,8 +1,8 @@
-import React, { forwardRef } from 'react';
-import type { VariantProps } from '@gluestack-ui/utils/nativewind-utils';
-import { Animated, Easing, Platform, View } from 'react-native';
-import { SafeAnimatedView } from '@/utils/animatedWebSafe';
-import { skeletonStyle, skeletonTextStyle } from './styles';
+import React, { forwardRef } from "react";
+import type { VariantProps } from "@gluestack-ui/utils/nativewind-utils";
+import { Animated, Easing, Platform, View } from "react-native";
+import { SafeAnimatedView } from "@/utils/animatedWebSafe";
+import { skeletonStyle, skeletonTextStyle } from "./styles";
 
 type ISkeletonProps = React.ComponentProps<typeof View> &
   VariantProps<typeof skeletonStyle> & {
@@ -26,18 +26,20 @@ const Skeleton = forwardRef<
     className,
     variant,
     children,
-    startColor = 'bg-background-200',
+    startColor = "bg-background-200",
     isLoaded = false,
     speed = 2,
     ...props
   },
-  ref
+  ref,
 ) {
   // On web, skip all animation setup to avoid Reanimated issues
-  const isWeb = Platform.OS === 'web' || (
-    Platform.OS !== 'ios' && Platform.OS !== 'android' && 
-    Platform.OS !== 'macos' && Platform.OS !== 'windows'
-  );
+  const isWeb =
+    Platform.OS === "web" ||
+    (Platform.OS !== "ios" &&
+      Platform.OS !== "android" &&
+      Platform.OS !== "macos" &&
+      Platform.OS !== "windows");
 
   if (isWeb) {
     // Web: render non-animated skeleton or children
@@ -111,12 +113,12 @@ const SkeletonText = forwardRef<
     className,
     _lines,
     isLoaded = false,
-    startColor = 'bg-background-200',
+    startColor = "bg-background-200",
     gap = 2,
     children,
     ...props
   },
-  ref
+  ref,
 ) {
   if (!isLoaded) {
     if (_lines) {
@@ -154,7 +156,7 @@ const SkeletonText = forwardRef<
   }
 });
 
-Skeleton.displayName = 'Skeleton';
-SkeletonText.displayName = 'SkeletonText';
+Skeleton.displayName = "Skeleton";
+SkeletonText.displayName = "SkeletonText";
 
 export { Skeleton, SkeletonText };

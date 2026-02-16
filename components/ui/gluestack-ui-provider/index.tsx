@@ -1,19 +1,19 @@
-import React, { useEffect } from 'react';
-import { config } from './config';
-import { ViewProps } from 'react-native';
-import { SafeView } from '@/utils/animatedWebSafe';
-import { OverlayProvider } from '@gluestack-ui/core/overlay/creator';
-import { ToastProvider } from '@gluestack-ui/core/toast/creator';
-import { useColorScheme } from 'nativewind';
-import type { ModeType } from '@/types/types';
+import React, { useEffect } from "react";
+import { config } from "./config";
+import { ViewProps } from "react-native";
+import { SafeView } from "@/utils/animatedWebSafe";
+import { OverlayProvider } from "@gluestack-ui/core/overlay/creator";
+import { ToastProvider } from "@gluestack-ui/core/toast/creator";
+import { useColorScheme } from "nativewind";
+import type { ModeType } from "@/types/types";
 
 export function GluestackUIProvider({
-  mode = 'light',
+  mode = "light",
   ...props
 }: {
   mode?: ModeType;
   children?: React.ReactNode;
-  style?: ViewProps['style'];
+  style?: ViewProps["style"];
 }) {
   const { colorScheme, setColorScheme } = useColorScheme();
 
@@ -26,7 +26,7 @@ export function GluestackUIProvider({
     <SafeView
       style={[
         config[colorScheme!],
-        { flex: 1, height: '100%', width: '100%' },
+        { flex: 1, height: "100%", width: "100%" },
         props.style,
       ]}
     >

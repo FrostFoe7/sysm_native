@@ -1,23 +1,28 @@
 // app/(auth)/signup.tsx
 // Create account with email + password
 
-import React, { useState, useRef, useCallback } from 'react';
-import { View, Pressable, TextInput } from 'react-native';
-import { router } from 'expo-router';
-import { Text } from '@/components/ui/text';
-import { Button, ButtonText, ButtonSpinner } from '@/components/ui/button';
-import { HStack } from '@/components/ui/hstack';
-import { Divider } from '@/components/ui/divider';
-import { AuthCard } from '@/components/AuthCard';
-import { FloatingInput } from '@/components/FloatingInput';
-import { PasswordStrength } from '@/components/PasswordStrength';
-import { useAuthStore } from '@/store/useAuthStore';
+import React, { useState, useRef, useCallback } from "react";
+import { View, Pressable, TextInput } from "react-native";
+import { router } from "expo-router";
+import { Text } from "@/components/ui/text";
+import { Button, ButtonText, ButtonSpinner } from "@/components/ui/button";
+import { HStack } from "@/components/ui/hstack";
+import { Divider } from "@/components/ui/divider";
+import { AuthCard } from "@/components/AuthCard";
+import { FloatingInput } from "@/components/FloatingInput";
+import { PasswordStrength } from "@/components/PasswordStrength";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export default function SignupScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [errors, setErrors] = useState<{ email?: string; password?: string; confirm?: string; general?: string }>({});
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [errors, setErrors] = useState<{
+    email?: string;
+    password?: string;
+    confirm?: string;
+    general?: string;
+  }>({});
   const [loading, setLoading] = useState(false);
 
   const signUpWithEmail = useAuthStore((s) => s.signUpWithEmail);
@@ -28,11 +33,12 @@ export default function SignupScreen() {
 
   const validate = useCallback(() => {
     const e: typeof errors = {};
-    if (!email.trim()) e.email = 'Email is required';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = 'Enter a valid email';
-    if (!password) e.password = 'Password is required';
-    else if (password.length < 6) e.password = 'At least 6 characters';
-    if (password !== confirmPassword) e.confirm = 'Passwords do not match';
+    if (!email.trim()) e.email = "Email is required";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+      e.email = "Enter a valid email";
+    if (!password) e.password = "Password is required";
+    else if (password.length < 6) e.password = "At least 6 characters";
+    if (password !== confirmPassword) e.confirm = "Passwords do not match";
     setErrors(e);
     return Object.keys(e).length === 0;
   }, [email, password, confirmPassword]);
@@ -53,10 +59,13 @@ export default function SignupScreen() {
     setLoading(false);
   }, [email, password, validate, signUpWithEmail]);
 
-  const handleOAuth = useCallback(async (provider: 'google' | 'apple') => {
-    const { error } = await signInWithOAuth(provider);
-    if (error) setErrors({ general: error.message });
-  }, [signInWithOAuth]);
+  const handleOAuth = useCallback(
+    async (provider: "google" | "apple") => {
+      const { error } = await signInWithOAuth(provider);
+      if (error) setErrors({ general: error.message });
+    },
+    [signInWithOAuth],
+  );
 
   return (
     <AuthCard
@@ -64,10 +73,14 @@ export default function SignupScreen() {
       subtitle="Join sysm and start sharing"
       footer={
         <View className="items-center gap-3">
-          <Pressable onPress={() => router.push('/(auth)/login')}>
+          <Pressable onPress={() => router.push("/(auth)/login")}>
             <HStack className="items-center" space="xs">
-              <Text className="text-[14px] text-brand-muted">Already have an account?</Text>
-              <Text className="text-[14px] font-semibold text-brand-blue">Sign in</Text>
+              <Text className="text-[14px] text-brand-muted">
+                Already have an account?
+              </Text>
+              <Text className="text-[14px] font-semibold text-brand-blue">
+                Sign in
+              </Text>
             </HStack>
           </Pressable>
         </View>
@@ -76,7 +89,9 @@ export default function SignupScreen() {
       {/* Error banner */}
       {errors.general && (
         <View className="rounded-xl bg-red-500/10 px-4 py-3">
-          <Text className="text-center text-[13px] text-brand-red">{errors.general}</Text>
+          <Text className="text-center text-[13px] text-brand-red">
+            {errors.general}
+          </Text>
         </View>
       )}
 
@@ -124,31 +139,43 @@ export default function SignupScreen() {
         isDisabled={loading}
         className="h-[50px] rounded-xl bg-brand-blue active:opacity-80"
       >
-        {loading ? <ButtonSpinner color="#fff" /> : <ButtonText className="text-[15px] font-semibold text-white">Create account</ButtonText>}
+        {loading ? (
+          <ButtonSpinner color="#fff" />
+        ) : (
+          <ButtonText className="text-[15px] font-semibold text-white">
+            Create account
+          </ButtonText>
+        )}
       </Button>
 
       {/* Divider */}
       <HStack className="items-center" space="md">
         <Divider className="flex-1 bg-brand-border" />
-        <Text className="text-[12px] uppercase tracking-wider text-brand-muted">or</Text>
+        <Text className="text-[12px] uppercase tracking-wider text-brand-muted">
+          or
+        </Text>
         <Divider className="flex-1 bg-brand-border" />
       </HStack>
 
       {/* OAuth */}
       <Button
         variant="outline"
-        onPress={() => handleOAuth('google')}
+        onPress={() => handleOAuth("google")}
         className="h-[50px] rounded-xl border-brand-border"
       >
-        <ButtonText className="text-[15px] font-medium text-brand-light">Continue with Google</ButtonText>
+        <ButtonText className="text-[15px] font-medium text-brand-light">
+          Continue with Google
+        </ButtonText>
       </Button>
 
       <Button
         variant="outline"
-        onPress={() => handleOAuth('apple')}
+        onPress={() => handleOAuth("apple")}
         className="h-[50px] rounded-xl border-brand-border"
       >
-        <ButtonText className="text-[15px] font-medium text-brand-light">Continue with Apple</ButtonText>
+        <ButtonText className="text-[15px] font-medium text-brand-light">
+          Continue with Apple
+        </ButtonText>
       </Button>
     </AuthCard>
   );

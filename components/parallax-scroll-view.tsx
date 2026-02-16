@@ -1,17 +1,17 @@
-import type { PropsWithChildren, ReactElement } from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
-import { 
-  useAnimatedStyle, 
-  isWeb, 
+import type { PropsWithChildren, ReactElement } from "react";
+import { StyleSheet, View, ScrollView } from "react-native";
+import {
+  useAnimatedStyle,
+  isWeb,
   SafeAnimatedView,
   useSharedValue,
-  createAnimatedComponent
-} from '@/utils/animatedWebSafe';
+  createAnimatedComponent,
+} from "@/utils/animatedWebSafe";
 
-import { ThemedView } from '@/components/themed-view';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { useThemeColor } from '@/hooks/use-theme-color';
-import { HEADER_HEIGHT } from '@/constants/ui';
+import { ThemedView } from "@/components/themed-view";
+import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useThemeColor } from "@/hooks/use-theme-color";
+import { HEADER_HEIGHT } from "@/constants/ui";
 
 const SafeAnimatedScrollView = createAnimatedComponent(ScrollView);
 
@@ -25,18 +25,18 @@ export default function ParallaxScrollView({
   headerImage,
   headerBackgroundColor,
 }: Props) {
-  const backgroundColor = useThemeColor({}, 'background');
-  const colorScheme = useColorScheme() ?? 'light';
-  
+  const backgroundColor = useThemeColor({}, "background");
+  const colorScheme = useColorScheme() ?? "light";
+
   const scrollOffset = useSharedValue(0);
 
   const handleScroll = (event: any) => {
     scrollOffset.value = event.nativeEvent.contentOffset.y;
   };
-  
+
   const headerAnimatedStyle = useAnimatedStyle(() => {
     if (isWeb) return {};
-    // Note: interpolation logic moved here if needed, but for simplicity 
+    // Note: interpolation logic moved here if needed, but for simplicity
     // we just return a base style or empty on web.
     return {
       transform: [
@@ -59,7 +59,8 @@ export default function ParallaxScrollView({
             styles.header,
             { backgroundColor: headerBackgroundColor[colorScheme] },
             headerAnimatedStyle,
-          ]}>
+          ]}
+        >
           {headerImage}
         </SafeAnimatedView>
         <ThemedView style={styles.content}>{children}</ThemedView>
@@ -71,12 +72,12 @@ export default function ParallaxScrollView({
 const styles = StyleSheet.create({
   header: {
     height: HEADER_HEIGHT,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   content: {
     flex: 1,
     padding: 32,
     gap: 16,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
 });

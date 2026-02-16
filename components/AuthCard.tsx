@@ -1,12 +1,12 @@
 // components/AuthCard.tsx
 // Responsive auth card — fullscreen on mobile, centered card on desktop
 
-import React from 'react';
-import { View, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
-import { SafeAreaView } from '@/components/ui/safe-area-view';
-import { VStack } from '@/components/ui/vstack';
-import { Text } from '@/components/ui/text';
-import { Heading } from '@/components/ui/heading';
+import React from "react";
+import { View, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
+import { SafeAreaView } from "@/components/ui/safe-area-view";
+import { VStack } from "@/components/ui/vstack";
+import { Text } from "@/components/ui/text";
+import { Heading } from "@/components/ui/heading";
 
 interface AuthCardProps {
   title: string;
@@ -43,22 +43,21 @@ export function AuthCard({ title, subtitle, children, footer }: AuthCardProps) {
       </VStack>
 
       {/* Footer links */}
-      {footer && (
-        <View className="mt-2">
-          {footer}
-        </View>
-      )}
+      {footer && <View className="mt-2">{footer}</View>}
     </VStack>
   );
 
   return (
     <>
       {/* Desktop Layout (lg: breakpoint) */}
-      <View 
+      <View
         className="hidden flex-1 items-center justify-center bg-brand-dark lg:flex"
-        style={{
-          backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(0,149,246,0.06) 0%, transparent 50%), radial-gradient(circle at 80% 50%, rgba(138,43,226,0.04) 0%, transparent 50%)',
-        } as any}
+        style={
+          {
+            backgroundImage:
+              "radial-gradient(circle at 20% 50%, rgba(0,149,246,0.06) 0%, transparent 50%), radial-gradient(circle at 80% 50%, rgba(138,43,226,0.04) 0%, transparent 50%)",
+          } as any
+        }
       >
         <View className="w-[420px] rounded-2xl border border-brand-border bg-brand-elevated p-10">
           {content}
@@ -66,13 +65,21 @@ export function AuthCard({ title, subtitle, children, footer }: AuthCardProps) {
       </View>
 
       {/* Mobile/Tablet Layout (up to lg breakpoint) */}
-      <SafeAreaView className="flex-1 bg-brand-dark lg:hidden" edges={['top', 'bottom']}>
+      <SafeAreaView
+        className="flex-1 bg-brand-dark lg:hidden"
+        edges={["top", "bottom"]}
+      >
         <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
           className="flex-1"
         >
           <ScrollView
-            contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24, paddingVertical: 32 }}
+            contentContainerStyle={{
+              flexGrow: 1,
+              justifyContent: "center",
+              paddingHorizontal: 24,
+              paddingVertical: 32,
+            }}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
           >

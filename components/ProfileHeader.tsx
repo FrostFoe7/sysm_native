@@ -1,18 +1,24 @@
 // components/ProfileHeader.tsx
 
-import React from 'react';
-import { Pressable } from 'react-native';
-import { Avatar, AvatarImage } from '@/components/ui/avatar';
-import { Text } from '@/components/ui/text';
-import { Heading } from '@/components/ui/heading';
-import { HStack } from '@/components/ui/hstack';
-import { VStack } from '@/components/ui/vstack';
-import { Button, ButtonText, ButtonIcon } from '@/components/ui/button';
-import { Divider } from '@/components/ui/divider';
-import { Box } from '@/components/ui/box';
-import { formatCount } from '@/services/format';
-import { VerifiedIcon, EditIcon, ShareIcon, FollowIcon, FollowingIcon } from '@/constants/icons';
-import type { User } from '@/types/types';
+import React from "react";
+import { Pressable } from "react-native";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Text } from "@/components/ui/text";
+import { Heading } from "@/components/ui/heading";
+import { HStack } from "@/components/ui/hstack";
+import { VStack } from "@/components/ui/vstack";
+import { Button, ButtonText, ButtonIcon } from "@/components/ui/button";
+import { Divider } from "@/components/ui/divider";
+import { Box } from "@/components/ui/box";
+import { formatCount } from "@/services/format";
+import {
+  VerifiedIcon,
+  EditIcon,
+  ShareIcon,
+  FollowIcon,
+  FollowingIcon,
+} from "@/constants/icons";
+import type { User } from "@/types/types";
 
 interface ProfileHeaderProps {
   user: User;
@@ -55,9 +61,7 @@ export function ProfileHeader({
             <Text className="text-[15px] text-brand-light" numberOfLines={1}>
               @{user.username}
             </Text>
-            {user.verified && (
-              <VerifiedIcon size={14} color="#0095f6" />
-            )}
+            {user.verified && <VerifiedIcon size={14} color="#0095f6" />}
             <Box className="rounded-full bg-brand-border px-2 py-0.5">
               <Text className="text-[11px] text-brand-muted">threads.net</Text>
             </Box>
@@ -80,13 +84,19 @@ export function ProfileHeader({
       <HStack className="items-center gap-2">
         <Pressable onPress={onFollowersPress} hitSlop={8}>
           <Text className="text-[13px] text-brand-muted-alt">
-            <Text className="font-semibold text-brand-light">{formatCount(followerCount)}</Text> followers
+            <Text className="font-semibold text-brand-light">
+              {formatCount(followerCount)}
+            </Text>{" "}
+            followers
           </Text>
         </Pressable>
         <Text className="text-[13px] text-brand-muted-alt">·</Text>
         <Pressable onPress={onFollowingPress} hitSlop={8}>
           <Text className="text-[13px] text-brand-muted-alt">
-            <Text className="font-semibold text-brand-light">{formatCount(followingCount)}</Text> following
+            <Text className="font-semibold text-brand-light">
+              {formatCount(followingCount)}
+            </Text>{" "}
+            following
           </Text>
         </Pressable>
       </HStack>
@@ -101,7 +111,12 @@ export function ProfileHeader({
               className="h-9 flex-1 flex-row items-center justify-center rounded-lg border-brand-border-secondary bg-transparent"
               onPress={onEditProfile}
             >
-              <ButtonIcon as={EditIcon} size={"sm" as any} color="#f3f5f7" className="mr-2" />
+              <ButtonIcon
+                as={EditIcon}
+                size={"sm" as any}
+                color="#f3f5f7"
+                className="mr-2"
+              />
               <ButtonText className="text-[14px] font-semibold text-brand-light">
                 Edit profile
               </ButtonText>
@@ -111,7 +126,12 @@ export function ProfileHeader({
               size="sm"
               className="h-9 flex-1 flex-row items-center justify-center rounded-lg border-brand-border-secondary bg-transparent"
             >
-              <ButtonIcon as={ShareIcon} size={"sm" as any} color="#f3f5f7" className="mr-2" />
+              <ButtonIcon
+                as={ShareIcon}
+                size={"sm" as any}
+                color="#f3f5f7"
+                className="mr-2"
+              />
               <ButtonText className="text-[14px] font-semibold text-brand-light">
                 Share
               </ButtonText>
@@ -123,23 +143,23 @@ export function ProfileHeader({
               size="sm"
               className={`h-9 flex-1 flex-row items-center justify-center rounded-lg ${
                 isFollowing
-                  ? 'border border-brand-border-secondary bg-transparent'
-                  : 'bg-brand-light'
+                  ? "border border-brand-border-secondary bg-transparent"
+                  : "bg-brand-light"
               }`}
               onPress={onFollowToggle}
             >
-              <ButtonIcon 
-                as={isFollowing ? FollowingIcon : FollowIcon} 
-                size={"sm" as any} 
-                color={isFollowing ? "#f3f5f7" : "#101010"} 
-                className="mr-2" 
+              <ButtonIcon
+                as={isFollowing ? FollowingIcon : FollowIcon}
+                size={"sm" as any}
+                color={isFollowing ? "#f3f5f7" : "#101010"}
+                className="mr-2"
               />
               <ButtonText
                 className={`text-[14px] font-semibold ${
-                  isFollowing ? 'text-brand-light' : 'text-brand-dark'
+                  isFollowing ? "text-brand-light" : "text-brand-dark"
                 }`}
               >
-                {isFollowing ? 'Following' : 'Follow'}
+                {isFollowing ? "Following" : "Follow"}
               </ButtonText>
             </Button>
             <Button

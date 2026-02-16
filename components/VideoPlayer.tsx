@@ -1,10 +1,14 @@
 // components/VideoPlayer.tsx
 
-import React, { useState, useEffect } from 'react';
-import { View, Pressable, StyleSheet } from 'react-native';
-import { useVideoPlayer, VideoView, VideoPlayer as VideoPlayerType } from 'expo-video';
-import { PlayIcon } from '@/constants/icons';
-import { Volume2, VolumeX } from 'lucide-react-native';
+import React, { useState, useEffect } from "react";
+import { View, Pressable, StyleSheet } from "react-native";
+import {
+  useVideoPlayer,
+  VideoView,
+  VideoPlayer as VideoPlayerType,
+} from "expo-video";
+import { PlayIcon } from "@/constants/icons";
+import { Volume2, VolumeX } from "lucide-react-native";
 
 interface VideoPlayerProps {
   uri: string;
@@ -89,42 +93,42 @@ export function VideoPlayer({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#1a1a1a',
+    backgroundColor: "#1a1a1a",
     borderRadius: 12,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   pressable: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   video: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0,0,0,0.2)",
+    justifyContent: "center",
+    alignItems: "center",
   },
   playButton: {
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
     paddingLeft: 4,
   },
   muteButton: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 8,
     right: 8,
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0,0,0,0.6)",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

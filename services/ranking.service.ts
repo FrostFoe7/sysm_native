@@ -2,8 +2,8 @@
 // Centralized ranking service — calls ONLY server-side RPCs
 // No client scoring. No lifetime totals. No static popularity.
 
-import { supabase, getCachedUserId } from './supabase';
-import type { ThreadWithAuthor, ReelWithAuthor, User } from '@/types/types';
+import { supabase, getCachedUserId } from "./supabase";
+import type { ThreadWithAuthor, ReelWithAuthor, User } from "@/types/types";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -24,7 +24,7 @@ export interface RankedReel extends ReelWithAuthor {
 }
 
 export interface ExploreItem {
-  content_type: 'thread' | 'reel';
+  content_type: "thread" | "reel";
   content_id: string;
   // Thread fields
   thread?: ThreadWithAuthor;
@@ -45,10 +45,11 @@ function rpcRowToAuthor(row: any): User {
   return {
     id: row.author_id ?? row.user_id,
     username: row.author_username,
-    display_name: row.author_display_name ?? '',
-    avatar_url: row.author_avatar_url ?? '',
-    bio: '',
+    display_name: row.author_display_name ?? "",
+    avatar_url: row.author_avatar_url ?? "",
+    bio: "",
     verified: row.author_verified ?? false,
+    is_private: false,
     followers_count: 0,
     following_count: 0,
     created_at: row.created_at,
@@ -61,7 +62,9 @@ function rpcRowToThread(row: any): RankedThread {
     id: row.id,
     user_id: row.user_id,
     content: row.content,
-    images: (row.media ?? []).filter((m: any) => m.type === 'image').map((m: any) => m.uri),
+    images: (row.media ?? [])
+      .filter((m: any) => m.type === "image")
+      .map((m: any) => m.uri),
     media: row.media ?? [],
     parent_id: row.parent_id,
     root_id: row.root_id,
@@ -92,6 +95,7 @@ function rpcRowToReel(row: any): RankedReel {
     likeCount: row.like_count,
     commentCount: row.comment_count ?? 0,
     shareCount: row.share_count ?? 0,
+    viewCount: row.view_count ?? 0,
     isLiked: row.is_liked ?? false,
     createdAt: row.created_at,
     aspectRatio: row.aspect_ratio ?? 0.5625,
@@ -107,10 +111,13 @@ function rpcRowToReel(row: any): RankedReel {
 
 // ─── Ranked Threads ──────────────────────────────────────────────────────────
 
-async function getRankedThreads(limit = 25, offset = 0): Promise<RankedThread[]> {
+async function getRankedThreads(
+  limit = 25,
+  offset = 0,
+): Promise<RankedThread[]> {
   const userId = await getCachedUserId();
 
-  const { data, error } = await supabase.rpc('rpc_rank_threads', {
+  const { data, error } = await supabase.rpc("rpc_rank_threads", {
     p_user_id: userId,
     p_limit: limit,
     p_offset: offset,
@@ -122,7 +129,10 @@ async function getRankedThreads(limit = 25, offset = 0): Promise<RankedThread[]>
 
   // Record impressions for seen-content suppression
   if (threads.length > 0) {
-    recordImpressions(threads.map((t: RankedThread) => t.id), 'thread').catch(() => {});
+    recordImpressions(
+      threads.map((t: RankedThread) => t.id),
+      "thread",
+    ).catch(() => {});
   }
 
   return threads;
@@ -133,7 +143,7 @@ async function getRankedThreads(limit = 25, offset = 0): Promise<RankedThread[]>
 async function getRankedReels(limit = 15, offset = 0): Promise<RankedReel[]> {
   const userId = await getCachedUserId();
 
-  const { data, error } = await supabase.rpc('rpc_rank_reels', {
+  const { data, error } = await supabase.rpc("rpc_rank_reels", {
     p_user_id: userId,
     p_limit: limit,
     p_offset: offset,
@@ -144,7 +154,10 @@ async function getRankedReels(limit = 15, offset = 0): Promise<RankedReel[]> {
   const reels = (data ?? []).map(rpcRowToReel);
 
   if (reels.length > 0) {
-    recordImpressions(reels.map((r: RankedReel) => r.id), 'reel').catch(() => {});
+    recordImpressions(
+      reels.map((r: RankedReel) => r.id),
+      "reel",
+    ).catch(() => {});
   }
 
   return reels;
@@ -155,7 +168,7 @@ async function getRankedReels(limit = 15, offset = 0): Promise<RankedReel[]> {
 async function getExploreFeed(limit = 30, offset = 0): Promise<ExploreItem[]> {
   const userId = await getCachedUserId();
 
-  const { data, error } = await supabase.rpc('rpc_explore_feed', {
+  const { data, error } = await supabase.rpc("rpc_explore_feed", {
     p_user_id: userId,
     p_limit: limit,
     p_offset: offset,
@@ -176,12 +189,14 @@ async function getExploreFeed(limit = 30, offset = 0): Promise<ExploreItem[]> {
       final_score: row.final_score ?? 0,
     };
 
-    if (row.content_type === 'thread') {
+    if (row.content_type === "thread") {
       item.thread = {
         id: row.content_id,
         user_id: row.author_id,
-        content: row.thread_content ?? '',
-        images: (row.thread_media ?? []).filter((m: any) => m?.type === 'image').map((m: any) => m.uri),
+        content: row.thread_content ?? "",
+        images: (row.thread_media ?? [])
+          .filter((m: any) => m?.type === "image")
+          .map((m: any) => m.uri),
         media: row.thread_media ?? [],
         parent_id: null,
         root_id: null,
@@ -196,12 +211,13 @@ async function getExploreFeed(limit = 30, offset = 0): Promise<ExploreItem[]> {
       item.reel = {
         id: row.content_id,
         author_id: row.author_id,
-        videoUrl: row.reel_video_url ?? '',
-        thumbnailUrl: row.reel_thumbnail_url ?? '',
-        caption: row.reel_caption ?? '',
+        videoUrl: row.reel_video_url ?? "",
+        thumbnailUrl: row.reel_thumbnail_url ?? "",
+        caption: row.reel_caption ?? "",
         likeCount: row.reel_like_count ?? 0,
         commentCount: row.reel_comment_count ?? 0,
         shareCount: 0,
+        viewCount: row.reel_view_count ?? 0,
         isLiked: row.is_liked ?? false,
         createdAt: row.created_at,
         aspectRatio: row.reel_aspect_ratio ?? 0.5625,
@@ -214,19 +230,26 @@ async function getExploreFeed(limit = 30, offset = 0): Promise<ExploreItem[]> {
   });
 
   // Record impressions for both types
-  const threadIds = items.filter((i) => i.content_type === 'thread').map((i) => i.content_id);
-  const reelIds = items.filter((i) => i.content_type === 'reel').map((i) => i.content_id);
-  if (threadIds.length) recordImpressions(threadIds, 'thread').catch(() => {});
-  if (reelIds.length) recordImpressions(reelIds, 'reel').catch(() => {});
+  const threadIds = items
+    .filter((i) => i.content_type === "thread")
+    .map((i) => i.content_id);
+  const reelIds = items
+    .filter((i) => i.content_type === "reel")
+    .map((i) => i.content_id);
+  if (threadIds.length) recordImpressions(threadIds, "thread").catch(() => {});
+  if (reelIds.length) recordImpressions(reelIds, "reel").catch(() => {});
 
   return items;
 }
 
 // ─── Impression tracking ─────────────────────────────────────────────────────
 
-async function recordImpressions(contentIds: string[], contentType: 'thread' | 'reel'): Promise<void> {
+async function recordImpressions(
+  contentIds: string[],
+  contentType: "thread" | "reel",
+): Promise<void> {
   const userId = await getCachedUserId();
-  await supabase.rpc('record_impressions', {
+  await supabase.rpc("record_impressions", {
     p_user_id: userId,
     p_content_ids: contentIds,
     p_content_type: contentType,
@@ -235,9 +258,13 @@ async function recordImpressions(contentIds: string[], contentType: 'thread' | '
 
 // ─── Watch time tracking ─────────────────────────────────────────────────────
 
-async function recordReelWatch(reelId: string, watchMs: number, completed: boolean): Promise<void> {
+async function recordReelWatch(
+  reelId: string,
+  watchMs: number,
+  completed: boolean,
+): Promise<void> {
   const userId = await getCachedUserId();
-  await supabase.rpc('record_reel_watch', {
+  await supabase.rpc("record_reel_watch", {
     p_user_id: userId,
     p_reel_id: reelId,
     p_watch_ms: watchMs,

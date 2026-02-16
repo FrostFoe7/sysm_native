@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface InteractionState {
   likedThreads: Record<string, boolean>;
@@ -33,27 +33,46 @@ export const useInteractionStore = create<InteractionState>()(
       bookmarkedThreads: {},
 
       setLiked: (threadId, isLiked) =>
-        set((s) => ({ likedThreads: { ...s.likedThreads, [threadId]: isLiked } })),
+        set((s) => ({
+          likedThreads: { ...s.likedThreads, [threadId]: isLiked },
+        })),
 
       setReposted: (threadId, isReposted) =>
-        set((s) => ({ repostedThreads: { ...s.repostedThreads, [threadId]: isReposted } })),
+        set((s) => ({
+          repostedThreads: { ...s.repostedThreads, [threadId]: isReposted },
+        })),
 
       setFollowing: (userId, isFollowing) =>
-        set((s) => ({ followingUsers: { ...s.followingUsers, [userId]: isFollowing } })),
+        set((s) => ({
+          followingUsers: { ...s.followingUsers, [userId]: isFollowing },
+        })),
 
       setBookmarked: (threadId, isBookmarked) =>
-        set((s) => ({ bookmarkedThreads: { ...s.bookmarkedThreads, [threadId]: isBookmarked } })),
+        set((s) => ({
+          bookmarkedThreads: {
+            ...s.bookmarkedThreads,
+            [threadId]: isBookmarked,
+          },
+        })),
 
       syncInteractions: ({ liked, reposted, following, bookmarked }) =>
         set((s) => ({
-          likedThreads: liked ? { ...s.likedThreads, ...liked } : s.likedThreads,
-          repostedThreads: reposted ? { ...s.repostedThreads, ...reposted } : s.repostedThreads,
-          followingUsers: following ? { ...s.followingUsers, ...following } : s.followingUsers,
-          bookmarkedThreads: bookmarked ? { ...s.bookmarkedThreads, ...bookmarked } : s.bookmarkedThreads,
+          likedThreads: liked
+            ? { ...s.likedThreads, ...liked }
+            : s.likedThreads,
+          repostedThreads: reposted
+            ? { ...s.repostedThreads, ...reposted }
+            : s.repostedThreads,
+          followingUsers: following
+            ? { ...s.followingUsers, ...following }
+            : s.followingUsers,
+          bookmarkedThreads: bookmarked
+            ? { ...s.bookmarkedThreads, ...bookmarked }
+            : s.bookmarkedThreads,
         })),
     }),
     {
-      name: 'interaction-storage',
+      name: "interaction-storage",
       storage: createJSONStorage(() => AsyncStorage),
     },
   ),

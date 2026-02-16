@@ -1,16 +1,22 @@
 // components/skeletons.tsx
 
-import React from 'react';
-import { View } from 'react-native';
-import { Skeleton } from '@/components/ui/skeleton';
-import { HStack } from '@/components/ui/hstack';
-import { VStack } from '@/components/ui/vstack';
-import { Divider } from '@/components/ui/divider';
-import { BONE_COLOR } from '@/constants/ui';
+import React from "react";
+import { View } from "react-native";
+import { Skeleton } from "@/components/ui/skeleton";
+import { HStack } from "@/components/ui/hstack";
+import { VStack } from "@/components/ui/vstack";
+import { Divider } from "@/components/ui/divider";
+import { BONE_COLOR } from "@/constants/ui";
 
 // ─── Thread card skeleton ────────────────────────────
 
-export function ThreadCardSkeleton({ showDivider = true, showMedia = false }: { showDivider?: boolean; showMedia?: boolean }) {
+export function ThreadCardSkeleton({
+  showDivider = true,
+  showMedia = false,
+}: {
+  showDivider?: boolean;
+  showMedia?: boolean;
+}) {
   return (
     <View className="w-full">
       <HStack className="px-4 py-3" space="md">
@@ -21,23 +27,53 @@ export function ThreadCardSkeleton({ showDivider = true, showMedia = false }: { 
         <VStack className="flex-1" space="sm">
           {/* Username + timestamp */}
           <HStack className="items-center justify-between">
-            <Skeleton variant="rounded" className={`h-[14px] w-[120px] ${BONE_COLOR}`} />
-            <Skeleton variant="rounded" className={`h-[12px] w-[28px] ${BONE_COLOR}`} />
+            <Skeleton
+              variant="rounded"
+              className={`h-[14px] w-[120px] ${BONE_COLOR}`}
+            />
+            <Skeleton
+              variant="rounded"
+              className={`h-[12px] w-[28px] ${BONE_COLOR}`}
+            />
           </HStack>
           {/* Body lines */}
-          <Skeleton variant="rounded" className={`h-[14px] w-full ${BONE_COLOR}`} />
-          <Skeleton variant="rounded" className={`h-[14px] w-[85%] ${BONE_COLOR}`} />
-          <Skeleton variant="rounded" className={`h-[14px] w-[55%] ${BONE_COLOR}`} />
+          <Skeleton
+            variant="rounded"
+            className={`h-[14px] w-full ${BONE_COLOR}`}
+          />
+          <Skeleton
+            variant="rounded"
+            className={`h-[14px] w-[85%] ${BONE_COLOR}`}
+          />
+          <Skeleton
+            variant="rounded"
+            className={`h-[14px] w-[55%] ${BONE_COLOR}`}
+          />
           {/* Media placeholder */}
           {showMedia && (
-            <Skeleton variant="rounded" className={`h-[180px] w-full rounded-xl ${BONE_COLOR}`} />
+            <Skeleton
+              variant="rounded"
+              className={`h-[180px] w-full rounded-xl ${BONE_COLOR}`}
+            />
           )}
           {/* Action row */}
           <HStack className="mt-1 items-center" space="lg">
-            <Skeleton variant="circular" className={`size-[20px] ${BONE_COLOR}`} />
-            <Skeleton variant="circular" className={`size-[20px] ${BONE_COLOR}`} />
-            <Skeleton variant="circular" className={`size-[20px] ${BONE_COLOR}`} />
-            <Skeleton variant="circular" className={`size-[20px] ${BONE_COLOR}`} />
+            <Skeleton
+              variant="circular"
+              className={`size-[20px] ${BONE_COLOR}`}
+            />
+            <Skeleton
+              variant="circular"
+              className={`size-[20px] ${BONE_COLOR}`}
+            />
+            <Skeleton
+              variant="circular"
+              className={`size-[20px] ${BONE_COLOR}`}
+            />
+            <Skeleton
+              variant="circular"
+              className={`size-[20px] ${BONE_COLOR}`}
+            />
           </HStack>
         </VStack>
       </HStack>
@@ -52,7 +88,11 @@ export function FeedSkeleton({ count = 6 }: { count?: number }) {
   return (
     <View className="w-full">
       {Array.from({ length: count }).map((_, i) => (
-        <ThreadCardSkeleton key={`feed-sk-${i}`} showDivider={i < count - 1} showMedia={i % 3 === 1} />
+        <ThreadCardSkeleton
+          key={`feed-sk-${i}`}
+          showDivider={i < count - 1}
+          showMedia={i % 3 === 1}
+        />
       ))}
     </View>
   );
@@ -60,16 +100,29 @@ export function FeedSkeleton({ count = 6 }: { count?: number }) {
 
 // ─── Profile header skeleton ─────────────────────────
 
-export function ProfileHeaderSkeleton({ isCurrentUser = true }: { isCurrentUser?: boolean }) {
+export function ProfileHeaderSkeleton({
+  isCurrentUser = true,
+}: {
+  isCurrentUser?: boolean;
+}) {
   return (
     <VStack className="w-full px-4 pb-2 pt-4">
       {/* Top row: name + avatar */}
       <HStack className="mb-3 items-start justify-between">
         <VStack className="mr-4 flex-1" space="sm">
-          <Skeleton variant="rounded" className={`h-[22px] w-[160px] ${BONE_COLOR}`} />
+          <Skeleton
+            variant="rounded"
+            className={`h-[22px] w-[160px] ${BONE_COLOR}`}
+          />
           <HStack className="items-center" space="xs">
-            <Skeleton variant="rounded" className={`h-[14px] w-[100px] ${BONE_COLOR}`} />
-            <Skeleton variant="rounded" className={`h-[16px] w-[70px] rounded-full ${BONE_COLOR}`} />
+            <Skeleton
+              variant="rounded"
+              className={`h-[14px] w-[100px] ${BONE_COLOR}`}
+            />
+            <Skeleton
+              variant="rounded"
+              className={`h-[16px] w-[70px] rounded-full ${BONE_COLOR}`}
+            />
           </HStack>
         </VStack>
         <Skeleton variant="circular" className={`size-[56px] ${BONE_COLOR}`} />
@@ -77,20 +130,38 @@ export function ProfileHeaderSkeleton({ isCurrentUser = true }: { isCurrentUser?
 
       {/* Bio lines */}
       <VStack className="mb-3" space="xs">
-        <Skeleton variant="rounded" className={`h-[14px] w-full ${BONE_COLOR}`} />
-        <Skeleton variant="rounded" className={`h-[14px] w-[70%] ${BONE_COLOR}`} />
+        <Skeleton
+          variant="rounded"
+          className={`h-[14px] w-full ${BONE_COLOR}`}
+        />
+        <Skeleton
+          variant="rounded"
+          className={`h-[14px] w-[70%] ${BONE_COLOR}`}
+        />
       </VStack>
 
       {/* Stats */}
       <HStack className="mb-4 items-center" space="sm">
-        <Skeleton variant="rounded" className={`h-[13px] w-[90px] ${BONE_COLOR}`} />
-        <Skeleton variant="rounded" className={`h-[13px] w-[80px] ${BONE_COLOR}`} />
+        <Skeleton
+          variant="rounded"
+          className={`h-[13px] w-[90px] ${BONE_COLOR}`}
+        />
+        <Skeleton
+          variant="rounded"
+          className={`h-[13px] w-[80px] ${BONE_COLOR}`}
+        />
       </HStack>
 
       {/* Buttons */}
       <HStack className="mb-2" space="sm">
-        <Skeleton variant="rounded" className={`h-9 flex-1 rounded-lg ${BONE_COLOR}`} />
-        <Skeleton variant="rounded" className={`h-9 flex-1 rounded-lg ${BONE_COLOR}`} />
+        <Skeleton
+          variant="rounded"
+          className={`h-9 flex-1 rounded-lg ${BONE_COLOR}`}
+        />
+        <Skeleton
+          variant="rounded"
+          className={`h-9 flex-1 rounded-lg ${BONE_COLOR}`}
+        />
       </HStack>
 
       <Divider className="bg-brand-border" />
@@ -107,11 +178,23 @@ export function ActivityItemSkeleton() {
         <Skeleton variant="circular" className={`size-9 ${BONE_COLOR}`} />
         <VStack className="flex-1" space="sm">
           <HStack className="items-center" space="xs">
-            <Skeleton variant="rounded" className={`h-[13px] w-[100px] ${BONE_COLOR}`} />
-            <Skeleton variant="rounded" className={`h-[12px] w-[24px] ${BONE_COLOR}`} />
+            <Skeleton
+              variant="rounded"
+              className={`h-[13px] w-[100px] ${BONE_COLOR}`}
+            />
+            <Skeleton
+              variant="rounded"
+              className={`h-[12px] w-[24px] ${BONE_COLOR}`}
+            />
           </HStack>
-          <Skeleton variant="rounded" className={`h-[13px] w-[140px] ${BONE_COLOR}`} />
-          <Skeleton variant="rounded" className={`h-[12px] w-[200px] ${BONE_COLOR}`} />
+          <Skeleton
+            variant="rounded"
+            className={`h-[13px] w-[140px] ${BONE_COLOR}`}
+          />
+          <Skeleton
+            variant="rounded"
+            className={`h-[12px] w-[200px] ${BONE_COLOR}`}
+          />
         </VStack>
       </HStack>
       <Divider className="ml-[64px] bg-brand-border" />
@@ -139,10 +222,19 @@ export function ExploreUserSkeleton() {
       <HStack className="items-center px-4 py-3" space="md">
         <Skeleton variant="circular" className={`size-10 ${BONE_COLOR}`} />
         <VStack className="flex-1" space="sm">
-          <Skeleton variant="rounded" className={`h-[14px] w-[120px] ${BONE_COLOR}`} />
-          <Skeleton variant="rounded" className={`h-[12px] w-[90px] ${BONE_COLOR}`} />
+          <Skeleton
+            variant="rounded"
+            className={`h-[14px] w-[120px] ${BONE_COLOR}`}
+          />
+          <Skeleton
+            variant="rounded"
+            className={`h-[12px] w-[90px] ${BONE_COLOR}`}
+          />
         </VStack>
-        <Skeleton variant="rounded" className={`h-[32px] w-[90px] rounded-lg ${BONE_COLOR}`} />
+        <Skeleton
+          variant="rounded"
+          className={`h-[32px] w-[90px] rounded-lg ${BONE_COLOR}`}
+        />
       </HStack>
       <Divider className="ml-[72px] bg-brand-border" />
     </View>
@@ -156,7 +248,10 @@ export function ExploreSkeleton() {
     <View className="w-full">
       {/* Section header */}
       <View className="px-4 pb-2 pt-5">
-        <Skeleton variant="rounded" className={`h-[16px] w-[80px] ${BONE_COLOR}`} />
+        <Skeleton
+          variant="rounded"
+          className={`h-[16px] w-[80px] ${BONE_COLOR}`}
+        />
       </View>
       {/* User rows */}
       {Array.from({ length: 4 }).map((_, i) => (
@@ -164,7 +259,10 @@ export function ExploreSkeleton() {
       ))}
       {/* Second section */}
       <View className="px-4 pb-2 pt-5">
-        <Skeleton variant="rounded" className={`h-[16px] w-[80px] ${BONE_COLOR}`} />
+        <Skeleton
+          variant="rounded"
+          className={`h-[16px] w-[80px] ${BONE_COLOR}`}
+        />
       </View>
       {/* Thread cards */}
       {Array.from({ length: 3 }).map((_, i) => (
@@ -184,29 +282,65 @@ export function ThreadDetailSkeleton() {
         <Skeleton variant="circular" className={`size-9 ${BONE_COLOR}`} />
         <VStack className="flex-1" space="sm">
           <HStack className="items-center justify-between">
-            <Skeleton variant="rounded" className={`h-[14px] w-[120px] ${BONE_COLOR}`} />
-            <Skeleton variant="rounded" className={`h-[12px] w-[60px] ${BONE_COLOR}`} />
+            <Skeleton
+              variant="rounded"
+              className={`h-[14px] w-[120px] ${BONE_COLOR}`}
+            />
+            <Skeleton
+              variant="rounded"
+              className={`h-[12px] w-[60px] ${BONE_COLOR}`}
+            />
           </HStack>
-          <Skeleton variant="rounded" className={`h-[14px] w-full ${BONE_COLOR}`} />
-          <Skeleton variant="rounded" className={`h-[14px] w-[90%] ${BONE_COLOR}`} />
-          <Skeleton variant="rounded" className={`h-[14px] w-[70%] ${BONE_COLOR}`} />
+          <Skeleton
+            variant="rounded"
+            className={`h-[14px] w-full ${BONE_COLOR}`}
+          />
+          <Skeleton
+            variant="rounded"
+            className={`h-[14px] w-[90%] ${BONE_COLOR}`}
+          />
+          <Skeleton
+            variant="rounded"
+            className={`h-[14px] w-[70%] ${BONE_COLOR}`}
+          />
           {/* Action row */}
           <HStack className="mt-1 items-center" space="lg">
-            <Skeleton variant="circular" className={`size-[20px] ${BONE_COLOR}`} />
-            <Skeleton variant="circular" className={`size-[20px] ${BONE_COLOR}`} />
-            <Skeleton variant="circular" className={`size-[20px] ${BONE_COLOR}`} />
-            <Skeleton variant="circular" className={`size-[20px] ${BONE_COLOR}`} />
+            <Skeleton
+              variant="circular"
+              className={`size-[20px] ${BONE_COLOR}`}
+            />
+            <Skeleton
+              variant="circular"
+              className={`size-[20px] ${BONE_COLOR}`}
+            />
+            <Skeleton
+              variant="circular"
+              className={`size-[20px] ${BONE_COLOR}`}
+            />
+            <Skeleton
+              variant="circular"
+              className={`size-[20px] ${BONE_COLOR}`}
+            />
           </HStack>
           {/* Engagement */}
           <HStack className="mt-1" space="md">
-            <Skeleton variant="rounded" className={`h-[12px] w-[70px] ${BONE_COLOR}`} />
-            <Skeleton variant="rounded" className={`h-[12px] w-[50px] ${BONE_COLOR}`} />
+            <Skeleton
+              variant="rounded"
+              className={`h-[12px] w-[70px] ${BONE_COLOR}`}
+            />
+            <Skeleton
+              variant="rounded"
+              className={`h-[12px] w-[50px] ${BONE_COLOR}`}
+            />
           </HStack>
         </VStack>
       </HStack>
       {/* Date */}
       <View className="px-4 pb-2">
-        <Skeleton variant="rounded" className={`h-[12px] w-[150px] ${BONE_COLOR}`} />
+        <Skeleton
+          variant="rounded"
+          className={`h-[12px] w-[150px] ${BONE_COLOR}`}
+        />
       </View>
       <Divider className="bg-brand-border" />
       {/* Reply skeletons */}
@@ -223,10 +357,16 @@ export function TabBarSkeleton() {
   return (
     <HStack className="w-full border-b border-brand-border">
       <View className="flex-1 items-center py-3">
-        <Skeleton variant="rounded" className={`h-[14px] w-[60px] ${BONE_COLOR}`} />
+        <Skeleton
+          variant="rounded"
+          className={`h-[14px] w-[60px] ${BONE_COLOR}`}
+        />
       </View>
       <View className="flex-1 items-center py-3">
-        <Skeleton variant="rounded" className={`h-[14px] w-[60px] ${BONE_COLOR}`} />
+        <Skeleton
+          variant="rounded"
+          className={`h-[14px] w-[60px] ${BONE_COLOR}`}
+        />
       </View>
     </HStack>
   );
@@ -241,10 +381,19 @@ export function ConversationRowSkeleton() {
         <Skeleton variant="circular" className={`size-[52px] ${BONE_COLOR}`} />
         <VStack className="flex-1 justify-center" space="sm">
           <HStack className="items-center justify-between">
-            <Skeleton variant="rounded" className={`h-[14px] w-[140px] ${BONE_COLOR}`} />
-            <Skeleton variant="rounded" className={`h-[11px] w-[32px] ${BONE_COLOR}`} />
+            <Skeleton
+              variant="rounded"
+              className={`h-[14px] w-[140px] ${BONE_COLOR}`}
+            />
+            <Skeleton
+              variant="rounded"
+              className={`h-[11px] w-[32px] ${BONE_COLOR}`}
+            />
           </HStack>
-          <Skeleton variant="rounded" className={`h-[13px] w-[200px] ${BONE_COLOR}`} />
+          <Skeleton
+            variant="rounded"
+            className={`h-[13px] w-[200px] ${BONE_COLOR}`}
+          />
         </VStack>
       </HStack>
       <Divider className="ml-[76px] bg-brand-border" />
@@ -268,12 +417,19 @@ export function InboxSkeleton({ count = 8 }: { count?: number }) {
 
 export function ChatMessageSkeleton({ isMe = false }: { isMe?: boolean }) {
   return (
-    <View className={`w-full flex-row px-4 py-1 ${isMe ? 'justify-end' : 'justify-start'}`}>
-      {!isMe && <Skeleton variant="circular" className={`mr-2 size-[28px] ${BONE_COLOR}`} />}
+    <View
+      className={`w-full flex-row px-4 py-1 ${isMe ? "justify-end" : "justify-start"}`}
+    >
+      {!isMe && (
+        <Skeleton
+          variant="circular"
+          className={`mr-2 size-[28px] ${BONE_COLOR}`}
+        />
+      )}
       <VStack space="xs">
         <Skeleton
           variant="rounded"
-          className={`h-[36px] rounded-2xl ${isMe ? 'w-[180px]' : 'w-[220px]'} ${BONE_COLOR}`}
+          className={`h-[36px] rounded-2xl ${isMe ? "w-[180px]" : "w-[220px]"} ${BONE_COLOR}`}
         />
       </VStack>
     </View>

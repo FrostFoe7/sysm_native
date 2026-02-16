@@ -1,12 +1,12 @@
 // app/(tabs)/_layout.tsx
 
-import { Tabs } from 'expo-router';
-import React, { useState, useEffect } from 'react';
-import { Platform, View, useWindowDimensions } from 'react-native';
-import { Home, Search, Heart, User, Film, Send } from 'lucide-react-native';
-import { HapticTab } from '@/components/haptic-tab';
-import { DesktopSidebar } from '@/components/DesktopSidebar';
-import { BREAKPOINTS } from '@/constants/ui';
+import { Tabs } from "expo-router";
+import React, { useState, useEffect } from "react";
+import { Platform, View, useWindowDimensions } from "react-native";
+import { Home, Search, Heart, User, Film, Send } from "lucide-react-native";
+import { HapticTab } from "@/components/haptic-tab";
+import { DesktopSidebar } from "@/components/DesktopSidebar";
+import { BREAKPOINTS } from "@/constants/ui";
 
 function TabsNavigator({ hideTabBar }: { hideTabBar: boolean }) {
   return (
@@ -14,16 +14,16 @@ function TabsNavigator({ hideTabBar }: { hideTabBar: boolean }) {
       screenOptions={{
         headerShown: false,
         tabBarButton: HapticTab,
-        tabBarActiveTintColor: '#f3f5f7', // brand-light
-        tabBarInactiveTintColor: '#555555', // brand-muted
+        tabBarActiveTintColor: "#f3f5f7", // brand-light
+        tabBarInactiveTintColor: "#555555", // brand-muted
         tabBarShowLabel: false,
         tabBarStyle: hideTabBar
-          ? { display: 'none' }
+          ? { display: "none" }
           : {
-              backgroundColor: '#101010', // brand-dark
-              borderTopColor: '#1e1e1e', // brand-border
+              backgroundColor: "#101010", // brand-dark
+              borderTopColor: "#1e1e1e", // brand-border
               borderTopWidth: 0.5,
-              height: Platform.OS === 'web' ? 60 : 84,
+              height: Platform.OS === "web" ? 60 : 84,
               paddingTop: 8,
               elevation: 0,
             },
@@ -38,7 +38,7 @@ function TabsNavigator({ hideTabBar }: { hideTabBar: boolean }) {
                 size={26}
                 color={color}
                 strokeWidth={focused ? 2.5 : 1.8}
-                fill={focused ? color : 'transparent'}
+                fill={focused ? color : "transparent"}
               />
             </View>
           ),
@@ -67,7 +67,7 @@ function TabsNavigator({ hideTabBar }: { hideTabBar: boolean }) {
                 size={26}
                 color={color}
                 strokeWidth={focused ? 2.5 : 1.8}
-                fill={focused ? color : 'transparent'}
+                fill={focused ? color : "transparent"}
               />
             </View>
           ),
@@ -82,7 +82,7 @@ function TabsNavigator({ hideTabBar }: { hideTabBar: boolean }) {
                 size={26}
                 color={color}
                 strokeWidth={focused ? 2.5 : 1.8}
-                fill={focused ? color : 'transparent'}
+                fill={focused ? color : "transparent"}
               />
             </View>
           ),
@@ -97,7 +97,7 @@ function TabsNavigator({ hideTabBar }: { hideTabBar: boolean }) {
                 size={26}
                 color={color}
                 strokeWidth={focused ? 2.5 : 1.8}
-                fill={focused ? color : 'transparent'}
+                fill={focused ? color : "transparent"}
               />
             </View>
           ),
@@ -112,7 +112,7 @@ function TabsNavigator({ hideTabBar }: { hideTabBar: boolean }) {
                 size={26}
                 color={color}
                 strokeWidth={focused ? 2.5 : 1.8}
-                fill={focused ? color : 'transparent'}
+                fill={focused ? color : "transparent"}
               />
             </View>
           ),
@@ -128,7 +128,7 @@ export default function TabLayout() {
 
   // We must use JS to conditionally render to avoid mounting multiple navigators
   useEffect(() => {
-    setIsDesktop(Platform.OS === 'web' && width >= BREAKPOINTS.lg);
+    setIsDesktop(Platform.OS === "web" && width >= BREAKPOINTS.lg);
   }, [width]);
 
   if (isDesktop) {

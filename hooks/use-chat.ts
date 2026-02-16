@@ -2,13 +2,18 @@
 // Full chat hook with realtime subscriptions, de-duping, optimistic send,
 // typing indicators (debounced + auto-expire), and message ordering.
 
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
-import { AppState, AppStateStatus } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
-import { ChatService } from '@/services/chat.service';
-import { VoiceService } from '@/services/voice.service';
-import { useAuthStore } from '@/store/useAuthStore';
-import type { MessageWithSender, ConversationWithDetails, ChatItem, User } from '@/types/types';
+import { useState, useCallback, useMemo, useRef, useEffect } from "react";
+import { AppState, AppStateStatus } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
+import { ChatService } from "@/services/chat.service";
+import { VoiceService } from "@/services/voice.service";
+import { useAuthStore } from "@/store/useAuthStore";
+import type {
+  MessageWithSender,
+  ConversationWithDetails,
+  ChatItem,
+  User,
+} from "@/types/types";
 
 const TYPING_DEBOUNCE_MS = 1500;
 const TYPING_EXPIRE_MS = 3000;
@@ -28,7 +33,9 @@ export function useChat(conversationId: string) {
   const [details, setDetails] = useState<ConversationWithDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
-  const [typingUsers, setTypingUsers] = useState<Map<string, { user: User; expiresAt: number }>>(new Map());
+  const [typingUsers, setTypingUsers] = useState<
+    Map<string, { user: User; expiresAt: number }>
+  >(new Map());
   const { user, userId: currentUserId } = useAuthStore();
 
   // Refs for cleanup
@@ -61,7 +68,7 @@ export function useChat(conversationId: string) {
         ChatService.markAsRead(conversationId).catch(() => {});
       }
     } catch (error) {
-      console.error('Failed to load chat:', error);
+      console.error("Failed to load chat:", error);
     } finally {
       setIsLoading(false);
     }
@@ -94,7 +101,7 @@ export function useChat(conversationId: string) {
       });
       setHasMore(older.length >= 50);
     } catch (error) {
-      console.error('Failed to load more messages:', error);
+      console.error("Failed to load more messages:", error);
     }
   }, [conversationId, hasMore, messages]);
 
@@ -104,92 +111,134 @@ export function useChat(conversationId: string) {
     if (!conversationId) return;
 
     // 1. New messages
-    const msgSub = ChatService.subscribeToMessages(conversationId, (raw: any) => {
-      // De-dupe: skip if we already have this message (from optimistic send or dupe event)
-      if (seenIds.current.has(raw.id)) {
-        // But swap temp message if this is the real version
-        setMessages((prev) =>
-          prev.map((m) => (m.id.startsWith('temp-') && m.content === raw.content && m.sender_id === raw.sender_id
-            ? { ...m, id: raw.id, status: raw.status, created_at: raw.created_at }
-            : m)),
-        );
-        return;
-      }
+    const msgSub = ChatService.subscribeToMessages(
+      conversationId,
+      (raw: any) => {
+        // De-dupe: skip if we already have this message (from optimistic send or dupe event)
+        if (seenIds.current.has(raw.id)) {
+          // But swap temp message if this is the real version
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id.startsWith("temp-") &&
+              m.content === raw.content &&
+              m.sender_id === raw.sender_id
+                ? {
+                    ...m,
+                    id: raw.id,
+                    status: raw.status,
+                    created_at: raw.created_at,
+                  }
+                : m,
+            ),
+          );
+          return;
+        }
 
-      seenIds.current.add(raw.id);
+        seenIds.current.add(raw.id);
 
-      // Build a minimal MessageWithSender from the realtime payload
-      const incoming: MessageWithSender = {
-        id: raw.id,
-        conversation_id: raw.conversation_id,
-        sender_id: raw.sender_id,
-        type: raw.type,
-        content: raw.content ?? '',
-        media_url: raw.media_url,
-        media_thumbnail: raw.media_thumbnail,
-        reply_to_id: raw.reply_to_id,
-        shared_thread_id: raw.shared_thread_id,
-        shared_reel_id: raw.shared_reel_id,
-        reactions: [],
-        status: raw.status ?? 'sent',
-        created_at: raw.created_at,
-        is_deleted: raw.is_deleted ?? false,
-        audio_url: raw.audio_url ?? null,
-        audio_duration_ms: raw.audio_duration_ms ?? null,
-        encrypted_content: raw.encrypted_content ?? null,
-        encrypted_key: raw.encrypted_key ?? null,
-        key_version: raw.key_version ?? null,
-        is_encrypted: raw.is_encrypted ?? false,
-        sender: { id: raw.sender_id, username: '', display_name: '', avatar_url: '', bio: '', verified: false, followers_count: 0, following_count: 0, created_at: '' },
-        replyTo: null,
-        sharedThread: null,
-        sharedReel: null,
-      };
+        // Build a minimal MessageWithSender from the realtime payload
+        const incoming: MessageWithSender = {
+          id: raw.id,
+          conversation_id: raw.conversation_id,
+          sender_id: raw.sender_id,
+          type: raw.type,
+          content: raw.content ?? "",
+          media_url: raw.media_url,
+          media_thumbnail: raw.media_thumbnail,
+          reply_to_id: raw.reply_to_id,
+          shared_thread_id: raw.shared_thread_id,
+          shared_reel_id: raw.shared_reel_id,
+          reactions: [],
+          status: raw.status ?? "sent",
+          created_at: raw.created_at,
+          is_deleted: raw.is_deleted ?? false,
+          audio_url: raw.audio_url ?? null,
+          audio_duration_ms: raw.audio_duration_ms ?? null,
+          encrypted_content: raw.encrypted_content ?? null,
+          encrypted_key: raw.encrypted_key ?? null,
+          key_version: raw.key_version ?? null,
+          is_encrypted: raw.is_encrypted ?? false,
+          sender: {
+            id: raw.sender_id,
+            username: "",
+            display_name: "",
+            avatar_url: "",
+            bio: "",
+            verified: false,
+            is_private: false,
+            followers_count: 0,
+            following_count: 0,
+            created_at: "",
+          },
+          replyTo: null,
+          sharedThread: null,
+          sharedReel: null,
+        };
 
-      setMessages((prev) => sortMessages([...prev, incoming]));
+        setMessages((prev) => sortMessages([...prev, incoming]));
 
-      // Mark read if focused
-      if (isFocusedRef.current && raw.sender_id !== currentUserId) {
-        ChatService.markAsRead(conversationId).catch(() => {});
-      }
-    });
+        // Mark read if focused
+        if (isFocusedRef.current && raw.sender_id !== currentUserId) {
+          ChatService.markAsRead(conversationId).catch(() => {});
+        }
+      },
+    );
 
     // 2. Message updates (edits, deletions)
-    const updateSub = ChatService.subscribeToMessageUpdates(conversationId, (raw: any) => {
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.id === raw.id
-            ? { ...m, content: raw.content, is_deleted: raw.is_deleted, status: raw.status }
-            : m,
-        ),
-      );
-    });
+    const updateSub = ChatService.subscribeToMessageUpdates(
+      conversationId,
+      (raw: any) => {
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === raw.id
+              ? {
+                  ...m,
+                  content: raw.content,
+                  is_deleted: raw.is_deleted,
+                  status: raw.status,
+                }
+              : m,
+          ),
+        );
+      },
+    );
 
     // 3. Typing indicators
-    const typingSub = ChatService.subscribeToTyping(conversationId, (uid: string, isTyping: boolean) => {
-      if (uid === currentUserId) return; // ignore self
+    const typingSub = ChatService.subscribeToTyping(
+      conversationId,
+      (uid: string, isTyping: boolean) => {
+        if (uid === currentUserId) return; // ignore self
 
-      setTypingUsers((prev) => {
-        const next = new Map(prev);
-        if (isTyping) {
-          // Find user from details
-          const typingUser = details?.participants.find((p) => p.user_id === uid)?.user;
-          if (typingUser) {
-            next.set(uid, { user: typingUser, expiresAt: Date.now() + TYPING_EXPIRE_MS });
+        setTypingUsers((prev) => {
+          const next = new Map(prev);
+          if (isTyping) {
+            // Find user from details
+            const typingUser = details?.participants.find(
+              (p) => p.user_id === uid,
+            )?.user;
+            if (typingUser) {
+              next.set(uid, {
+                user: typingUser,
+                expiresAt: Date.now() + TYPING_EXPIRE_MS,
+              });
+            }
+          } else {
+            next.delete(uid);
           }
-        } else {
-          next.delete(uid);
-        }
-        return next;
-      });
-    });
+          return next;
+        });
+      },
+    );
 
     // 4. Participant changes (join/leave) — refresh details
-    const participantSub = ChatService.subscribeToParticipants(conversationId, () => {
-      ChatService.getConversation(conversationId).then((d) => {
-        if (d) setDetails(d);
-      });
-    });
+    const participantSub = ChatService.subscribeToParticipants(
+      conversationId,
+      () => {
+        ChatService.getConversation(conversationId).then((d) => {
+          if (d) setDetails(d);
+        });
+      },
+    );
 
     // Cleanup
     subCleanupRef.current = () => {
@@ -248,11 +297,11 @@ export function useChat(conversationId: string) {
   // Mark as read when app comes to foreground
   useEffect(() => {
     const handleAppState = (state: AppStateStatus) => {
-      if (state === 'active' && isFocusedRef.current) {
+      if (state === "active" && isFocusedRef.current) {
         ChatService.markAsRead(conversationId).catch(() => {});
       }
     };
-    const sub = AppState.addEventListener('change', handleAppState);
+    const sub = AppState.addEventListener("change", handleAppState);
     return () => sub.remove();
   }, [conversationId]);
 
@@ -284,7 +333,7 @@ export function useChat(conversationId: string) {
         conversation_id: conversationId,
         sender_id: user.id,
         sender: user,
-        type: 'text',
+        type: "text",
         content: content.trim(),
         media_url: null,
         media_thumbnail: null,
@@ -292,7 +341,7 @@ export function useChat(conversationId: string) {
         shared_thread_id: null,
         shared_reel_id: null,
         reactions: [],
-        status: 'sending',
+        status: "sending",
         created_at: new Date().toISOString(),
         is_deleted: false,
         audio_url: null,
@@ -322,14 +371,22 @@ export function useChat(conversationId: string) {
         setMessages((prev) =>
           prev.map((m) =>
             m.id === tempId
-              ? { ...sentMessage, sender: user, replyTo: null, sharedThread: null, sharedReel: null }
+              ? {
+                  ...sentMessage,
+                  sender: user,
+                  replyTo: null,
+                  sharedThread: null,
+                  sharedReel: null,
+                }
               : m,
           ),
         );
       } catch (error) {
-        console.error('Failed to send message:', error);
+        console.error("Failed to send message:", error);
         setMessages((prev) =>
-          prev.map((m) => (m.id === tempId ? { ...m, status: 'error' as any } : m)),
+          prev.map((m) =>
+            m.id === tempId ? { ...m, status: "error" as any } : m,
+          ),
         );
       }
     },
@@ -345,7 +402,9 @@ export function useChat(conversationId: string) {
 
       // Mark as sending again
       setMessages((prev) =>
-        prev.map((m) => (m.id === tempId ? { ...m, status: 'sending' as any } : m)),
+        prev.map((m) =>
+          m.id === tempId ? { ...m, status: "sending" as any } : m,
+        ),
       );
 
       try {
@@ -359,13 +418,21 @@ export function useChat(conversationId: string) {
         setMessages((prev) =>
           prev.map((m) =>
             m.id === tempId
-              ? { ...sentMessage, sender: user, replyTo: null, sharedThread: null, sharedReel: null }
+              ? {
+                  ...sentMessage,
+                  sender: user,
+                  replyTo: null,
+                  sharedThread: null,
+                  sharedReel: null,
+                }
               : m,
           ),
         );
       } catch (error) {
         setMessages((prev) =>
-          prev.map((m) => (m.id === tempId ? { ...m, status: 'error' as any } : m)),
+          prev.map((m) =>
+            m.id === tempId ? { ...m, status: "error" as any } : m,
+          ),
         );
       }
     },
@@ -388,8 +455,17 @@ export function useChat(conversationId: string) {
           return {
             ...m,
             reactions: existing
-              ? m.reactions.filter((r) => !(r.user_id === currentUserId && r.emoji === emoji))
-              : [...m.reactions, { user_id: currentUserId, emoji, created_at: new Date().toISOString() }],
+              ? m.reactions.filter(
+                  (r) => !(r.user_id === currentUserId && r.emoji === emoji),
+                )
+              : [
+                  ...m.reactions,
+                  {
+                    user_id: currentUserId,
+                    emoji,
+                    created_at: new Date().toISOString(),
+                  },
+                ],
           };
         }),
       );
@@ -397,7 +473,7 @@ export function useChat(conversationId: string) {
       try {
         await ChatService.toggleReaction(messageId, emoji);
       } catch (error) {
-        console.error('Failed to toggle reaction:', error);
+        console.error("Failed to toggle reaction:", error);
         // Reload to get correct state
         loadData();
       }
@@ -427,20 +503,17 @@ export function useChat(conversationId: string) {
 
   // ─── Delete message ──────────────────────────────────────────────────────
 
-  const deleteMessage = useCallback(
-    async (messageId: string) => {
+  const deleteMessage = useCallback(async (messageId: string) => {
+    setMessages((prev) =>
+      prev.map((m) => (m.id === messageId ? { ...m, is_deleted: true } : m)),
+    );
+    const ok = await ChatService.deleteMessage(messageId);
+    if (!ok) {
       setMessages((prev) =>
-        prev.map((m) => (m.id === messageId ? { ...m, is_deleted: true } : m)),
+        prev.map((m) => (m.id === messageId ? { ...m, is_deleted: false } : m)),
       );
-      const ok = await ChatService.deleteMessage(messageId);
-      if (!ok) {
-        setMessages((prev) =>
-          prev.map((m) => (m.id === messageId ? { ...m, is_deleted: false } : m)),
-        );
-      }
-    },
-    [],
-  );
+    }
+  }, []);
 
   // ─── Send voice note ─────────────────────────────────────────────────────
 
@@ -454,15 +527,15 @@ export function useChat(conversationId: string) {
         conversation_id: conversationId,
         sender_id: user.id,
         sender: user,
-        type: 'voice_note',
-        content: '',
+        type: "voice_note",
+        content: "",
         media_url: null,
         media_thumbnail: null,
         reply_to_id: replyToId || null,
         shared_thread_id: null,
         shared_reel_id: null,
         reactions: [],
-        status: 'sending',
+        status: "sending",
         created_at: new Date().toISOString(),
         is_deleted: false,
         audio_url: uri,
@@ -481,11 +554,14 @@ export function useChat(conversationId: string) {
 
       try {
         // Upload audio to Supabase Storage
-        const uploadResult = await VoiceService.uploadVoiceNote(conversationId, {
-          uri,
-          durationMs,
-          fileSize: 0, // Size not needed for upload, only used for display
-        });
+        const uploadResult = await VoiceService.uploadVoiceNote(
+          conversationId,
+          {
+            uri,
+            durationMs,
+            fileSize: 0, // Size not needed for upload, only used for display
+          },
+        );
 
         // Send the message with the uploaded URL
         const sentMessage = await ChatService.sendVoiceMessage({
@@ -499,14 +575,22 @@ export function useChat(conversationId: string) {
         setMessages((prev) =>
           prev.map((m) =>
             m.id === tempId
-              ? { ...sentMessage, sender: user, replyTo: null, sharedThread: null, sharedReel: null }
+              ? {
+                  ...sentMessage,
+                  sender: user,
+                  replyTo: null,
+                  sharedThread: null,
+                  sharedReel: null,
+                }
               : m,
           ),
         );
       } catch (error) {
-        console.error('Failed to send voice note:', error);
+        console.error("Failed to send voice note:", error);
         setMessages((prev) =>
-          prev.map((m) => (m.id === tempId ? { ...m, status: 'error' as any } : m)),
+          prev.map((m) =>
+            m.id === tempId ? { ...m, status: "error" as any } : m,
+          ),
         );
       }
     },
@@ -536,7 +620,8 @@ export function useChat(conversationId: string) {
 /** Sort messages by (created_at, id) for monotonic ordering */
 function sortMessages(msgs: MessageWithSender[]): MessageWithSender[] {
   return msgs.sort((a, b) => {
-    const timeDiff = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+    const timeDiff =
+      new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
     if (timeDiff !== 0) return timeDiff;
     return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
   });
@@ -545,8 +630,8 @@ function sortMessages(msgs: MessageWithSender[]): MessageWithSender[] {
 /** Build chat items with date separators */
 function buildChatItems(messages: MessageWithSender[]): ChatItem[] {
   const items: ChatItem[] = [];
-  let lastDate = '';
-  let lastSenderId = '';
+  let lastDate = "";
+  let lastSenderId = "";
 
   for (let i = 0; i < messages.length; i++) {
     const msg = messages[i];
@@ -554,16 +639,20 @@ function buildChatItems(messages: MessageWithSender[]): ChatItem[] {
     const nextMsg = messages[i + 1];
 
     if (msgDate !== lastDate) {
-      items.push({ type: 'date', date: msg.created_at, key: `date-${msgDate}` });
+      items.push({
+        type: "date",
+        date: msg.created_at,
+        key: `date-${msgDate}`,
+      });
       lastDate = msgDate;
-      lastSenderId = '';
+      lastSenderId = "";
     }
 
-    const showAvatar = msg.sender_id !== lastSenderId || msg.type === 'system';
+    const showAvatar = msg.sender_id !== lastSenderId || msg.type === "system";
     const isLastFromSender = !nextMsg || nextMsg.sender_id !== msg.sender_id;
 
     items.push({
-      type: 'message',
+      type: "message",
       message: msg,
       showAvatar,
       showTimestamp: isLastFromSender,
@@ -579,7 +668,7 @@ function buildChatItems(messages: MessageWithSender[]): ChatItem[] {
 /** Safely unsubscribe from a Supabase channel */
 function supabaseUnsubscribe(channel: any) {
   try {
-    if (channel && typeof channel.unsubscribe === 'function') {
+    if (channel && typeof channel.unsubscribe === "function") {
       channel.unsubscribe();
     }
   } catch {

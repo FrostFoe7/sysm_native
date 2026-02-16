@@ -1,18 +1,18 @@
 // components/AnimatedHeart.tsx
 // Bouncy scale animation on the heart icon when liked
 
-import React, { useEffect, useState } from 'react';
-import { Pressable } from 'react-native';
-import { 
-  SafeAnimatedView, 
-  isWeb, 
-  useSharedValue, 
-  withSpring, 
+import React, { useEffect, useState } from "react";
+import { Pressable } from "react-native";
+import {
+  SafeAnimatedView,
+  isWeb,
+  useSharedValue,
+  withSpring,
   withSequence,
-  useAnimatedStyle 
-} from '@/utils/animatedWebSafe';
-import { BOUNCY_SPRING_CONFIG } from '@/constants/ui';
-import { HeartIcon, HeartFillIcon } from '@/constants/icons';
+  useAnimatedStyle,
+} from "@/utils/animatedWebSafe";
+import { BOUNCY_SPRING_CONFIG } from "@/constants/ui";
+import { HeartIcon, HeartFillIcon } from "@/constants/icons";
 
 interface AnimatedHeartProps {
   isLiked: boolean;
@@ -20,7 +20,11 @@ interface AnimatedHeartProps {
   size?: number;
 }
 
-export function AnimatedHeart({ isLiked, onPress, size = 19 }: AnimatedHeartProps) {
+export function AnimatedHeart({
+  isLiked,
+  onPress,
+  size = 19,
+}: AnimatedHeartProps) {
   const [scaleWeb, setScaleWeb] = useState(1);
   const scale = useSharedValue(1);
   const liked = useSharedValue(isLiked ? 1 : 0);
@@ -48,7 +52,7 @@ export function AnimatedHeart({ isLiked, onPress, size = 19 }: AnimatedHeartProp
     transform: [{ scale: isWeb ? scaleWeb : scale.value }],
   }));
 
-  const heartColor = isLiked ? '#ff3040' : '#777777';
+  const heartColor = isLiked ? "#ff3040" : "#777777";
 
   return (
     <Pressable
@@ -56,10 +60,10 @@ export function AnimatedHeart({ isLiked, onPress, size = 19 }: AnimatedHeartProp
       hitSlop={8}
       className="rounded-full p-2 active:bg-white/5"
     >
-      <SafeAnimatedView 
+      <SafeAnimatedView
         style={[
           animatedStyle,
-          isWeb && ({ transition: 'transform 200ms ease-out' } as any)
+          isWeb && ({ transition: "transform 200ms ease-out" } as any),
         ]}
       >
         {isLiked ? (

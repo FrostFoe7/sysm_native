@@ -1,23 +1,23 @@
 // components/DesktopSidebar.tsx
 
-import React, { useCallback, useEffect, useState } from 'react';
-import { Pressable, View } from 'react-native';
-import { useRouter, usePathname } from 'expo-router';
-import { VStack } from '@/components/ui/vstack';
-import { Text } from '@/components/ui/text';
-import { Avatar, AvatarImage } from '@/components/ui/avatar';
-import { Divider } from '@/components/ui/divider';
-import { UserService } from '@/services/user.service';
-import type { User as UserType } from '@/types/types';
-import { 
-  HomeIcon, 
-  ReelsIcon, 
-  NotificationsIcon, 
-  ChatIcon, 
-  EditIcon, 
+import React, { useCallback, useEffect, useState } from "react";
+import { Pressable, View } from "react-native";
+import { useRouter, usePathname } from "expo-router";
+import { VStack } from "@/components/ui/vstack";
+import { Text } from "@/components/ui/text";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Divider } from "@/components/ui/divider";
+import { UserService } from "@/services/user.service";
+import type { User as UserType } from "@/types/types";
+import {
+  HomeIcon,
+  ReelsIcon,
+  NotificationsIcon,
+  ChatIcon,
+  EditIcon,
   SettingsIcon,
-} from '@/constants/icons';
-import { Search, User } from 'lucide-react-native';
+} from "@/constants/icons";
+import { Search, User } from "lucide-react-native";
 
 interface NavItem {
   icon: any;
@@ -29,45 +29,45 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   {
     icon: HomeIcon,
-    label: 'Home',
-    path: '/(tabs)',
-    matchPaths: ['/', '/(tabs)', '/(tabs)/index'],
+    label: "Home",
+    path: "/(tabs)",
+    matchPaths: ["/", "/(tabs)", "/(tabs)/index"],
   },
   {
     icon: Search,
-    label: 'Search',
-    path: '/(tabs)/explore',
-    matchPaths: ['/(tabs)/explore', '/explore'],
+    label: "Search",
+    path: "/(tabs)/explore",
+    matchPaths: ["/(tabs)/explore", "/explore"],
   },
   {
     icon: EditIcon,
-    label: 'New Thread',
-    path: '/modal',
-    matchPaths: ['/modal', '/(tabs)/new'],
+    label: "New Thread",
+    path: "/modal",
+    matchPaths: ["/modal", "/(tabs)/new"],
   },
   {
     icon: ReelsIcon,
-    label: 'Reels',
-    path: '/(tabs)/reels',
-    matchPaths: ['/(tabs)/reels', '/reels'],
+    label: "Reels",
+    path: "/(tabs)/reels",
+    matchPaths: ["/(tabs)/reels", "/reels"],
   },
   {
     icon: NotificationsIcon,
-    label: 'Activity',
-    path: '/(tabs)/activity',
-    matchPaths: ['/(tabs)/activity', '/activity'],
+    label: "Activity",
+    path: "/(tabs)/activity",
+    matchPaths: ["/(tabs)/activity", "/activity"],
   },
   {
     icon: ChatIcon,
-    label: 'Messages',
-    path: '/(tabs)/inbox',
-    matchPaths: ['/(tabs)/inbox', '/inbox'],
+    label: "Messages",
+    path: "/(tabs)/inbox",
+    matchPaths: ["/(tabs)/inbox", "/inbox"],
   },
   {
     icon: User,
-    label: 'Profile',
-    path: '/(tabs)/profile',
-    matchPaths: ['/(tabs)/profile', '/profile'],
+    label: "Profile",
+    path: "/(tabs)/profile",
+    matchPaths: ["/(tabs)/profile", "/profile"],
   },
 ];
 
@@ -81,7 +81,7 @@ function SidebarNavItem({
   onPress: () => void;
 }) {
   const Icon = item.icon;
-  const color = isActive ? '#f3f5f7' : '#777777';
+  const color = isActive ? "#f3f5f7" : "#777777";
 
   return (
     <Pressable
@@ -90,15 +90,11 @@ function SidebarNavItem({
       style={{ gap: 16 }}
     >
       <View className="w-7 items-center">
-        <Icon
-          size={26}
-          color={color}
-          strokeWidth={isActive ? 2.5 : 1.8}
-        />
+        <Icon size={26} color={color} strokeWidth={isActive ? 2.5 : 1.8} />
       </View>
       <Text
         className={`text-[16px] ${
-          isActive ? 'font-semibold text-brand-light' : 'text-brand-muted-alt'
+          isActive ? "font-semibold text-brand-light" : "text-brand-muted-alt"
         }`}
       >
         {item.label}
@@ -119,7 +115,7 @@ export function DesktopSidebar() {
   const isActive = useCallback(
     (item: NavItem) => {
       return item.matchPaths.some(
-        (p) => pathname === p || pathname.startsWith(p + '/'),
+        (p) => pathname === p || pathname.startsWith(p + "/"),
       );
     },
     [pathname],
@@ -127,8 +123,8 @@ export function DesktopSidebar() {
 
   const handleNav = useCallback(
     (item: NavItem) => {
-      if (item.path === '/modal') {
-        router.push('/modal');
+      if (item.path === "/modal") {
+        router.push("/modal");
       } else {
         router.replace(item.path as any);
       }
@@ -142,7 +138,7 @@ export function DesktopSidebar() {
         {/* Logo / Brand */}
         <Pressable
           className="mb-2 px-5 py-4"
-          onPress={() => router.replace('/(tabs)' as any)}
+          onPress={() => router.replace("/(tabs)" as any)}
         >
           <Text className="text-[22px] font-bold tracking-tight text-brand-light">
             𝕋𝕙𝕣𝕖𝕒𝕕𝕤
@@ -166,24 +162,27 @@ export function DesktopSidebar() {
       <VStack className="px-2">
         <Divider className="mb-3 bg-brand-border" />
         {currentUser && (
-        <Pressable
-          className="flex-row items-center rounded-xl px-4 py-3 active:bg-white/5"
-          style={{ gap: 12 }}
-          onPress={() => router.replace('/(tabs)/profile' as any)}
-        >
-          <Avatar size="sm">
-            <AvatarImage source={{ uri: currentUser.avatar_url }} />
-          </Avatar>
-          <VStack className="flex-1">
-            <Text className="text-[14px] font-semibold text-brand-light" numberOfLines={1}>
-              {currentUser.display_name}
-            </Text>
-            <Text className="text-[12px] text-brand-muted" numberOfLines={1}>
-              @{currentUser.username}
-            </Text>
-          </VStack>
-          <SettingsIcon size={18} color="#555555" />
-        </Pressable>
+          <Pressable
+            className="flex-row items-center rounded-xl px-4 py-3 active:bg-white/5"
+            style={{ gap: 12 }}
+            onPress={() => router.replace("/(tabs)/profile" as any)}
+          >
+            <Avatar size="sm">
+              <AvatarImage source={{ uri: currentUser.avatar_url }} />
+            </Avatar>
+            <VStack className="flex-1">
+              <Text
+                className="text-[14px] font-semibold text-brand-light"
+                numberOfLines={1}
+              >
+                {currentUser.display_name}
+              </Text>
+              <Text className="text-[12px] text-brand-muted" numberOfLines={1}>
+                @{currentUser.username}
+              </Text>
+            </VStack>
+            <SettingsIcon size={18} color="#555555" />
+          </Pressable>
         )}
       </VStack>
     </View>

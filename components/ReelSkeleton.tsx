@@ -1,9 +1,9 @@
 // components/ReelSkeleton.tsx
 // Fullscreen skeleton matching Reels layout exactly
 
-import React from 'react';
-import { View } from 'react-native';
-import { Skeleton } from '@/components/ui/skeleton';
+import React from "react";
+import { View } from "react-native";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function ReelSkeleton() {
   return (
@@ -14,7 +14,10 @@ export function ReelSkeleton() {
       </View>
 
       {/* Right side action buttons skeleton */}
-      <View className="absolute bottom-[120px] right-3 items-center" style={{ gap: 20 }}>
+      <View
+        className="absolute bottom-[120px] right-3 items-center"
+        style={{ gap: 20 }}
+      >
         {/* Avatar */}
         <Skeleton
           variant="circular"
@@ -61,7 +64,10 @@ export function ReelSkeleton() {
       </View>
 
       {/* Bottom overlay skeleton */}
-      <View className="absolute bottom-6 left-3 right-[72px]" style={{ gap: 8 }}>
+      <View
+        className="absolute bottom-6 left-3 right-[72px]"
+        style={{ gap: 8 }}
+      >
         {/* Username */}
         <Skeleton
           variant="rounded"

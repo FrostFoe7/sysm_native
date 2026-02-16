@@ -1,6 +1,12 @@
 // app/thread/[id].tsx
 
-import React, { useState, useCallback, useRef, useEffect, useLayoutEffect } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  useLayoutEffect,
+} from "react";
 import {
   FlatList,
   TextInput,
@@ -8,31 +14,31 @@ import {
   Platform,
   KeyboardAvoidingView,
   View,
-} from 'react-native';
-import { useLocalSearchParams, useRouter, useNavigation } from 'expo-router';
-import { useFocusEffect } from '@react-navigation/native';
-import { ThreadCard } from '@/components/ThreadCard';
-import { ShareSheet } from '@/components/ShareSheet';
-import { ThreadOverflowMenu } from '@/components/ThreadOverflowMenu';
-import { Avatar, AvatarImage } from '@/components/ui/avatar';
-import { Text } from '@/components/ui/text';
-import { HStack } from '@/components/ui/hstack';
-import { Divider } from '@/components/ui/divider';
-import { Box } from '@/components/ui/box';
-import { ThreadService } from '@/services/thread.service';
-import { UserService } from '@/services/user.service';
-import { formatFullDate } from '@/services/format';
-import { SendIcon, ArrowLeftIcon } from '@/constants/icons';
-import { ThreadDetailSkeleton } from '@/components/skeletons';
-import { SafeAreaView } from '@/components/ui/safe-area-view';
-import type { ThreadWithAuthor, ThreadWithReplies } from '@/types/types';
-import { useInteractionStore } from '@/store/useInteractionStore';
+} from "react-native";
+import { useLocalSearchParams, useRouter, useNavigation } from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
+import { ThreadCard } from "@/components/ThreadCard";
+import { ShareSheet } from "@/components/ShareSheet";
+import { ThreadOverflowMenu } from "@/components/ThreadOverflowMenu";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Text } from "@/components/ui/text";
+import { HStack } from "@/components/ui/hstack";
+import { Divider } from "@/components/ui/divider";
+import { Box } from "@/components/ui/box";
+import { ThreadService } from "@/services/thread.service";
+import { UserService } from "@/services/user.service";
+import { formatFullDate } from "@/services/format";
+import { SendIcon, ArrowLeftIcon } from "@/constants/icons";
+import { ThreadDetailSkeleton } from "@/components/skeletons";
+import { SafeAreaView } from "@/components/ui/safe-area-view";
+import type { ThreadWithAuthor, ThreadWithReplies } from "@/types/types";
+import { useInteractionStore } from "@/store/useInteractionStore";
 
 type ListItem =
-  | { type: 'ancestor'; thread: ThreadWithAuthor }
-  | { type: 'main'; thread: ThreadWithReplies }
-  | { type: 'reply-header' }
-  | { type: 'reply'; thread: ThreadWithAuthor };
+  | { type: "ancestor"; thread: ThreadWithAuthor }
+  | { type: "main"; thread: ThreadWithReplies }
+  | { type: "reply-header" }
+  | { type: "reply"; thread: ThreadWithAuthor };
 
 export default function ThreadDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -40,20 +46,22 @@ export default function ThreadDetailScreen() {
   const navigation = useNavigation();
   const inputRef = useRef<TextInput>(null);
   const flatListRef = useRef<FlatList>(null);
-  const [replyText, setReplyText] = useState('');
+  const [replyText, setReplyText] = useState("");
   const [detail, setDetail] = useState<ThreadWithReplies | null>(null);
   const [ancestors, setAncestors] = useState<ThreadWithAuthor[]>([]);
-  
-  const { 
-    likedThreads: likedMap, 
-    repostedThreads: repostMap, 
-    setLiked, 
+
+  const {
+    likedThreads: likedMap,
+    repostedThreads: repostMap,
+    setLiked,
     setReposted,
-    syncInteractions 
+    syncInteractions,
   } = useInteractionStore();
 
   const [shareThreadId, setShareThreadId] = useState<string | null>(null);
-  const [overflowThread, setOverflowThread] = useState<ThreadWithAuthor | null>(null);
+  const [overflowThread, setOverflowThread] = useState<ThreadWithAuthor | null>(
+    null,
+  );
   const [currentUser, setCurrentUser] = useState<any>(null);
 
   useEffect(() => {
@@ -90,7 +98,7 @@ export default function ThreadDetailScreen() {
         syncInteractions({ liked: newLiked, reposted: newReposted });
       }
     } catch (error) {
-      console.error('Failed to load thread detail:', error);
+      console.error("Failed to load thread detail:", error);
     }
   }, [id, syncInteractions]);
 
@@ -106,24 +114,37 @@ export default function ThreadDetailScreen() {
     }, [loadData]),
   );
 
-  const handleLike = useCallback((threadId: string) => {
-    const wasLiked = !!likedMap[threadId];
-    setLiked(threadId, !wasLiked);
-    ThreadService.toggleLike(threadId).catch(() => setLiked(threadId, wasLiked));
-    
-    setDetail((prev) => {
-      if (!prev) return prev;
-      if (prev.id === threadId) {
-        return { ...prev, like_count: wasLiked ? prev.like_count - 1 : prev.like_count + 1 };
-      }
-      return {
-        ...prev,
-        replies: prev.replies.map((r) =>
-          r.id === threadId ? { ...r, like_count: wasLiked ? r.like_count - 1 : r.like_count + 1 } : r,
-        ),
-      };
-    });
-  }, [likedMap, setLiked]);
+  const handleLike = useCallback(
+    (threadId: string) => {
+      const wasLiked = !!likedMap[threadId];
+      setLiked(threadId, !wasLiked);
+      ThreadService.toggleLike(threadId).catch(() =>
+        setLiked(threadId, wasLiked),
+      );
+
+      setDetail((prev) => {
+        if (!prev) return prev;
+        if (prev.id === threadId) {
+          return {
+            ...prev,
+            like_count: wasLiked ? prev.like_count - 1 : prev.like_count + 1,
+          };
+        }
+        return {
+          ...prev,
+          replies: prev.replies.map((r) =>
+            r.id === threadId
+              ? {
+                  ...r,
+                  like_count: wasLiked ? r.like_count - 1 : r.like_count + 1,
+                }
+              : r,
+          ),
+        };
+      });
+    },
+    [likedMap, setLiked],
+  );
 
   const handleReply = useCallback(
     (threadId: string) => {
@@ -136,24 +157,41 @@ export default function ThreadDetailScreen() {
     [id, router],
   );
 
-  const handleRepost = useCallback((threadId: string) => {
-    const wasReposted = !!repostMap[threadId];
-    setReposted(threadId, !wasReposted);
-    ThreadService.toggleRepost(threadId).catch(() => setReposted(threadId, wasReposted));
+  const handleRepost = useCallback(
+    (threadId: string) => {
+      const wasReposted = !!repostMap[threadId];
+      setReposted(threadId, !wasReposted);
+      ThreadService.toggleRepost(threadId).catch(() =>
+        setReposted(threadId, wasReposted),
+      );
 
-    setDetail((prev) => {
-      if (!prev) return prev;
-      if (prev.id === threadId) {
-        return { ...prev, repost_count: wasReposted ? prev.repost_count - 1 : prev.repost_count + 1 };
-      }
-      return {
-        ...prev,
-        replies: prev.replies.map((r) =>
-          r.id === threadId ? { ...r, repost_count: wasReposted ? r.repost_count - 1 : r.repost_count + 1 } : r,
-        ),
-      };
-    });
-  }, [repostMap, setReposted]);
+      setDetail((prev) => {
+        if (!prev) return prev;
+        if (prev.id === threadId) {
+          return {
+            ...prev,
+            repost_count: wasReposted
+              ? prev.repost_count - 1
+              : prev.repost_count + 1,
+          };
+        }
+        return {
+          ...prev,
+          replies: prev.replies.map((r) =>
+            r.id === threadId
+              ? {
+                  ...r,
+                  repost_count: wasReposted
+                    ? r.repost_count - 1
+                    : r.repost_count + 1,
+                }
+              : r,
+          ),
+        };
+      });
+    },
+    [repostMap, setReposted],
+  );
 
   const handleShare = useCallback((threadId: string) => {
     setShareThreadId(threadId);
@@ -161,7 +199,9 @@ export default function ThreadDetailScreen() {
 
   const handleMore = useCallback(
     (threadId: string) => {
-      const allThreads = detail ? [detail, ...ancestors, ...detail.replies] : ancestors;
+      const allThreads = detail
+        ? [detail, ...ancestors, ...detail.replies]
+        : ancestors;
       const found = allThreads.find((t) => t.id === threadId) ?? null;
       setOverflowThread(found);
     },
@@ -207,7 +247,7 @@ export default function ThreadDetailScreen() {
     if (!id || !replyText.trim()) return;
     try {
       const newReply = await ThreadService.createReply(id, replyText.trim());
-      setReplyText('');
+      setReplyText("");
       // Optimistically update the detail
       setDetail((prev) => {
         if (!prev) return prev;
@@ -222,14 +262,16 @@ export default function ThreadDetailScreen() {
         flatListRef.current?.scrollToEnd({ animated: true });
       }, 100);
     } catch (error) {
-      console.error('Failed to submit reply:', error);
+      console.error("Failed to submit reply:", error);
     }
   }, [id, replyText]);
 
   if (!detail) {
     return (
       <View className="flex-1 bg-brand-dark">
-        <Box className={`flex-1 ${Platform.OS === 'web' ? 'w-full max-w-[680px] self-center' : ''}`}>
+        <Box
+          className={`flex-1 ${Platform.OS === "web" ? "w-full max-w-[680px] self-center" : ""}`}
+        >
           <ThreadDetailSkeleton />
         </Box>
       </View>
@@ -237,14 +279,14 @@ export default function ThreadDetailScreen() {
   }
 
   const listData: ListItem[] = [
-    ...ancestors.map((t) => ({ type: 'ancestor' as const, thread: t })),
-    { type: 'main' as const, thread: detail },
-    { type: 'reply-header' as const },
-    ...detail.replies.map((t) => ({ type: 'reply' as const, thread: t })),
+    ...ancestors.map((t) => ({ type: "ancestor" as const, thread: t })),
+    { type: "main" as const, thread: detail },
+    { type: "reply-header" as const },
+    ...detail.replies.map((t) => ({ type: "reply" as const, thread: t })),
   ];
 
   const renderItem = ({ item, index }: { item: ListItem; index: number }) => {
-    if (item.type === 'ancestor') {
+    if (item.type === "ancestor") {
       return (
         <ThreadCard
           thread={{
@@ -262,7 +304,7 @@ export default function ThreadDetailScreen() {
       );
     }
 
-    if (item.type === 'main') {
+    if (item.type === "main") {
       return (
         <View>
           <ThreadCard
@@ -289,19 +331,21 @@ export default function ThreadDetailScreen() {
       );
     }
 
-    if (item.type === 'reply-header') {
+    if (item.type === "reply-header") {
       if (detail.replies.length === 0) {
         return (
           <View className="items-center justify-center py-12">
             <Text className="text-[15px] text-brand-muted">No replies yet</Text>
-            <Text className="mt-1 text-[13px] text-[#444444]">Be the first to reply</Text>
+            <Text className="mt-1 text-[13px] text-[#444444]">
+              Be the first to reply
+            </Text>
           </View>
         );
       }
       return null;
     }
 
-    if (item.type === 'reply') {
+    if (item.type === "reply") {
       return (
         <ThreadCard
           thread={{
@@ -314,7 +358,9 @@ export default function ThreadDetailScreen() {
           onRepost={handleRepost}
           onShare={handleShare}
           onMorePress={handleMore}
-          showDivider={index < listData.length - 1 && listData[index + 1]?.type === 'reply'}
+          showDivider={
+            index < listData.length - 1 && listData[index + 1]?.type === "reply"
+          }
         />
       );
     }
@@ -324,22 +370,26 @@ export default function ThreadDetailScreen() {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
       className="flex-1 bg-brand-dark"
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 0}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 88 : 0}
     >
-      <Box className={`flex-1 ${Platform.OS === 'web' ? 'w-full max-w-[680px] self-center' : ''}`}>
+      <Box
+        className={`flex-1 ${Platform.OS === "web" ? "w-full max-w-[680px] self-center" : ""}`}
+      >
         {/* Custom Header with Back Button */}
-        <SafeAreaView edges={['top']}>
+        <SafeAreaView edges={["top"]}>
           <HStack className="items-center px-4 py-2" space="md">
-            <Pressable 
-              onPress={() => router.back()} 
-              hitSlop={12} 
+            <Pressable
+              onPress={() => router.back()}
+              hitSlop={12}
               className="rounded-full p-1 active:bg-white/10"
             >
               <ArrowLeftIcon size={24} color="#f5f5f5" />
             </Pressable>
-            <Text className="text-[18px] font-bold text-brand-light">Thread</Text>
+            <Text className="text-[18px] font-bold text-brand-light">
+              Thread
+            </Text>
           </HStack>
         </SafeAreaView>
 
@@ -348,8 +398,8 @@ export default function ThreadDetailScreen() {
           data={listData}
           renderItem={renderItem}
           keyExtractor={(item, index) => {
-            if (item.type === 'reply-header') return 'reply-header';
-            if ('thread' in item) return `${item.type}-${item.thread.id}`;
+            if (item.type === "reply-header") return "reply-header";
+            if ("thread" in item) return `${item.type}-${item.thread.id}`;
             return `item-${index}`;
           }}
           showsVerticalScrollIndicator={false}
@@ -357,9 +407,12 @@ export default function ThreadDetailScreen() {
         />
 
         <Divider className="bg-brand-border" />
-        <HStack className="items-center bg-brand-dark px-4 py-2 pb-3" space="md">
+        <HStack
+          className="items-center bg-brand-dark px-4 py-2 pb-3"
+          space="md"
+        >
           <Avatar size="xs">
-            <AvatarImage source={{ uri: currentUser?.avatar_url ?? '' }} />
+            <AvatarImage source={{ uri: currentUser?.avatar_url ?? "" }} />
           </Avatar>
           <TextInput
             ref={inputRef}
@@ -369,8 +422,8 @@ export default function ThreadDetailScreen() {
             placeholderTextColor="brand-muted"
             className="h-[36px] flex-1 text-[15px] text-brand-light"
             style={{
-              ...(Platform.OS === 'web' ? { outlineStyle: 'none' as any } : {}),
-              overflow: 'hidden',
+              ...(Platform.OS === "web" ? { outlineStyle: "none" as any } : {}),
+              overflow: "hidden",
             }}
             returnKeyType="send"
             onSubmitEditing={handleSubmitReply}
@@ -379,12 +432,12 @@ export default function ThreadDetailScreen() {
           <Pressable
             onPress={handleSubmitReply}
             disabled={!replyText.trim()}
-            className={`rounded-full p-2 ${replyText.trim() ? 'active:bg-white/10' : 'opacity-40'}`}
+            className={`rounded-full p-2 ${replyText.trim() ? "active:bg-white/10" : "opacity-40"}`}
             hitSlop={8}
           >
             <SendIcon
               size={20}
-              color={replyText.trim() ? '#0095f6' : '#555555'}
+              color={replyText.trim() ? "#0095f6" : "#555555"}
             />
           </Pressable>
         </HStack>
@@ -392,7 +445,7 @@ export default function ThreadDetailScreen() {
       <ShareSheet
         isOpen={shareThreadId !== null}
         onClose={() => setShareThreadId(null)}
-        threadId={shareThreadId ?? ''}
+        threadId={shareThreadId ?? ""}
       />
       <ThreadOverflowMenu
         isOpen={overflowThread !== null}

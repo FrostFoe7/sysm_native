@@ -1,6 +1,11 @@
 // app/profile/edit.tsx
 
-import React, { useState, useCallback, useLayoutEffect, useEffect } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useLayoutEffect,
+  useEffect,
+} from "react";
 import {
   ScrollView,
   TextInput,
@@ -9,24 +14,24 @@ import {
   Platform,
   Alert,
   View,
-} from 'react-native';
-import { useRouter, useNavigation } from 'expo-router';
-import { ScreenLayout } from '@/components/ScreenLayout';
-import { Avatar, AvatarImage } from '@/components/ui/avatar';
-import { Text } from '@/components/ui/text';
-import { VStack } from '@/components/ui/vstack';
-import { HStack } from '@/components/ui/hstack';
-import { Divider } from '@/components/ui/divider';
-import { Box } from '@/components/ui/box';
-import { UserService } from '@/services/user.service';
-import { CameraIcon, CloseIcon, ArrowLeftIcon } from '@/constants/icons';
-import { 
-  MAX_BIO_LENGTH, 
-  MAX_NAME_LENGTH, 
-  MAX_USERNAME_LENGTH, 
-  AVATAR_OPTIONS 
-} from '@/constants/app';
-import { SafeAreaView } from '@/components/ui/safe-area-view';
+} from "react-native";
+import { useRouter, useNavigation } from "expo-router";
+import { ScreenLayout } from "@/components/ScreenLayout";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Text } from "@/components/ui/text";
+import { VStack } from "@/components/ui/vstack";
+import { HStack } from "@/components/ui/hstack";
+import { Divider } from "@/components/ui/divider";
+import { Box } from "@/components/ui/box";
+import { UserService } from "@/services/user.service";
+import { CameraIcon, CloseIcon, ArrowLeftIcon } from "@/constants/icons";
+import {
+  MAX_BIO_LENGTH,
+  MAX_NAME_LENGTH,
+  MAX_USERNAME_LENGTH,
+  AVATAR_OPTIONS,
+} from "@/constants/app";
+import { SafeAreaView } from "@/components/ui/safe-area-view";
 
 function EditField({
   label,
@@ -60,13 +65,13 @@ function EditField({
         multiline={multiline}
         numberOfLines={multiline ? 4 : 1}
         style={{
-          color: 'brand-light',
+          color: "brand-light",
           fontSize: 16,
           paddingVertical: 8,
           paddingHorizontal: 0,
           minHeight: multiline ? 80 : undefined,
-          textAlignVertical: multiline ? 'top' : 'center',
-          ...(Platform.OS === 'web' ? { outlineStyle: 'none' as any } : {}),
+          textAlignVertical: multiline ? "top" : "center",
+          ...(Platform.OS === "web" ? { outlineStyle: "none" as any } : {}),
         }}
       />
       <Divider className="mt-1 bg-brand-border-secondary" />
@@ -79,21 +84,23 @@ export default function EditProfileScreen() {
   const navigation = useNavigation();
   const [currentUser, setCurrentUser] = useState<any>(null);
 
-  const [displayName, setDisplayName] = useState('');
-  const [username, setUsername] = useState('');
-  const [bio, setBio] = useState('');
-  const [avatarUrl, setAvatarUrl] = useState('');
+  const [displayName, setDisplayName] = useState("");
+  const [username, setUsername] = useState("");
+  const [bio, setBio] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    UserService.getCurrentUser().then((user) => {
-      setCurrentUser(user);
-      setDisplayName(user.display_name);
-      setUsername(user.username);
-      setBio(user.bio);
-      setAvatarUrl(user.avatar_url);
-    }).catch(console.error);
+    UserService.getCurrentUser()
+      .then((user) => {
+        setCurrentUser(user);
+        setDisplayName(user.display_name);
+        setUsername(user.username);
+        setBio(user.bio);
+        setAvatarUrl(user.avatar_url);
+      })
+      .catch(console.error);
   }, []);
 
   useLayoutEffect(() => {
@@ -101,12 +108,11 @@ export default function EditProfileScreen() {
   }, [navigation]);
 
   const hasChanges =
-    currentUser && (
-      displayName !== currentUser.display_name ||
+    currentUser &&
+    (displayName !== currentUser.display_name ||
       username !== currentUser.username ||
       bio !== currentUser.bio ||
-      avatarUrl !== currentUser.avatar_url
-    );
+      avatarUrl !== currentUser.avatar_url);
 
   const isValid =
     displayName.trim().length > 0 &&
@@ -131,13 +137,17 @@ export default function EditProfileScreen() {
 
   const handleCancel = useCallback(() => {
     if (hasChanges) {
-      if (Platform.OS === 'web') {
-        const confirmed = window.confirm('Discard changes?');
+      if (Platform.OS === "web") {
+        const confirmed = window.confirm("Discard changes?");
         if (confirmed) router.back();
       } else {
-        Alert.alert('Discard changes?', 'Your edits will not be saved.', [
-          { text: 'Keep Editing', style: 'cancel' },
-          { text: 'Discard', style: 'destructive', onPress: () => router.back() },
+        Alert.alert("Discard changes?", "Your edits will not be saved.", [
+          { text: "Keep Editing", style: "cancel" },
+          {
+            text: "Discard",
+            style: "destructive",
+            onPress: () => router.back(),
+          },
         ]);
       }
     } else {
@@ -157,19 +167,21 @@ export default function EditProfileScreen() {
 
   return (
     <ScreenLayout edges={[]}>
-      <SafeAreaView edges={['top']}>
+      <SafeAreaView edges={["top"]}>
         <HStack className="items-center justify-between px-4 py-2" space="md">
           <HStack className="items-center" space="md">
-            <Pressable 
-              onPress={handleCancel} 
-              hitSlop={12} 
+            <Pressable
+              onPress={handleCancel}
+              hitSlop={12}
               className="rounded-full p-1 active:bg-white/10"
             >
               <ArrowLeftIcon size={24} color="#f5f5f5" />
             </Pressable>
-            <Text className="text-[18px] font-bold text-brand-light">Edit Profile</Text>
+            <Text className="text-[18px] font-bold text-brand-light">
+              Edit Profile
+            </Text>
           </HStack>
-          
+
           <Pressable
             onPress={handleSave}
             hitSlop={12}
@@ -178,7 +190,7 @@ export default function EditProfileScreen() {
           >
             <Text
               className={`text-[16px] font-semibold ${
-                hasChanges && isValid ? 'text-brand-blue' : 'text-[#333333]'
+                hasChanges && isValid ? "text-brand-blue" : "text-[#333333]"
               }`}
             >
               Done
@@ -188,7 +200,7 @@ export default function EditProfileScreen() {
       </SafeAreaView>
 
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
         className="flex-1"
       >
         <ScrollView
@@ -218,7 +230,9 @@ export default function EditProfileScreen() {
           {showAvatarPicker && (
             <VStack className="mb-4 px-4">
               <HStack className="mb-3 items-center justify-between">
-                <Text className="text-[13px] text-brand-muted-alt">Choose avatar</Text>
+                <Text className="text-[13px] text-brand-muted-alt">
+                  Choose avatar
+                </Text>
                 <Pressable
                   onPress={() => setShowAvatarPicker(false)}
                   hitSlop={8}
@@ -235,7 +249,7 @@ export default function EditProfileScreen() {
                       setShowAvatarPicker(false);
                     }}
                     className={`rounded-full ${
-                      avatarUrl === url ? 'border-2 border-brand-blue' : ''
+                      avatarUrl === url ? "border-2 border-brand-blue" : ""
                     }`}
                   >
                     <Avatar size="md">
@@ -260,7 +274,7 @@ export default function EditProfileScreen() {
           <EditField
             label="Username"
             value={username}
-            onChangeText={(t) => setUsername(t.replace(/[^a-zA-Z0-9._]/g, ''))}
+            onChangeText={(t) => setUsername(t.replace(/[^a-zA-Z0-9._]/g, ""))}
             maxLength={MAX_USERNAME_LENGTH}
             placeholder="username"
           />
@@ -277,7 +291,8 @@ export default function EditProfileScreen() {
           {/* Username validation */}
           {username.length > 0 && !isValid && (
             <Text className="mt-1 px-4 text-[13px] text-brand-red">
-              Username can only contain letters, numbers, periods, and underscores.
+              Username can only contain letters, numbers, periods, and
+              underscores.
             </Text>
           )}
         </ScrollView>

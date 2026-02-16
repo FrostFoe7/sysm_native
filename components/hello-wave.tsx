@@ -1,5 +1,5 @@
-import { Text } from 'react-native';
-import { isWeb, SafeAnimatedText } from '@/utils/animatedWebSafe';
+import { Text } from "react-native";
+import { isWeb, SafeAnimatedText } from "@/utils/animatedWebSafe";
 
 export function HelloWave() {
   if (isWeb) {
@@ -9,7 +9,8 @@ export function HelloWave() {
           fontSize: 28,
           lineHeight: 32,
           marginTop: -6,
-        }}>
+        }}
+      >
         👋
       </Text>
     );
@@ -22,7 +23,8 @@ export function HelloWave() {
         fontSize: 28,
         lineHeight: 32,
         marginTop: -6,
-      }}>
+      }}
+    >
       👋
     </SafeAnimatedText>
   );

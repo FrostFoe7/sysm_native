@@ -3,10 +3,10 @@
 // Uses expo-av for recording + playback, Supabase Storage for persistence.
 // Singleton playback — only one audio plays at a time.
 
-import { Audio, InterruptionModeIOS, InterruptionModeAndroid } from 'expo-av';
-import * as Haptics from 'expo-haptics';
-import { Platform } from 'react-native';
-import { supabase, getCachedUserId } from './supabase';
+import { Audio, InterruptionModeIOS, InterruptionModeAndroid } from "expo-av";
+import * as Haptics from "expo-haptics";
+import { Platform } from "react-native";
+import { supabase, getCachedUserId } from "./supabase";
 
 // ─── Types ──────────────────────────────────────────────────────────────────────
 
@@ -21,7 +21,7 @@ export interface VoiceUploadResult {
   durationMs: number;
 }
 
-export type PlaybackStatus = 'idle' | 'loading' | 'playing' | 'paused';
+export type PlaybackStatus = "idle" | "loading" | "playing" | "paused";
 
 export interface PlaybackState {
   messageId: string | null;
@@ -63,43 +63,41 @@ async function startRecording(): Promise<boolean> {
     await stopPlayback();
 
     // Start recording
-    const { recording } = await Audio.Recording.createAsync(
-      {
-        isMeteringEnabled: true,
-        android: {
-          extension: '.m4a',
-          outputFormat: Audio.AndroidOutputFormat.MPEG_4,
-          audioEncoder: Audio.AndroidAudioEncoder.AAC,
-          sampleRate: 44100,
-          numberOfChannels: 1,
-          bitRate: 128000,
-        },
-        ios: {
-          extension: '.m4a',
-          outputFormat: Audio.IOSOutputFormat.MPEG4AAC,
-          audioQuality: Audio.IOSAudioQuality.HIGH,
-          sampleRate: 44100,
-          numberOfChannels: 1,
-          bitRate: 128000,
-        },
-        web: {
-          mimeType: 'audio/webm',
-          bitsPerSecond: 128000,
-        },
+    const { recording } = await Audio.Recording.createAsync({
+      isMeteringEnabled: true,
+      android: {
+        extension: ".m4a",
+        outputFormat: Audio.AndroidOutputFormat.MPEG_4,
+        audioEncoder: Audio.AndroidAudioEncoder.AAC,
+        sampleRate: 44100,
+        numberOfChannels: 1,
+        bitRate: 128000,
       },
-    );
+      ios: {
+        extension: ".m4a",
+        outputFormat: Audio.IOSOutputFormat.MPEG4AAC,
+        audioQuality: Audio.IOSAudioQuality.HIGH,
+        sampleRate: 44100,
+        numberOfChannels: 1,
+        bitRate: 128000,
+      },
+      web: {
+        mimeType: "audio/webm",
+        bitsPerSecond: 128000,
+      },
+    });
 
     _recording = recording;
     _recordingStartTime = Date.now();
 
     // Haptic feedback
-    if (Platform.OS !== 'web') {
+    if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     }
 
     return true;
   } catch (error) {
-    console.error('Failed to start recording:', error);
+    console.error("Failed to start recording:", error);
     return false;
   }
 }
@@ -126,14 +124,15 @@ async function stopRecording(): Promise<VoiceRecordingResult | null> {
 
     const uri = _recording.getURI();
     const status = await _recording.getStatusAsync();
-    const durationMs = status.durationMillis ?? (Date.now() - _recordingStartTime);
+    const durationMs =
+      status.durationMillis ?? Date.now() - _recordingStartTime;
 
     _recording = null;
 
     if (!uri) return null;
 
     // Haptic feedback
-    if (Platform.OS !== 'web') {
+    if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
 
@@ -143,7 +142,7 @@ async function stopRecording(): Promise<VoiceRecordingResult | null> {
       fileSize: 0, // Will be determined during upload
     };
   } catch (error) {
-    console.error('Failed to stop recording:', error);
+    console.error("Failed to stop recording:", error);
     _recording = null;
     return null;
   }
@@ -208,8 +207,8 @@ async function uploadVoiceNote(
 ): Promise<VoiceUploadResult> {
   const userId = await getCachedUserId();
   const timestamp = Date.now();
-  const extension = Platform.OS === 'web' ? 'webm' : 'm4a';
-  const mimeType = Platform.OS === 'web' ? 'audio/webm' : 'audio/mp4';
+  const extension = Platform.OS === "web" ? "webm" : "m4a";
+  const mimeType = Platform.OS === "web" ? "audio/webm" : "audio/mp4";
   const filePath = `${conversationId}/${userId}/${timestamp}.${extension}`;
 
   // Read file as blob
@@ -217,10 +216,10 @@ async function uploadVoiceNote(
   const blob = await response.blob();
 
   const { data, error } = await supabase.storage
-    .from('chat-audio')
+    .from("chat-audio")
     .upload(filePath, blob, {
       contentType: mimeType,
-      cacheControl: '31536000', // 1 year cache
+      cacheControl: "31536000", // 1 year cache
       upsert: false,
     });
 
@@ -228,10 +227,10 @@ async function uploadVoiceNote(
 
   // Get signed URL (private bucket)
   const { data: urlData } = await supabase.storage
-    .from('chat-audio')
+    .from("chat-audio")
     .createSignedUrl(data.path, 60 * 60 * 24 * 365); // 1 year
 
-  if (!urlData?.signedUrl) throw new Error('Failed to get signed URL');
+  if (!urlData?.signedUrl) throw new Error("Failed to get signed URL");
 
   return {
     audioUrl: urlData.signedUrl,
@@ -246,7 +245,7 @@ let _currentPlayingMessageId: string | null = null;
 let _playbackListeners: PlaybackListener[] = [];
 let _playbackState: PlaybackState = {
   messageId: null,
-  status: 'idle',
+  status: "idle",
   positionMs: 0,
   durationMs: 0,
 };
@@ -283,11 +282,11 @@ async function playAudio(messageId: string, audioUrl: string): Promise<void> {
     if (status.isLoaded) {
       if (status.isPlaying) {
         await _sound.pauseAsync();
-        emitPlaybackState({ status: 'paused' });
+        emitPlaybackState({ status: "paused" });
         return;
       } else {
         await _sound.playAsync();
-        emitPlaybackState({ status: 'playing' });
+        emitPlaybackState({ status: "playing" });
         return;
       }
     }
@@ -298,7 +297,7 @@ async function playAudio(messageId: string, audioUrl: string): Promise<void> {
 
   emitPlaybackState({
     messageId,
-    status: 'loading',
+    status: "loading",
     positionMs: 0,
     durationMs: 0,
   });
@@ -322,18 +321,28 @@ async function playAudio(messageId: string, audioUrl: string): Promise<void> {
     _sound = sound;
     _currentPlayingMessageId = messageId;
 
-    emitPlaybackState({ status: 'playing' });
+    emitPlaybackState({ status: "playing" });
   } catch (error) {
-    console.error('Failed to play audio:', error);
-    emitPlaybackState({ messageId: null, status: 'idle', positionMs: 0, durationMs: 0 });
+    console.error("Failed to play audio:", error);
+    emitPlaybackState({
+      messageId: null,
+      status: "idle",
+      positionMs: 0,
+      durationMs: 0,
+    });
   }
 }
 
 function onPlaybackStatusUpdate(status: any) {
   if (!status.isLoaded) {
     if (status.error) {
-      console.error('Playback error:', status.error);
-      emitPlaybackState({ messageId: null, status: 'idle', positionMs: 0, durationMs: 0 });
+      console.error("Playback error:", status.error);
+      emitPlaybackState({
+        messageId: null,
+        status: "idle",
+        positionMs: 0,
+        durationMs: 0,
+      });
     }
     return;
   }
@@ -341,13 +350,22 @@ function onPlaybackStatusUpdate(status: any) {
   emitPlaybackState({
     positionMs: status.positionMillis ?? 0,
     durationMs: status.durationMillis ?? 0,
-    status: status.isPlaying ? 'playing' : status.didJustFinish ? 'idle' : 'paused',
+    status: status.isPlaying
+      ? "playing"
+      : status.didJustFinish
+        ? "idle"
+        : "paused",
   });
 
   // Auto-cleanup when finished
   if (status.didJustFinish) {
     _currentPlayingMessageId = null;
-    emitPlaybackState({ messageId: null, status: 'idle', positionMs: 0, durationMs: 0 });
+    emitPlaybackState({
+      messageId: null,
+      status: "idle",
+      positionMs: 0,
+      durationMs: 0,
+    });
     _sound?.unloadAsync().catch(() => {});
     _sound = null;
   }
@@ -380,7 +398,12 @@ async function stopPlayback(): Promise<void> {
     _sound = null;
   }
   _currentPlayingMessageId = null;
-  emitPlaybackState({ messageId: null, status: 'idle', positionMs: 0, durationMs: 0 });
+  emitPlaybackState({
+    messageId: null,
+    status: "idle",
+    positionMs: 0,
+    durationMs: 0,
+  });
 }
 
 /**
@@ -389,7 +412,7 @@ async function stopPlayback(): Promise<void> {
 async function prefetchAudio(audioUrl: string): Promise<void> {
   try {
     // Use fetch to warm the cache
-    await fetch(audioUrl, { method: 'HEAD' });
+    await fetch(audioUrl, { method: "HEAD" });
   } catch {
     // Non-critical
   }
@@ -402,7 +425,7 @@ function formatDuration(ms: number): string {
   const totalSeconds = Math.floor(ms / 1000);
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
-  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 }
 
 export const VoiceService = {

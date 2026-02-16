@@ -1,13 +1,13 @@
 // components/MediaGallery.tsx
 
-import React, { useCallback, useState, memo } from 'react';
-import { View, Pressable } from 'react-native';
-import { SafeView } from '@/utils/animatedWebSafe';
-import { Image } from 'expo-image';
-import { Skeleton } from '@/components/ui/skeleton';
-import { VideoPlayer } from '@/components/VideoPlayer';
-import type { MediaItem } from '@/types/types';
-import { BORDER_RADIUS, GAP } from '@/constants/ui';
+import React, { useCallback, useState, memo } from "react";
+import { View, Pressable } from "react-native";
+import { SafeView } from "@/utils/animatedWebSafe";
+import { Image } from "expo-image";
+import { Skeleton } from "@/components/ui/skeleton";
+import { VideoPlayer } from "@/components/VideoPlayer";
+import type { MediaItem } from "@/types/types";
+import { BORDER_RADIUS, GAP } from "@/constants/ui";
 
 interface MediaGalleryProps {
   media: MediaItem[];
@@ -38,26 +38,46 @@ function SingleMedia({
 }) {
   const [loaded, setLoaded] = useState(false);
 
-  if (item.type === 'video') {
+  if (item.type === "video") {
     return (
-      <Pressable onPress={onPress} style={{ width: '100%', height: maxHeight, borderRadius: BORDER_RADIUS, overflow: 'hidden' }}>
+      <Pressable
+        onPress={onPress}
+        style={{
+          width: "100%",
+          height: maxHeight,
+          borderRadius: BORDER_RADIUS,
+          overflow: "hidden",
+        }}
+      >
         <VideoPlayer
           uri={item.uri}
           thumbnailUri={item.thumbnailUri}
           autoPlay
           muted
-          style={{ width: '100%', height: '100%' }}
+          style={{ width: "100%", height: "100%" }}
         />
       </Pressable>
     );
   }
 
   return (
-    <Pressable onPress={onPress} style={{ width: '100%', height: maxHeight, borderRadius: BORDER_RADIUS, overflow: 'hidden' }}>
-      {!loaded && <MediaSkeleton style={{ position: 'absolute', width: '100%', height: '100%' }} />}
+    <Pressable
+      onPress={onPress}
+      style={{
+        width: "100%",
+        height: maxHeight,
+        borderRadius: BORDER_RADIUS,
+        overflow: "hidden",
+      }}
+    >
+      {!loaded && (
+        <MediaSkeleton
+          style={{ position: "absolute", width: "100%", height: "100%" }}
+        />
+      )}
       <Image
         source={{ uri: item.uri }}
-        style={{ width: '100%', height: '100%', borderRadius: BORDER_RADIUS }}
+        style={{ width: "100%", height: "100%", borderRadius: BORDER_RADIUS }}
         contentFit="cover"
         transition={200}
         onLoad={() => setLoaded(true)}
@@ -79,25 +99,41 @@ function DuoMedia({
   const [loaded, setLoaded] = useState<Record<number, boolean>>({});
 
   return (
-    <SafeView style={{ flexDirection: 'row', height: maxHeight, gap: GAP, borderRadius: BORDER_RADIUS, overflow: 'hidden' }}>
+    <SafeView
+      style={{
+        flexDirection: "row",
+        height: maxHeight,
+        gap: GAP,
+        borderRadius: BORDER_RADIUS,
+        overflow: "hidden",
+      }}
+    >
       {media.slice(0, 2).map((item, i) => (
-        <View key={i} style={{ flex: 1, overflow: 'hidden' }}>
-          {item.type === 'video' ? (
+        <View key={i} style={{ flex: 1, overflow: "hidden" }}>
+          {item.type === "video" ? (
             <Pressable onPress={() => onPress?.(i)} style={{ flex: 1 }}>
               <VideoPlayer
                 uri={item.uri}
                 thumbnailUri={item.thumbnailUri}
                 autoPlay={i === 0}
                 muted
-                style={{ width: '100%', height: '100%' }}
+                style={{ width: "100%", height: "100%" }}
               />
             </Pressable>
           ) : (
             <Pressable onPress={() => onPress?.(i)} style={{ flex: 1 }}>
-              {!loaded[i] && <MediaSkeleton style={{ position: 'absolute', width: '100%', height: '100%' }} />}
+              {!loaded[i] && (
+                <MediaSkeleton
+                  style={{
+                    position: "absolute",
+                    width: "100%",
+                    height: "100%",
+                  }}
+                />
+              )}
               <Image
                 source={{ uri: item.uri }}
-                style={{ width: '100%', height: '100%' }}
+                style={{ width: "100%", height: "100%" }}
                 contentFit="cover"
                 transition={200}
                 onLoad={() => setLoaded((p) => ({ ...p, [i]: true }))}
@@ -123,7 +159,7 @@ function TriMedia({
   const [loaded, setLoaded] = useState<Record<number, boolean>>({});
 
   const renderItem = (item: MediaItem, idx: number, style: any) => {
-    if (item.type === 'video') {
+    if (item.type === "video") {
       return (
         <Pressable key={idx} onPress={() => onPress?.(idx)} style={style}>
           <VideoPlayer
@@ -131,17 +167,21 @@ function TriMedia({
             thumbnailUri={item.thumbnailUri}
             autoPlay={idx === 0}
             muted
-            style={{ width: '100%', height: '100%' }}
+            style={{ width: "100%", height: "100%" }}
           />
         </Pressable>
       );
     }
     return (
       <Pressable key={idx} onPress={() => onPress?.(idx)} style={style}>
-        {!loaded[idx] && <MediaSkeleton style={{ position: 'absolute', width: '100%', height: '100%' }} />}
+        {!loaded[idx] && (
+          <MediaSkeleton
+            style={{ position: "absolute", width: "100%", height: "100%" }}
+          />
+        )}
         <Image
           source={{ uri: item.uri }}
-          style={{ width: '100%', height: '100%' }}
+          style={{ width: "100%", height: "100%" }}
           contentFit="cover"
           transition={200}
           onLoad={() => setLoaded((p) => ({ ...p, [idx]: true }))}
@@ -151,8 +191,15 @@ function TriMedia({
   };
 
   return (
-    <SafeView style={{ height: maxHeight, gap: GAP, borderRadius: BORDER_RADIUS, overflow: 'hidden' }}>
-      <View style={{ flex: 1, flexDirection: 'row', gap: GAP }}>
+    <SafeView
+      style={{
+        height: maxHeight,
+        gap: GAP,
+        borderRadius: BORDER_RADIUS,
+        overflow: "hidden",
+      }}
+    >
+      <View style={{ flex: 1, flexDirection: "row", gap: GAP }}>
         {renderItem(media[0], 0, { flex: 2 })}
         {renderItem(media[1], 1, { flex: 1 })}
       </View>
@@ -174,7 +221,7 @@ function QuadMedia({
   const [loaded, setLoaded] = useState<Record<number, boolean>>({});
 
   const renderItem = (item: MediaItem, idx: number) => {
-    if (item.type === 'video') {
+    if (item.type === "video") {
       return (
         <Pressable key={idx} onPress={() => onPress?.(idx)} style={{ flex: 1 }}>
           <VideoPlayer
@@ -182,17 +229,21 @@ function QuadMedia({
             thumbnailUri={item.thumbnailUri}
             autoPlay={idx === 0}
             muted
-            style={{ width: '100%', height: '100%' }}
+            style={{ width: "100%", height: "100%" }}
           />
         </Pressable>
       );
     }
     return (
       <Pressable key={idx} onPress={() => onPress?.(idx)} style={{ flex: 1 }}>
-        {!loaded[idx] && <MediaSkeleton style={{ position: 'absolute', width: '100%', height: '100%' }} />}
+        {!loaded[idx] && (
+          <MediaSkeleton
+            style={{ position: "absolute", width: "100%", height: "100%" }}
+          />
+        )}
         <Image
           source={{ uri: item.uri }}
-          style={{ width: '100%', height: '100%' }}
+          style={{ width: "100%", height: "100%" }}
           contentFit="cover"
           transition={200}
           onLoad={() => setLoaded((p) => ({ ...p, [idx]: true }))}
@@ -202,12 +253,19 @@ function QuadMedia({
   };
 
   return (
-    <SafeView style={{ height: maxHeight, gap: GAP, borderRadius: BORDER_RADIUS, overflow: 'hidden' }}>
-      <View style={{ flex: 1, flexDirection: 'row', gap: GAP }}>
+    <SafeView
+      style={{
+        height: maxHeight,
+        gap: GAP,
+        borderRadius: BORDER_RADIUS,
+        overflow: "hidden",
+      }}
+    >
+      <View style={{ flex: 1, flexDirection: "row", gap: GAP }}>
         {renderItem(media[0], 0)}
         {renderItem(media[1], 1)}
       </View>
-      <View style={{ flex: 1, flexDirection: 'row', gap: GAP }}>
+      <View style={{ flex: 1, flexDirection: "row", gap: GAP }}>
         {renderItem(media[2], 2)}
         {renderItem(media[3], 3)}
       </View>

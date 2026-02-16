@@ -1,17 +1,17 @@
 // components/AnimatedListItem.tsx
 // Fade-in + slide-up entrance animation for list items
 
-import React, { useEffect } from 'react';
-import { View } from 'react-native';
-import { 
-  useAnimatedStyle, 
-  SafeAnimatedView, 
+import React, { useEffect } from "react";
+import { View } from "react-native";
+import {
+  useAnimatedStyle,
+  SafeAnimatedView,
   isWeb,
   useSharedValue,
   withTiming,
   withDelay,
-  Easing
-} from '@/utils/animatedWebSafe';
+  Easing,
+} from "@/utils/animatedWebSafe";
 
 interface AnimatedListItemProps {
   index: number;

@@ -1,25 +1,31 @@
 // app/conversation/[id].tsx
 
-import React, { useState, useCallback, useRef } from 'react';
-import { FlatList, View, Pressable, Platform, KeyboardAvoidingView } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { SafeAreaView } from '@/components/ui/safe-area-view';
-import { Text } from '@/components/ui/text';
-import { HStack } from '@/components/ui/hstack';
-import { VStack } from '@/components/ui/vstack';
-import { Avatar, AvatarImage } from '@/components/ui/avatar';
-import { MessageBubble, DateSeparator } from '@/components/MessageBubble';
-import { ChatComposer } from '@/components/ChatComposer';
-import { ChatSkeleton } from '@/components/skeletons';
+import React, { useState, useCallback, useRef } from "react";
+import {
+  FlatList,
+  View,
+  Pressable,
+  Platform,
+  KeyboardAvoidingView,
+} from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { SafeAreaView } from "@/components/ui/safe-area-view";
+import { Text } from "@/components/ui/text";
+import { HStack } from "@/components/ui/hstack";
+import { VStack } from "@/components/ui/vstack";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { MessageBubble, DateSeparator } from "@/components/MessageBubble";
+import { ChatComposer } from "@/components/ChatComposer";
+import { ChatSkeleton } from "@/components/skeletons";
 import {
   ArrowLeftIcon,
   PhoneIcon,
   VideoIcon,
   InfoIcon,
   VerifiedFillIcon,
-} from '@/constants/icons';
-import type { MessageWithSender, ChatItem } from '@/types/types';
-import { useChat } from '@/hooks/use-chat';
+} from "@/constants/icons";
+import type { MessageWithSender, ChatItem } from "@/types/types";
+import { useChat } from "@/hooks/use-chat";
 
 export default function ChatScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -39,17 +45,17 @@ export default function ChatScreen() {
     onTextChange,
     loadMore,
     hasMore,
-  } = useChat(id ?? '');
+  } = useChat(id ?? "");
 
-  const isGroup = conversationDetails?.conversation.type === 'group';
+  const isGroup = conversationDetails?.conversation.type === "group";
 
   // Display info
   const displayName = isGroup
-    ? conversationDetails?.conversation.name ?? 'Group'
-    : conversationDetails?.otherUsers[0]?.display_name ?? 'Chat';
+    ? (conversationDetails?.conversation.name ?? "Group")
+    : (conversationDetails?.otherUsers[0]?.display_name ?? "Chat");
   const displayAvatar = isGroup
-    ? conversationDetails?.conversation.avatar_url ?? ''
-    : conversationDetails?.otherUsers[0]?.avatar_url ?? '';
+    ? (conversationDetails?.conversation.avatar_url ?? "")
+    : (conversationDetails?.otherUsers[0]?.avatar_url ?? "");
   const isVerified = !isGroup && conversationDetails?.otherUsers[0]?.verified;
   const memberCount = conversationDetails?.participants.length ?? 0;
 
@@ -116,7 +122,7 @@ export default function ChatScreen() {
 
   const renderItem = useCallback(
     ({ item }: { item: ChatItem }) => {
-      if (item.type === 'date') {
+      if (item.type === "date") {
         return <DateSeparator date={item.date} />;
       }
       return (
@@ -132,7 +138,13 @@ export default function ChatScreen() {
         />
       );
     },
-    [isGroup, handleReply, handleReaction, handleProfilePress, handleThreadPress],
+    [
+      isGroup,
+      handleReply,
+      handleReaction,
+      handleProfilePress,
+      handleThreadPress,
+    ],
   );
 
   if (!conversationDetails) {
@@ -149,7 +161,7 @@ export default function ChatScreen() {
     <View className="flex-1 bg-brand-dark">
       {/* Header */}
       <View className="border-b border-brand-border bg-brand-dark">
-        <SafeAreaView edges={['top']}>
+        <SafeAreaView edges={["top"]}>
           <HStack className="items-center px-3 py-2" space="sm">
             <Pressable
               onPress={handleBack}
@@ -171,19 +183,22 @@ export default function ChatScreen() {
               </Avatar>
               <VStack className="ml-2.5 flex-1">
                 <HStack className="items-center" space="xs">
-                  <Text className="text-[16px] font-bold text-brand-light" numberOfLines={1}>
+                  <Text
+                    className="text-[16px] font-bold text-brand-light"
+                    numberOfLines={1}
+                  >
                     {displayName}
                   </Text>
-                  {isVerified && (
-                    <VerifiedFillIcon size={14} color="#0095f6" />
-                  )}
+                  {isVerified && <VerifiedFillIcon size={14} color="#0095f6" />}
                 </HStack>
                 {isGroup ? (
                   <Text className="text-[12px] text-brand-muted">
                     {memberCount} members
                   </Text>
                 ) : typingUsers.length > 0 ? (
-                  <Text className="text-[12px] italic text-brand-blue">typing...</Text>
+                  <Text className="text-[12px] italic text-brand-blue">
+                    typing...
+                  </Text>
                 ) : (
                   <Text className="text-[12px] text-brand-muted">Online</Text>
                 )}
@@ -224,10 +239,17 @@ export default function ChatScreen() {
           onContentSizeChange={() => {
             flatListRef.current?.scrollToEnd({ animated: false });
           }}
-          onStartReached={() => {
-            if (hasMore) loadMore();
+          onScroll={({ nativeEvent }) => {
+            // Load older messages when scrolled near the top
+            if (
+              nativeEvent.contentOffset.y < 200 &&
+              hasMore &&
+              !isLoading
+            ) {
+              loadMore();
+            }
           }}
-          onStartReachedThreshold={0.3}
+          scrollEventThrottle={400}
           inverted={false}
         />
       )}
@@ -237,8 +259,8 @@ export default function ChatScreen() {
         <View className="px-4 py-1">
           <Text className="text-[12px] italic text-brand-muted">
             {isGroup
-              ? `${typingUsers.map((u) => u.display_name.split(' ')[0]).join(', ')} typing...`
-              : 'typing...'}
+              ? `${typingUsers.map((u) => u.display_name.split(" ")[0]).join(", ")} typing...`
+              : "typing..."}
           </Text>
         </View>
       )}
@@ -254,10 +276,10 @@ export default function ChatScreen() {
     </View>
   );
 
-  if (Platform.OS === 'ios' || Platform.OS === 'android') {
+  if (Platform.OS === "ios" || Platform.OS === "android") {
     return (
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
         keyboardVerticalOffset={0}
       >

@@ -1,25 +1,39 @@
 // components/Composer.tsx
 
-import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { TextInput, Pressable, Platform, KeyboardAvoidingView, View, ScrollView } from 'react-native';
-import { useRouter } from 'expo-router';
-import { Image } from 'expo-image';
-import * as ImagePicker from 'expo-image-picker';
-import { Avatar, AvatarImage } from '@/components/ui/avatar';
-import { Text } from '@/components/ui/text';
-import { HStack } from '@/components/ui/hstack';
-import { VStack } from '@/components/ui/vstack';
-import { Box } from '@/components/ui/box';
-import { Divider } from '@/components/ui/divider';
-import { Button, ButtonText } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { UserService } from '@/services/user.service';
-import { MediaIcon, ReelsIcon, ChatIcon, CommunityIcon, CloseIcon, ArrowLeftIcon } from '@/constants/icons';
-import type { MediaItem, User } from '@/types/types';
+import React, { useState, useCallback, useRef, useEffect } from "react";
+import {
+  TextInput,
+  Pressable,
+  Platform,
+  KeyboardAvoidingView,
+  View,
+  ScrollView,
+} from "react-native";
+import { useRouter } from "expo-router";
+import { Image } from "expo-image";
+import * as ImagePicker from "expo-image-picker";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Text } from "@/components/ui/text";
+import { HStack } from "@/components/ui/hstack";
+import { VStack } from "@/components/ui/vstack";
+import { Box } from "@/components/ui/box";
+import { Divider } from "@/components/ui/divider";
+import { Button, ButtonText } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { UserService } from "@/services/user.service";
+import {
+  MediaIcon,
+  ReelsIcon,
+  ChatIcon,
+  CommunityIcon,
+  CloseIcon,
+  ArrowLeftIcon,
+} from "@/constants/icons";
+import type { MediaItem, User } from "@/types/types";
 
 interface ComposerMedia {
   uri: string;
-  type: 'image' | 'video';
+  type: "image" | "video";
   width?: number;
   height?: number;
   loading?: boolean;
@@ -38,7 +52,7 @@ export function Composer({
   replyToUsername,
   autoFocus = true,
 }: ComposerProps) {
-  const [content, setContent] = useState('');
+  const [content, setContent] = useState("");
   const [media, setMedia] = useState<ComposerMedia[]>([]);
   const inputRef = useRef<TextInput>(null);
   const router = useRouter();
@@ -65,15 +79,15 @@ export function Composer({
       height: m.height,
     }));
     onSubmit(trimmed, mediaItems.length > 0 ? mediaItems : undefined);
-    setContent('');
+    setContent("");
     setMedia([]);
   }, [content, media, onSubmit, anyLoading]);
 
   // Ctrl/Cmd + Enter to submit on web
   useEffect(() => {
-    if (Platform.OS !== 'web') return;
+    if (Platform.OS !== "web") return;
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
         e.preventDefault();
         const trimmed = content.trim();
         const hasContent = trimmed.length > 0 || media.length > 0;
@@ -85,28 +99,28 @@ export function Composer({
             height: m.height,
           }));
           onSubmit(trimmed, mediaItems.length > 0 ? mediaItems : undefined);
-          setContent('');
+          setContent("");
           setMedia([]);
         }
       }
     };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
   }, [content, media, onSubmit, anyLoading]);
 
   // Esc to cancel on web
   useEffect(() => {
-    if (Platform.OS !== 'web') return;
+    if (Platform.OS !== "web") return;
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         e.preventDefault();
         if (router.canGoBack()) {
           router.back();
         }
       }
     };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
   }, [router]);
 
   const pickImages = useCallback(async () => {
@@ -114,7 +128,7 @@ export function Composer({
     const slotsLeft = maxMedia - media.length;
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
+      mediaTypes: ["images"],
       allowsMultipleSelection: true,
       selectionLimit: slotsLeft,
       quality: 0.8,
@@ -123,7 +137,7 @@ export function Composer({
     if (!result.canceled && result.assets) {
       const newMedia: ComposerMedia[] = result.assets.map((asset) => ({
         uri: asset.uri,
-        type: 'image' as const,
+        type: "image" as const,
         width: asset.width,
         height: asset.height,
         loading: false,
@@ -136,7 +150,7 @@ export function Composer({
     if (media.length >= maxMedia) return;
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['videos'],
+      mediaTypes: ["videos"],
       allowsMultipleSelection: false,
       quality: 0.8,
     });
@@ -145,7 +159,7 @@ export function Composer({
       const asset = result.assets[0];
       const newItem: ComposerMedia = {
         uri: asset.uri,
-        type: 'video',
+        type: "video",
         width: asset.width,
         height: asset.height,
         loading: false,
@@ -158,13 +172,16 @@ export function Composer({
     setMedia((prev) => prev.filter((_, i) => i !== index));
   }, []);
 
-  const isValid = (content.trim().length > 0 || media.length > 0) && remaining >= 0 && !anyLoading;
+  const isValid =
+    (content.trim().length > 0 || media.length > 0) &&
+    remaining >= 0 &&
+    !anyLoading;
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
       className="flex-1"
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 0}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 88 : 0}
     >
       <VStack className="flex-1 bg-brand-elevated">
         {/* Composer body */}
@@ -174,22 +191,24 @@ export function Composer({
           showsVerticalScrollIndicator={false}
         >
           {/* Header with Back Button */}
-          <HStack className="px-4 py-3 items-center" space="md">
-            <Pressable 
-              onPress={() => router.back()} 
-              hitSlop={12} 
+          <HStack className="items-center px-4 py-3" space="md">
+            <Pressable
+              onPress={() => router.back()}
+              hitSlop={12}
               className="rounded-full p-1 active:bg-white/10"
             >
               <ArrowLeftIcon size={24} color="#f5f5f5" />
             </Pressable>
-            <Text className="text-[18px] font-bold text-brand-light">New thread</Text>
+            <Text className="text-[18px] font-bold text-brand-light">
+              New thread
+            </Text>
           </HStack>
 
           <HStack className="px-4 pt-4" space="md">
             {/* Avatar column */}
             <VStack className="items-center">
               <Avatar size="sm">
-                <AvatarImage source={{ uri: currentUser?.avatar_url ?? '' }} />
+                <AvatarImage source={{ uri: currentUser?.avatar_url ?? "" }} />
               </Avatar>
               <Box className="mt-2 min-h-[24px] w-[2px] flex-1 rounded-full bg-brand-border-secondary" />
             </VStack>
@@ -201,7 +220,7 @@ export function Composer({
               </Text>
               {replyToUsername && (
                 <Text className="text-[13px] text-brand-muted">
-                  Replying to{' '}
+                  Replying to{" "}
                   <Text className="text-[13px] text-brand-blue">
                     @{replyToUsername}
                   </Text>
@@ -222,11 +241,11 @@ export function Composer({
                 maxLength={maxLength}
                 className="min-h-[80px] py-1 text-[15px] leading-[21px] text-brand-light"
                 style={{
-                  textAlignVertical: 'top',
-                  ...(Platform.OS === 'web'
-                    ? { outlineStyle: 'none' as any }
+                  textAlignVertical: "top",
+                  ...(Platform.OS === "web"
+                    ? { outlineStyle: "none" as any }
                     : {}),
-                  overflow: 'hidden',
+                  overflow: "hidden",
                 }}
               />
 
@@ -245,49 +264,54 @@ export function Composer({
                           width: media.length === 1 ? 200 : 140,
                           height: media.length === 1 ? 200 : 140,
                           borderRadius: 12,
-                          overflow: 'hidden',
-                          backgroundColor: '#1e1e1e',
+                          overflow: "hidden",
+                          backgroundColor: "#1e1e1e",
                         }}
                       >
                         {item.loading ? (
-                          <Skeleton variant="rounded" className="size-full bg-brand-border" />
+                          <Skeleton
+                            variant="rounded"
+                            className="size-full bg-brand-border"
+                          />
                         ) : (
                           <Image
                             source={{ uri: item.uri }}
-                            style={{ width: '100%', height: '100%' }}
+                            style={{ width: "100%", height: "100%" }}
                             contentFit="cover"
                             transition={200}
                           />
                         )}
                         {/* Video badge */}
-                        {item.type === 'video' && !item.loading && (
+                        {item.type === "video" && !item.loading && (
                           <View
                             style={{
-                              position: 'absolute',
+                              position: "absolute",
                               bottom: 6,
                               left: 6,
                               paddingHorizontal: 5,
                               paddingVertical: 2,
                               borderRadius: 4,
-                              backgroundColor: 'rgba(0,0,0,0.6)',
+                              backgroundColor: "rgba(0,0,0,0.6)",
                             }}
                           >
-                            <Text className="text-2xs font-semibold text-white">VIDEO</Text>
+                            <Text className="text-2xs font-semibold text-white">
+                              VIDEO
+                            </Text>
                           </View>
                         )}
                         {/* Remove button */}
                         <Pressable
                           onPress={() => removeMedia(index)}
                           style={{
-                            position: 'absolute',
+                            position: "absolute",
                             top: 6,
                             right: 6,
                             width: 24,
                             height: 24,
                             borderRadius: 12,
-                            backgroundColor: 'rgba(0,0,0,0.7)',
-                            justifyContent: 'center',
-                            alignItems: 'center',
+                            backgroundColor: "rgba(0,0,0,0.7)",
+                            justifyContent: "center",
+                            alignItems: "center",
                           }}
                           hitSlop={4}
                         >
@@ -348,7 +372,7 @@ export function Composer({
             {content.length > 0 && (
               <Text
                 className={`text-[13px] ${
-                  remaining < 20 ? 'text-brand-red' : 'text-brand-muted'
+                  remaining < 20 ? "text-brand-red" : "text-brand-muted"
                 }`}
               >
                 {remaining}
@@ -359,14 +383,12 @@ export function Composer({
               onPress={handleSubmit}
               disabled={!isValid}
               className={`h-9 rounded-full px-5 ${
-                isValid
-                  ? 'bg-brand-light'
-                  : 'bg-brand-border'
+                isValid ? "bg-brand-light" : "bg-brand-border"
               }`}
             >
               <ButtonText
                 className={`text-[14px] font-semibold ${
-                  isValid ? 'text-brand-dark' : '#555555'
+                  isValid ? "text-brand-dark" : "#555555"
                 }`}
               >
                 Post

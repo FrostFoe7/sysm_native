@@ -1,24 +1,24 @@
 // app/(onboarding)/username.tsx
 // Step 1: Choose a unique username
 
-import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
-import { router } from 'expo-router';
-import { Text } from '@/components/ui/text';
-import { Heading } from '@/components/ui/heading';
-import { VStack } from '@/components/ui/vstack';
-import { Button, ButtonText, ButtonSpinner } from '@/components/ui/button';
-import { FloatingInput } from '@/components/FloatingInput';
-import { useAuthStore } from '@/store/useAuthStore';
-import { supabase } from '@/services/supabase';
-import { MAX_USERNAME_LENGTH } from '@/constants/app';
-import { VerifiedIcon, CloseIcon } from '@/constants/icons';
+import React, { useState, useCallback, useEffect, useRef } from "react";
+import { ScrollView, KeyboardAvoidingView, Platform } from "react-native";
+import { router } from "expo-router";
+import { Text } from "@/components/ui/text";
+import { Heading } from "@/components/ui/heading";
+import { VStack } from "@/components/ui/vstack";
+import { Button, ButtonText, ButtonSpinner } from "@/components/ui/button";
+import { FloatingInput } from "@/components/FloatingInput";
+import { useAuthStore } from "@/store/useAuthStore";
+import { supabase } from "@/services/supabase";
+import { MAX_USERNAME_LENGTH } from "@/constants/app";
+import { VerifiedIcon, CloseIcon } from "@/constants/icons";
 
 export default function UsernameStep() {
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState("");
   const [checking, setChecking] = useState(false);
   const [available, setAvailable] = useState<boolean | null>(null);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
 
   const userId = useAuthStore((s) => s.userId);
@@ -29,20 +29,22 @@ export default function UsernameStep() {
 
   // Validate username format
   const validateFormat = (value: string): string | null => {
-    if (value.length < 3) return 'At least 3 characters';
-    if (value.length > MAX_USERNAME_LENGTH) return `Max ${MAX_USERNAME_LENGTH} characters`;
-    if (!/^[a-zA-Z0-9._]+$/.test(value)) return 'Only letters, numbers, . and _';
-    if (/^[._]|[._]$/.test(value)) return 'Cannot start or end with . or _';
-    if (/[.]{2}|[_]{2}|[._][._]/.test(value)) return 'No consecutive . or _';
+    if (value.length < 3) return "At least 3 characters";
+    if (value.length > MAX_USERNAME_LENGTH)
+      return `Max ${MAX_USERNAME_LENGTH} characters`;
+    if (!/^[a-zA-Z0-9._]+$/.test(value))
+      return "Only letters, numbers, . and _";
+    if (/^[._]|[._]$/.test(value)) return "Cannot start or end with . or _";
+    if (/[.]{2}|[_]{2}|[._][._]/.test(value)) return "No consecutive . or _";
     return null;
   };
 
   // Live availability check with debounce
   const handleUsernameChange = useCallback((value: string) => {
-    const cleaned = value.toLowerCase().replace(/[^a-z0-9._]/g, '');
+    const cleaned = value.toLowerCase().replace(/[^a-z0-9._]/g, "");
     setUsername(cleaned);
     setAvailable(null);
-    setError('');
+    setError("");
 
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
@@ -55,20 +57,23 @@ export default function UsernameStep() {
     setChecking(true);
     debounceRef.current = setTimeout(async () => {
       try {
-        const { data, error: rpcError } = await supabase.rpc('check_username_available', {
-          p_username: cleaned,
-        });
+        const { data, error: rpcError } = await supabase.rpc(
+          "check_username_available",
+          {
+            p_username: cleaned,
+          },
+        );
 
         if (rpcError) {
-          setError('Could not check availability');
+          setError("Could not check availability");
           setChecking(false);
           return;
         }
 
         setAvailable(data as boolean);
-        if (!data) setError('Username is taken');
+        if (!data) setError("Username is taken");
       } catch {
-        setError('Could not check availability');
+        setError("Could not check availability");
       }
       setChecking(false);
     }, 400);
@@ -86,9 +91,9 @@ export default function UsernameStep() {
     setSaving(true);
 
     const { error: updateError } = await supabase
-      .from('users')
+      .from("users")
       .update({ username, onboarding_step: 1 })
-      .eq('id', userId);
+      .eq("id", userId);
 
     if (updateError) {
       setError(updateError.message);
@@ -98,7 +103,7 @@ export default function UsernameStep() {
 
     await updateOnboardingStep(1);
     await refreshProfile();
-    router.push('/(onboarding)/avatar');
+    router.push("/(onboarding)/avatar");
     setSaving(false);
   }, [available, userId, username, updateOnboardingStep, refreshProfile]);
 
@@ -110,16 +115,23 @@ export default function UsernameStep() {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
       className="flex-1"
     >
       <ScrollView
-        contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24, paddingVertical: 32 }}
+        contentContainerStyle={{
+          flexGrow: 1,
+          justifyContent: "center",
+          paddingHorizontal: 24,
+          paddingVertical: 32,
+        }}
         keyboardShouldPersistTaps="handled"
       >
         <VStack className="w-full" space="lg">
           <VStack space="xs">
-            <Heading size="xl" className="text-brand-light">Pick a username</Heading>
+            <Heading size="xl" className="text-brand-light">
+              Pick a username
+            </Heading>
             <Text className="text-[14px] leading-[20px] text-brand-muted">
               This is how people will find and mention you on sysm.
             </Text>
@@ -140,16 +152,23 @@ export default function UsernameStep() {
 
           {username.length > 0 && !error && (
             <Text className="text-[13px] text-brand-muted">
-              sysm.com/<Text className="font-medium text-brand-light">{username}</Text>
+              sysm.com/
+              <Text className="font-medium text-brand-light">{username}</Text>
             </Text>
           )}
 
           <Button
             onPress={handleNext}
             isDisabled={!available || saving}
-            className={`h-[50px] rounded-xl ${available ? 'bg-brand-blue active:opacity-80' : 'bg-brand-border'}`}
+            className={`h-[50px] rounded-xl ${available ? "bg-brand-blue active:opacity-80" : "bg-brand-border"}`}
           >
-            {saving ? <ButtonSpinner color="#fff" /> : <ButtonText className="text-[15px] font-semibold text-white">Next</ButtonText>}
+            {saving ? (
+              <ButtonSpinner color="#fff" />
+            ) : (
+              <ButtonText className="text-[15px] font-semibold text-white">
+                Next
+              </ButtonText>
+            )}
           </Button>
         </VStack>
       </ScrollView>

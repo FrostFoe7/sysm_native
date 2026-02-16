@@ -1,8 +1,8 @@
-import { useState, useCallback } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
-import { UserService } from '@/services/user.service';
-import { useAuthStore } from '@/store/useAuthStore';
-import type { User } from '@/types/types';
+import { useState, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import { UserService } from "@/services/user.service";
+import { useAuthStore } from "@/store/useAuthStore";
+import type { User } from "@/types/types";
 
 /**
  * Hook for managing the current user's own profile state.
@@ -18,7 +18,7 @@ export function useCurrentUserProfile() {
       const data = await UserService.getProfile(userId);
       setProfile(data);
     } catch (error) {
-      console.error('Failed to load current user profile:', error);
+      console.error("Failed to load current user profile:", error);
     } finally {
       setIsLoading(false);
     }
@@ -27,12 +27,12 @@ export function useCurrentUserProfile() {
   useFocusEffect(
     useCallback(() => {
       loadProfile();
-    }, [loadProfile])
+    }, [loadProfile]),
   );
 
   return {
     profile,
     isLoading,
-    refresh: loadProfile
+    refresh: loadProfile,
   };
 }

@@ -1,18 +1,14 @@
 // app/modal.tsx
 
-import React, { useCallback } from 'react';
-import { View, Pressable } from 'react-native';
-import { useRouter, Stack } from 'expo-router';
-import { 
-  SafeAnimatedView, 
-  FadeInDown, 
-  isWeb 
-} from '@/utils/animatedWebSafe';
-import { Composer } from '@/components/Composer';
-import { Box } from '@/components/ui/box';
-import { Text } from '@/components/ui/text';
-import { ThreadService } from '@/services/thread.service';
-import type { MediaItem } from '@/types/types';
+import React, { useCallback } from "react";
+import { View, Pressable } from "react-native";
+import { useRouter, Stack } from "expo-router";
+import { SafeAnimatedView, FadeInDown, isWeb } from "@/utils/animatedWebSafe";
+import { Composer } from "@/components/Composer";
+import { Box } from "@/components/ui/box";
+import { Text } from "@/components/ui/text";
+import { ThreadService } from "@/services/thread.service";
+import type { MediaItem } from "@/types/types";
 
 export default function ComposerModal() {
   const router = useRouter();
@@ -24,10 +20,10 @@ export default function ComposerModal() {
         if (router.canGoBack()) {
           router.back();
         } else {
-          router.navigate('/(tabs)');
+          router.navigate("/(tabs)");
         }
       } catch (err) {
-        console.error('Failed to create thread:', err);
+        console.error("Failed to create thread:", err);
       }
     },
     [router],
@@ -37,9 +33,9 @@ export default function ComposerModal() {
     <View className="flex-1 bg-brand-elevated">
       <Stack.Screen
         options={{
-          headerTitle: 'New Thread',
-          headerTitleStyle: { color: '#f3f5f7', fontWeight: 'bold' },
-          headerStyle: { backgroundColor: '#181818' },
+          headerTitle: "New Thread",
+          headerTitleStyle: { color: "#f3f5f7", fontWeight: "bold" },
+          headerStyle: { backgroundColor: "#181818" },
           headerLeft: () => (
             <Pressable
               onPress={() => router.back()}
@@ -52,12 +48,15 @@ export default function ComposerModal() {
         }}
       />
       <SafeAnimatedView
-        entering={FadeInDown?.duration(300).springify().damping(20).stiffness(200)}
+        entering={FadeInDown?.duration(300)
+          .springify()
+          .damping(20)
+          .stiffness(200)}
         className="flex-1"
       >
         <Box
           className={`flex-1 ${
-            isWeb ? 'w-full max-w-[680px] self-center' : ''
+            isWeb ? "w-full max-w-[680px] self-center" : ""
           }`}
         >
           <Composer
