@@ -59,7 +59,7 @@ async function uploadMedia(item: MediaItem): Promise<string> {
   }
 
   const { error: uploadError } = await supabase.storage
-    .from('media')
+    .from('thread-media')
     .upload(filePath, blob, {
       contentType: item.type === 'video' ? 'video/mp4' : 'image/jpeg',
       cacheControl: '3600',
@@ -68,7 +68,7 @@ async function uploadMedia(item: MediaItem): Promise<string> {
 
   if (uploadError) throw uploadError;
 
-  const { data } = supabase.storage.from('media').getPublicUrl(filePath);
+  const { data } = supabase.storage.from('thread-media').getPublicUrl(filePath);
   return data.publicUrl;
 }
 
