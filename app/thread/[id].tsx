@@ -32,6 +32,8 @@ import { UserService } from "@/services/user.service";
 import { formatFullDate } from "@/services/format";
 import { SendIcon, ArrowLeftIcon } from "@/constants/icons";
 import { SafeAreaView } from "@/components/ui/safe-area-view";
+import { useAppToast } from "@/components/AppToast";
+import { TOAST_ICONS } from "@/constants/icons";
 import type { ThreadWithAuthor, ThreadWithReplies } from "@/types/types";
 import { useInteractionStore } from "@/store/useInteractionStore";
 
@@ -50,6 +52,7 @@ export default function ThreadDetailScreen() {
   const [replyText, setReplyText] = useState("");
   const [detail, setDetail] = useState<ThreadWithReplies | null>(null);
   const [ancestors, setAncestors] = useState<ThreadWithAuthor[]>([]);
+  const { showToast } = useAppToast();
 
   const {
     likedThreads: likedMap,
@@ -219,6 +222,7 @@ export default function ThreadDetailScreen() {
   const handleThreadDeleted = useCallback(
     async (threadId: string) => {
       await ThreadService.deleteThread(threadId);
+      showToast("Thread deleted", TOAST_ICONS.deleted, "brand-red");
       if (threadId === id) {
         router.back();
       } else {
@@ -232,7 +236,7 @@ export default function ThreadDetailScreen() {
         });
       }
     },
-    [id, router],
+    [id, router, showToast],
   );
 
   const handleThreadHidden = useCallback(

@@ -23,11 +23,14 @@ import { PROFILE_TABS } from "@/constants/app";
 import { useCurrentUserProfile } from "@/hooks/use-user-profile";
 import { useInteractionStore } from "@/store/useInteractionStore";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useAppToast } from "@/components/AppToast";
+import { TOAST_ICONS } from "@/constants/icons";
 
 export default function ProfileScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("threads");
   const { userId, logout } = useAuthStore();
+  const { showToast } = useAppToast();
 
   const { profile, isLoading, refresh: refetch } = useCurrentUserProfile();
 
@@ -123,9 +126,10 @@ export default function ProfileScreen() {
   const handleThreadDeleted = useCallback(
     async (threadId: string) => {
       await ThreadService.deleteThread(threadId);
+      showToast("Thread deleted", TOAST_ICONS.deleted, "brand-red");
       refetch();
     },
-    [refetch],
+    [refetch, showToast],
   );
 
   const handleThreadHidden = useCallback(

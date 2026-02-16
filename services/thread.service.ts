@@ -431,19 +431,26 @@ async function reportThread(
 }
 
 async function deleteThread(threadId: string): Promise<boolean> {
-  const userId = await getCachedUserId();
+  try {
+    const userId = await getCachedUserId();
+    console.log(`[ThreadService] Attempting to delete thread: ${threadId} for user: ${userId}`);
 
-  const { data, error } = await supabase.rpc("delete_thread", {
-    p_user_id: userId,
-    p_thread_id: threadId,
-  });
+    const { data, error } = await supabase.rpc("delete_thread", {
+      p_user_id: userId,
+      p_thread_id: threadId,
+    });
 
-  if (error) {
-    console.error("Failed to delete thread:", error);
+    if (error) {
+      console.error("[ThreadService] Supabase RPC error deleting thread:", error);
+      return false;
+    }
+
+    console.log(`[ThreadService] Delete RPC result for ${threadId}:`, data);
+    return !!data;
+  } catch (err) {
+    console.error("[ThreadService] Unexpected error in deleteThread:", err);
     return false;
   }
-
-  return !!data;
 }
 
 async function isLikedByCurrentUser(threadId: string): Promise<boolean> {

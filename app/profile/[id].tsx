@@ -18,11 +18,14 @@ import type { ThreadWithAuthor } from "@/types/types";
 import { PROFILE_TABS } from "@/constants/app";
 import { useUserProfile } from "@/hooks/use-user";
 import { useInteractionStore } from "@/store/useInteractionStore";
+import { useAppToast } from "@/components/AppToast";
+import { TOAST_ICONS } from "@/constants/icons";
 
 export default function UserProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("threads");
+  const { showToast } = useAppToast();
 
   const {
     profile,
@@ -111,8 +114,9 @@ export default function UserProfileScreen() {
 
   const handleThreadDeleted = useCallback(async (threadId: string) => {
     await ThreadService.deleteThread(threadId);
+    showToast("Thread deleted", TOAST_ICONS.deleted, "brand-red");
     refresh();
-  }, [refresh]);
+  }, [refresh, showToast]);
 
   const handleThreadHidden = useCallback(() => {}, []);
   const handleUserMuted = useCallback(() => {}, []);

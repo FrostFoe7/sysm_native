@@ -27,6 +27,8 @@ import type { User, ThreadWithAuthor } from "@/types/types";
 import { useInteractionStore } from "@/store/useInteractionStore";
 import { useExploreFeed } from "@/hooks/use-explore";
 import type { ExploreItem as RankedExploreItem } from "@/services/ranking.service";
+import { useAppToast } from "@/components/AppToast";
+import { TOAST_ICONS } from "@/constants/icons";
 
 type ExploreListItem =
   | { type: "section-header"; title: string }
@@ -42,6 +44,7 @@ export default function ExploreScreen() {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [refreshKey, setRefreshKey] = useState(0);
+  const { showToast } = useAppToast();
 
   const {
     likedThreads: likedMap,
@@ -215,8 +218,9 @@ export default function ExploreScreen() {
 
   const handleThreadDeleted = useCallback(async (threadId: string) => {
     await ThreadService.deleteThread(threadId);
+    showToast("Thread deleted", TOAST_ICONS.deleted, "brand-red");
     setRefreshKey((k) => k + 1);
-  }, []);
+  }, [showToast]);
 
   const handleThreadHidden = useCallback((_threadId: string) => {
     setRefreshKey((k) => k + 1);

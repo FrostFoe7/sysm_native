@@ -5,6 +5,8 @@ import { ThreadService } from "@/services/thread.service";
 import { analytics } from "@/services/analytics.service";
 import type { ThreadWithAuthor } from "@/types/types";
 import { useInteractionStore } from "@/store/useInteractionStore";
+import { useAppToast } from "@/components/AppToast";
+import { TOAST_ICONS } from "@/constants/icons";
 
 /**
  * Hook for managing the threads feed data and interactions using React Query.
@@ -15,6 +17,7 @@ import { useInteractionStore } from "@/store/useInteractionStore";
  */
 export function useThreadsFeed(feedType: "foryou" | "following" = "foryou") {
   const queryClient = useQueryClient();
+  const { showToast } = useAppToast();
   const {
     likedThreads: likedMap,
     repostedThreads: repostMap,
@@ -304,11 +307,15 @@ export function useThreadsFeed(feedType: "foryou" | "following" = "foryou") {
           context.previousFollowing,
         );
       }
+      showToast("Failed to delete thread", TOAST_ICONS.reported, "brand-red");
     },
     onSuccess: (success) => {
       if (success) {
+        showToast("Thread deleted", TOAST_ICONS.deleted, "brand-red");
         queryClient.invalidateQueries({ queryKey: ["threads-feed"] });
         queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+      } else {
+        showToast("Failed to delete thread", TOAST_ICONS.reported, "brand-red");
       }
     },
   });

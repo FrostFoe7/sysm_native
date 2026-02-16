@@ -18,11 +18,14 @@ import { EditIcon } from "@/constants/icons";
 import { FEED_TABS } from "@/constants/app";
 import { useThreadsFeed } from "@/hooks/use-threads";
 import { useInteractionStore } from "@/store/useInteractionStore";
+import { useAppToast } from "@/components/AppToast";
+import { TOAST_ICONS } from "@/constants/icons";
 import type { ThreadWithAuthor } from "@/types/types";
 
 export default function HomeScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<"foryou" | "following">("foryou");
+  const { showToast } = useAppToast();
 
   const {
     data: feed,
